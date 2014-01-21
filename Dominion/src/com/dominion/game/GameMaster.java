@@ -114,7 +114,7 @@ public class GameMaster {
 			}
 		}
 		
-		return (numberOfEmptySupplies == 3);
+		return (numberOfEmptySupplies >= 3);
 	}
 
 	private void setupAllPlayers() {
