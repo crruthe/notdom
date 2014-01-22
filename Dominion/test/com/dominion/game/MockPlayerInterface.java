@@ -4,22 +4,40 @@ import com.dominion.game.cards.ActionCard;
 import com.dominion.game.cards.Card;
 import com.dominion.game.cards.ReactionCard;
 
-public class LocalGUIPlayer implements PlayerInterface {
-	private CardHand cardHand;
-	private TurnState turnState;
-	private GameBoard gameBoard;
-	
-	
-	public static void main(String[] args) {
-		GameMaster gm = new GameMaster();
-		gm.addPlayer(new Player(new LocalGUIPlayer()));
-		gm.addPlayer(new Player(new SimpleConsolePlayer()));
-		
-		gm.startGame();
-	}
+public class MockPlayerInterface implements PlayerInterface {
 
 	@Override
 	public void updateCardHand() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void updateGameBoard() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void updateTurnState() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void setCardHand(CardHand cardHand) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void setGameBoard(GameBoard gameBoard) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void setTurnState(TurnState turnState) {
 		// TODO Auto-generated method stub
 
 	}
@@ -37,12 +55,6 @@ public class LocalGUIPlayer implements PlayerInterface {
 	}
 
 	@Override
-	public void updateTurnState() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public Card getCardToBuy() {
 		// TODO Auto-generated method stub
 		return null;
@@ -55,24 +67,9 @@ public class LocalGUIPlayer implements PlayerInterface {
 	}
 
 	@Override
-	public void updateGameBoard() {
+	public Card getCardToDiscard() {
 		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void setCardHand(CardHand cardHand) {
-		this.cardHand = cardHand;		
-	}
-
-	@Override
-	public void setGameBoard(GameBoard gameBoard) {
-		this.gameBoard = gameBoard;		
-	}
-
-	@Override
-	public void setTurnState(TurnState turnState) {
-		this.turnState = turnState;		
+		return null;
 	}
 
 	@Override
@@ -82,13 +79,13 @@ public class LocalGUIPlayer implements PlayerInterface {
 	}
 
 	@Override
-	public Card getCardToDiscard() {
+	public Card getCardToTrash() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Card getCardToTrash() {
+	public Card getTreasureCardToTrash() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -103,12 +100,6 @@ public class LocalGUIPlayer implements PlayerInterface {
 	public boolean wantsToPutDeckInDiscard() {
 		// TODO Auto-generated method stub
 		return false;
-	}
-
-	@Override
-	public Card getTreasureCardToTrash() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override

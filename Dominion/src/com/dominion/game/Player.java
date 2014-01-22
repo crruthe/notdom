@@ -1,11 +1,10 @@
 package com.dominion.game;
 
+import java.util.Collection;
+
 import com.dominion.game.actions.CardAction;
 import com.dominion.game.cards.ActionCard;
 import com.dominion.game.cards.Card;
-import com.dominion.game.cards.ReactionCard;
-import com.dominion.game.cards.basic.CopperCard;
-import com.dominion.game.cards.basic.EstateCard;
 import com.dominion.game.visitors.CountTotalCoinsVisitor;
 import com.dominion.game.visitors.VictoryPointCounterCardVisitor;
 
@@ -15,125 +14,32 @@ public class Player {
 	private final CardHand cardHand = new CardHand();
 	private final PlayArea playArea = new PlayArea();
 	
+	private GameBoard gameBoard;
+	private TurnState turnState;	
+	private Collection<Player> otherPlayers;
+	
 	private final PlayerInterface playerInterface;
 
 	private final static int NUM_CARDS_IN_HAND = 5;
-	private final static int NUM_ESTATE_SETUP = 3;
-	private final static int NUM_COPPER_SETUP = 7;
 	
-	private final TurnState turnState = new TurnState();
+	private boolean isImmune;	
 	
-	private boolean isImmune;
-	
-	/**
-	 * @return the turnState
-	 */
-	public TurnState getTurnState() {
-		return turnState;
-	}
-
-	/**
-	 * @return the playerInterface
-	 */
-	public PlayerInterface getPlayerInterface() {
-		return playerInterface;
-	}
-
-	/**
-	 * factory constructor
-	 */
-	private Player(PlayerInterface playerInterface) {
+	public Player(PlayerInterface playerInterface) {
 		this.playerInterface = playerInterface;
 		this.playerInterface.setCardHand(cardHand);
-		this.playerInterface.setTurnState(turnState);
 	}
 	
-	/**
-	 * @return factory to create a default player
-	 */
-	public static Player createDefaultPlayer() {
-		PlayerInterface playerInterface = new LocalGUIPlayer();
-		return new Player(playerInterface);
-	}
-	
-	/**
-	 * @return factory to create a network player
-	 */
-	public static Player createNetworkPlayer() {
-		PlayerInterface playerInterface = new NetworkPlayer();
-		return new Player(playerInterface);
-	}
-
-	/**
-	 * @return factory to create a console player
-	 */
-	public static Player createSimpleConsolePlayer() {
-		PlayerInterface playerInterface = new SimpleConsolePlayer();
-		return new Player(playerInterface);
-	}
-	
-	/**
-	 * Take a card from the deck and place it in the hand. If
-	 * there are not enough cards in his Deck, he draws as many as he
-	 * can, shuffles his Discard pile to form a new face-down Deck, and
-	 * then draws the rest of his new hand.
-	 */
-	public Card drawCard() {
-		// Check if deck is empty and the discard pile needs to be reshuffled
-		if (cardDeck.isEmpty()) {
-			// Move discard pile into card deck 
-			cardDeck.addCards(discardPile.clearDiscardPile());
-			
-			cardDeck.shuffle();
-		}
+	public void playTurn() {
+		turnState = new TurnState();
+		playerInterface.setTurnState(turnState);
 		
-		Card card = cardDeck.drawCard();
-		return card;
+		actionPhase();
+		buyPhase();
+		cleanUpPhase();		
+		drawNewHand();	
 	}
 	
-	public void discardCard(Card card) {
-		cardHand.removeCard(card);
-		discardPile.addCard(card);
-	}
-		
-	/**
-	 * Each player starts the game with the same cards:
-	 * 7 coppers
-	 * 3 estates
-	 * 
-	 * Each player shuffles these cards and places them (his Deck)
-	 * face-down in his play area (the area near him on the table).
-	 */
-	private void setUpDeck() {
-		for (int i = 0; i < NUM_ESTATE_SETUP; i++) {
-			cardDeck.addCard(new EstateCard());
-		}
-		
-		for (int i = 0; i < NUM_COPPER_SETUP; i++) {
-			cardDeck.addCard(new CopperCard());
-		}
-		
-		cardDeck.shuffle();		
-	}
-	
-	
-	/**
-	 * The player draws a new hand of 5 cards from his Deck.
-	 */
-	private void drawNewHand() {
-		for (int i = 0; i < NUM_CARDS_IN_HAND; i++) {
-			cardHand.addCard(drawCard());
-		}
-	}
-	
-	public void setup() {
-		setUpDeck();
-		drawNewHand();		
-	}
-
-	public void actionPhase() {
-		// Reset actions, buys and coins
-		turnState.reset();		
+	private void actionPhase() {
 		playerInterface.updateTurnState();
 		
 		// Continue while the player has actions left
@@ -156,31 +62,10 @@ public class Player {
 		}
 	}
 	
-	public CardHand getCardHand() {
-		return cardHand;
-	}
-	
-	public PlayArea getPlayArea() {
-		return playArea;		
-	}
-	
-	private void playActionCard(ActionCard actionCard) {
-		// Move action card from hand to play area
-		cardHand.removeCard(actionCard);
-		playArea.addCard(actionCard);
-		
-		playerInterface.updateCardHand();
-		
-		// Iterate through actions for action card
-		for (CardAction action : actionCard.buildActionList()) {
-			action.setPlayer(this);
-			action.execute();
-		}
-	}
-	
-	public void buyPhase() {
+	private void buyPhase() {
 		// Determine amount of coins to buy with
-		countTotalCoinsInHand();
+		turnState.incrementCoins(countTotalCoinsInHand());
+		playerInterface.updateTurnState();
 		
 		while(turnState.getNumberOfBuys() > 0) {
 			Card card = playerInterface.getCardToBuy();
@@ -193,7 +78,7 @@ public class Player {
 				}
 
 				// Gain a card
-				discardPile.addCard(card);
+				gainCard(card);
 				
 				System.out.println(card.getDescription());
 				
@@ -203,28 +88,172 @@ public class Player {
 			playerInterface.updateTurnState();
 		}		
 	}
+
+	private void cleanUpPhase() {
+		discardPlayArea();
+		discardHand();
+	}	
 	
-	/**
-	 * Counts the total number of coins available from treasure cards
-	 */
-	private void countTotalCoinsInHand() {
-		CountTotalCoinsVisitor totalCoinsVisitor = new CountTotalCoinsVisitor();
-		for (Card card : cardHand.getCards()) {
-			card.accept(totalCoinsVisitor);
+	private void playActionCard(ActionCard actionCard) {
+
+		playCard(actionCard);
+		
+		playerInterface.updateCardHand();
+		
+		// Iterate through actions for action card
+		for (CardAction action : actionCard.buildActionList()) {
+			action.setPlayer(this);
+			action.execute();
 		}
-		turnState.incrementCoins(totalCoinsVisitor.getCoins());
-		playerInterface.updateTurnState();		
+	}
+		
+	/**
+	 * @return the playerInterface
+	 */
+	public PlayerInterface getPlayerInterface() {
+		return playerInterface;
 	}
 
-	public void endGamePhase() {
-		// Move card hand into card deck
-		cardDeck.addCards(cardHand.clearHand());
+	/**
+	 * Take a card from the deck. If there are not enough cards in their Deck, 
+	 * they draws as many as they can, shuffles their Discard pile to form a 
+	 * new face-down Deck, and then draws another card.
+	 */
+	public Card drawCard() {
+		// Check if deck is empty and the discard pile needs to be reshuffled
+		if (cardDeck.isEmpty()) {
+			moveDiscardPileToCardDeck(); 
+			
+			cardDeck.shuffle();
+		}
 		
-		// Move discard pile into the card deck
-		cardDeck.addCards(discardPile.clearDiscardPile());
+		Card card = cardDeck.drawCard();
+		return card;
 	}
 	
-	public int countVictoryPoints() {
+	public void drawCardToHand() {
+		cardHand.addCard(drawCard());
+	}
+	
+	/**
+	 * Move the discard pile back into the card deck
+	 */
+	public void moveDiscardPileToCardDeck() { 
+		cardDeck.addCards(discardPile.clearDiscardPile());		
+	}
+	
+	/**
+	 * Move all cards from the play area into the discard deck
+	 */
+	public void discardPlayArea() {
+		discardPile.addCards(playArea.clearPlayArea());
+	}
+	
+	/**
+	 * Move all cards from the play area into the discard deck
+	 */
+	public void moveCardFromHandToDeck(Card card) {
+		cardHand.removeCard(card);
+		cardDeck.addCard(card);
+	}
+
+	/**
+	 * Move a card from hand to the discard pile
+	 * @param card
+	 */
+	public void discardCardFromHand(Card card) {
+		cardHand.removeCard(card);
+		discardPile.addCard(card);
+	}
+	
+	/**
+	 * Move the card deck to the discard pile
+	 */
+	public void moveCardDeckToDiscardPile() {
+		discardPile.addCards(cardDeck.getCards());
+	}
+	
+	/**
+	 * Returns the current size of the hand
+	 * @return
+	 */
+	public int getHandSize() {
+		return cardHand.getSize();
+	}
+	
+	/**
+	 * Add a card to the card deck
+	 * @param card
+	 */
+	public void addCardToDeck(Card card) {
+		cardDeck.addCard(card);
+	}
+	
+	/**
+	 * Add multiple cards to the card deck
+	 * @param cards
+	 */
+	public void addCardsToDeck(Collection<Card> cards) {
+		cardDeck.addCards(cards);
+	}
+	
+	/**
+	 * Add multiple cards to the discard pile
+	 * @param cards
+	 */
+	public void addCardsToDiscardPile(Collection<Card> cards) {
+		discardPile.addCards(cards);
+	}
+	
+	/**
+	 * Move card from hand into the play area
+	 * @param card
+	 */
+	public void playCard(Card card) {
+		cardHand.removeCard(card);
+		playArea.addCard(card);		
+	}
+	
+	/**
+	 * Move a card into the hand
+	 * @param card
+	 */
+	public void addCardToHand(Card card) {
+		cardHand.addCard(card);
+	}
+	
+	/**
+	 * Add a new card into the discard pile
+	 * @param card
+	 */
+	public void gainCard(Card card) {
+		discardPile.addCard(card);	
+	}	
+	
+	/**
+	 * Discard current hand into the discard pile
+	 */
+	public void discardHand() {
+		discardPile.addCards(cardHand.clearHand());		
+	}
+		
+	/**
+	 * The player draws a new hand of 5 cards from his Deck.
+	 */
+	public void drawNewHand() {
+		for (int i = 0; i < NUM_CARDS_IN_HAND; i++) {
+			cardHand.addCard(drawCard());
+		}
+	}
+	
+	/** 
+	 * Counts the total number of victory points in the card deck for the
+	 * player.
+	 * 
+	 * @param player
+	 * @return
+	 */
+	public int countVictoryPointsInCardDeck() {
 		VictoryPointCounterCardVisitor victoryPointCounterCardVisitor = new VictoryPointCounterCardVisitor();
 		
 		// Necessary for gardens card
@@ -236,54 +265,49 @@ public class Player {
 		}
 		
 		return victoryPointCounterCardVisitor.getVictoryPoints();
+	}		
+	
+	/**
+	 * Counts the total number of coins available from treasure cards
+	 */
+	public int countTotalCoinsInHand() {
+		CountTotalCoinsVisitor totalCoinsVisitor = new CountTotalCoinsVisitor();
+		for (Card card : cardHand.getCards()) {
+			card.accept(totalCoinsVisitor);
+		}
+		return totalCoinsVisitor.getCoins();
 	}
 	
-	public void cleanUpPhase() {
-		// Move play area into discard pile
-		discardPile.addCards(playArea.clearPlayArea());
-		
-		// Move card hand into discard pile
-		discardPile.addCards(cardHand.clearHand());
-		
-		drawNewHand();	
+	/**
+	 * Return the size of the card deck
+	 * @return
+	 */
+	public int getCardDeckSize() {
+		return cardDeck.count();
 	}
-
+	
+	/**
+	 * Return the size of the card deck
+	 * @return
+	 */
+	public int getDiscardPileSize() {
+		return discardPile.count();
+	}
+	
+	public CardHand getCardHand() {
+		return cardHand;
+	}
+	
+	public PlayArea getPlayArea() {
+		return playArea;		
+	}
+		
 	public DiscardPile getDiscardPile() {
 		return discardPile;
 	}
 	
 	public CardDeck getCardDeck() {
 		return cardDeck;
-	}
-	
-	private void playReactionCard(ReactionCard reactionCard) {
-		// Move action card from hand to play area
-		cardHand.removeCard(reactionCard);
-		playArea.addCard(reactionCard);
-		
-		playerInterface.updateCardHand();
-
-		CardAction action = reactionCard.getReaction();
-
-		action.setPlayer(this);
-		action.execute();
-	}
-
-	public void revealReactionPhase() {
-		boolean endPhase = false;
-		
-		while (!endPhase) {			
-			ReactionCard card = playerInterface.getReactionCardToPlay();
-			
-			if (card == null) {
-				endPhase = true;
-			} else {
-				playReactionCard(card);
-			}
-		}
-
-		// Move reveal cards into card hand
-		cardHand.addCards(playArea.clearPlayArea());
 	}
 	
 	public boolean isImmune() {
@@ -296,6 +320,29 @@ public class Player {
 
 	public void trashCard(Card card) {
 		cardHand.removeCard(card);
-		GameMaster.getInstance().getGameBoard().addToTrashPile(card);
+	}
+
+	public GameBoard getGameBoard() {
+		return gameBoard;
+	}
+
+	public void setGameBoard(GameBoard gameBoard) {
+		this.gameBoard = gameBoard;
+	}
+	
+	public Collection<Player> getOtherPlayers() {
+		return otherPlayers;
+	}
+
+	public void setOtherPlayers(Collection<Player> otherPlayers) {
+		this.otherPlayers = otherPlayers;
 	}	
+	
+	public TurnState getTurnState() {
+		return turnState;
+	}
+
+	public void setTurnState(TurnState turnState) {
+		this.turnState = turnState;
+	}
 }

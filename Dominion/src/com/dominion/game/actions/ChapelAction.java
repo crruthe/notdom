@@ -15,6 +15,7 @@ public class ChapelAction extends CardAction {
 				endAction = true;
 			} else {
 				player.trashCard(card);
+				player.getGameBoard().addToTrashPile(card);
 				numberToTrash--;
 			}
 		}

@@ -8,8 +8,7 @@ public class ThroneRoomAction extends CardAction {
 		ActionCard actionCard = player.getPlayerInterface().getActionCardToPlay();
 		
 		if (actionCard != null) {
-			player.getCardHand().removeCard(actionCard);
-			player.getPlayArea().addCard(actionCard);
+			player.playCard(actionCard);
 			
 			for (CardAction action : actionCard.buildActionList()) {
 				action.setPlayer(player);

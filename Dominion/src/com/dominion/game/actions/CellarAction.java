@@ -14,7 +14,7 @@ public class CellarAction extends CardAction {
 			if (card == null) {
 				endAction = true;
 			} else {
-				player.discardCard(card);
+				player.discardCardFromHand(card);
 				numberDiscardedOfCards++;
 			}
 		}

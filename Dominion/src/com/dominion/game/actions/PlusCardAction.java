@@ -11,7 +11,7 @@ public class PlusCardAction extends CardAction {
 	@Override
 	public void execute() {
 		for (int i = 0; i < numCards; i++) {
-			player.getCardHand().addCard(player.drawCard());
+			player.drawCardToHand();
 		}
 	}
 }

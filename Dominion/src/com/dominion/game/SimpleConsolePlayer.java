@@ -27,8 +27,19 @@ public class SimpleConsolePlayer implements PlayerInterface {
 	public void updateCardHand() {
 	}
 	
+	public static void main(String[] args) {
+		GameMaster gm = new GameMaster();
+		
+		
+		gm.addPlayer(new Player(new SimpleConsolePlayer()));
+		gm.addPlayer(new Player(new SimpleConsolePlayer()));
+		gm.addPlayer(new Player(new SimpleConsolePlayer()));
+		
+		gm.startGame();
+	}
+	
 	private void displayCardHand() {
-		System.out.println(playerName);
+		System.out.println(getPlayerName());
 		System.out.println("=== Current Hand ===" );
 		int i = 0;
 		for (Card c : cardHand.getCards()) {

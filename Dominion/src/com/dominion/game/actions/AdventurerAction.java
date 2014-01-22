@@ -17,12 +17,13 @@ public class AdventurerAction extends CardAction {
 			if (card == null) {
 				numberOfTreasureCards = 2;
 			} else if (card instanceof TreasureCard) {
-				player.getCardHand().addCard(card);
+				player.addCardToHand(card);
 				numberOfTreasureCards++;
 			} else {
 				setAside.add(card);
 			}
 		}
-		player.getDiscardPile().addCards(setAside);
+		
+		player.addCardsToDiscardPile(setAside);
 	}	
 }

@@ -1,30 +1,18 @@
 package com.dominion.game;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
+
+import com.dominion.game.cards.basic.CopperCard;
+import com.dominion.game.cards.basic.EstateCard;
 
 
 public class GameMaster {
-	// Singleton with double-checked locking
-	private volatile static GameMaster instance;
+	private final static int NUM_ESTATE_SETUP = 3;
+	private final static int NUM_COPPER_SETUP = 7;
 	
-	private GameMaster() {}
-	
-	public static GameMaster getInstance() {
-		if (instance == null) {
-			synchronized (GameMaster.class) {
-				if (instance == null) {
-					instance = new GameMaster();
-				}
-			}
-		}
-		return instance;
-	}
-	// End Singleton
-	
-	
-	private final ArrayList<Player> players = new ArrayList<Player>();
+	private final LinkedList<Player> players = new LinkedList<Player>();
 	private final GameBoard gameBoard = new GameBoard();
 	
 	public void addPlayer(Player player) {
@@ -48,33 +36,32 @@ public class GameMaster {
 		randomisePlayers();
 		
 		boolean gameEnded = false;
-		
-		// Track the turn of current player
-		int currentPlayerIndex = 0;
-		Player currentPlayer;
+		Player currentPlayer = null;
 		
 		// Main game loop
-		while (!gameEnded) {
-			// Determine the next player to have a turn
-			currentPlayer = players.get(currentPlayerIndex);
+		while (!gameEnded) {			
+			// Determine the next player in the queue to and remove from the list
+			// i.e. players = players - currentPlayers = otherPlayers
+			currentPlayer = players.remove();
 			
 			currentPlayer.getPlayerInterface().updateGameBoard();
-			
-			currentPlayer.actionPhase();
-			currentPlayer.buyPhase();
-			currentPlayer.cleanUpPhase();
-			
+			currentPlayer.setOtherPlayers(players);
+			currentPlayer.playTurn();			
 			
 			gameEnded = hasGameEnded();
-			
-			// Increase the next player index and return if to the 
-			// first player once everyone has had a turn
-			currentPlayerIndex = (currentPlayerIndex + 1) % players.size();			
+
+			// Add current player to the end of the queue
+			players.add(currentPlayer);			
 		}
 		
+		// Tally the victory points
 		for (Player player : players) {
-			player.endGamePhase();
-			System.out.println(player.getPlayerInterface().getPlayerName() + " - " + player.countVictoryPoints());
+			
+			// Move all the cards into the card deck for tally
+			player.discardHand();
+			player.moveDiscardPileToCardDeck();
+			
+			System.out.println(player.getPlayerInterface().getPlayerName() + " - " + player.countVictoryPointsInCardDeck());
 		}
 	}
 		
@@ -119,8 +106,29 @@ public class GameMaster {
 
 	private void setupAllPlayers() {
 		for (Player player : players) {
-			player.setup();
+			player.setGameBoard(gameBoard);
+			
+			buildDeckForPlayer(player);
+			player.drawNewHand();
 			player.getPlayerInterface().setGameBoard(gameBoard);
+		}
+	}
+	
+	/**
+	 * Each player starts the game with the same cards:
+	 * 7 coppers
+	 * 3 estates
+	 * 
+	 * Each player shuffles these cards and places them (their Deck)
+	 * face-down in their play area (the area near them on the table).
+	 */
+	private void buildDeckForPlayer(Player player) {
+		for (int i = 0; i < NUM_ESTATE_SETUP; i++) {
+			player.gainCard(new EstateCard());
+		}
+		
+		for (int i = 0; i < NUM_COPPER_SETUP; i++) {
+			player.gainCard(new CopperCard());
 		}
 	}
 	

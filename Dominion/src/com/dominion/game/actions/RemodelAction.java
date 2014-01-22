@@ -14,8 +14,9 @@ public class RemodelAction extends CardAction {
 		Card trashCard = player.getPlayerInterface().getCardToTrash();
 		
 		player.trashCard(trashCard);
+		player.getGameBoard().addToTrashPile(trashCard);
 		
 		Card card = player.getPlayerInterface().getCardToGain(trashCard.getCost() + 2);
-		player.getCardHand().addCard(card);
+		player.addCardToHand(card);
 	}
 }

@@ -10,18 +10,18 @@ public class LibraryAction extends CardAction {
 	public void execute() {
 		LinkedList<Card> setAside = new LinkedList<Card>();
 		
-		while (player.getCardHand().getSize() < 7) {
+		while (player.getHandSize() < 7) {
 			Card card = player.drawCard();
 			if (card instanceof ActionCard) {
 				if (player.getPlayerInterface().wantsToSetAsideCard(card)) {
 					setAside.add(card);
 				} else {
-					player.getCardHand().addCard(card);
+					player.addCardToHand(card);
 				}				
 			} else {
-				player.getCardHand().addCard(card);
+				player.addCardToHand(card);
 			}			
 		}
-		player.getDiscardPile().addCards(setAside);
+		player.addCardsToDiscardPile(setAside);
 	}	
 }

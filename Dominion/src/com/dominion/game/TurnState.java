@@ -56,11 +56,5 @@ public class TurnState {
 
 	public void zeroActions() {
 		numberOfActions = 0;
-	}
-	
-	public void reset() {
-		numberOfBuys = 1;
-		numberOfActions = 1;
-		totalCoins = 0;			
-	}
+	}	
 }

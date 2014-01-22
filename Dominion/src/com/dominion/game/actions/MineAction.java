@@ -19,8 +19,9 @@ public class MineAction extends CardAction {
 		}
 		
 		player.trashCard(trashCard);
+		player.getGameBoard().addToTrashPile(trashCard);
 		
 		Card card = player.getPlayerInterface().getCardToGain(trashCard.getCost() + 3);
-		player.getCardHand().addCard(card);
+		player.addCardToHand(card);
 	}
 }
