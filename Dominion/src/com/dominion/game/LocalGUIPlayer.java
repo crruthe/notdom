@@ -6,12 +6,11 @@ import com.dominion.R;
 import com.dominion.game.cards.ActionCard;
 import com.dominion.game.cards.Card;
 import com.dominion.game.cards.ReactionCard;
-import com.dominion.game.cards.basic.CopperCard;
 
 public class LocalGUIPlayer implements PlayerInterface {
-	private CardHand cardHand;
-	private TurnState turnState;
-	private GameBoard gameBoard;
+	private ImmutableCardHand cardHand;
+	private ImmutableTurnState turnState;
+	private ImmutableGameBoard gameBoard;
 	
 	private Card selectedCard;
 	private boolean skip;
@@ -27,9 +26,11 @@ public class LocalGUIPlayer implements PlayerInterface {
 	}
 
 	@Override
-	public void updateCardHand() {
-		// TODO Auto-generated method stub
+	public void updateCardHand(final ImmutableCardHand cardHand) {
 
+		// update/render card hand
+		
+		this.cardHand = cardHand; 
 	}
 
 	@Override
@@ -45,9 +46,11 @@ public class LocalGUIPlayer implements PlayerInterface {
 	}
 
 	@Override
-	public void updateTurnState() {
-		// TODO Auto-generated method stub
+	public void updateTurnState(final ImmutableTurnState turnState) {
 		
+		// render/update num actions, num buys, total coins
+		
+		this.turnState = turnState;
 	}
 	
 	/**
@@ -93,7 +96,7 @@ public class LocalGUIPlayer implements PlayerInterface {
 	 * e.g. com.dominion.game.cards.basic.CopperCard
 	 * 
 	 * @param cardName
-	 * @return Card object
+	 * @return
 	 */
 	private Card getCardByString(String cardClass) {
 		try {
@@ -111,10 +114,11 @@ public class LocalGUIPlayer implements PlayerInterface {
 	}
 	
 	/**
-	 * Called by GameMaster when a player must select a card to buy
+	 * Blocks game thread, waiting for the user to provide a card
+	 * 
+	 * @return
 	 */
-	@Override
-	public Card getCardToBuy() {		
+	private Card waitForSelectedCard() {
 		// Wait for the user to select a card or skip this the buy action
 		while (selectedCard == null && !skip) {
 			waitOnGUI();
@@ -125,7 +129,20 @@ public class LocalGUIPlayer implements PlayerInterface {
 		selectedCard = null;
 		skip = false;
 		
-		return card;
+		return card;		
+	}
+	
+	/**
+	 * Called by GameMaster when a player must select a card to buy
+	 */
+	@Override
+	public Card getCardToBuy() {
+		// Enable possible cards to select (e.g. 10 kingdom, victory, treasure, curse)
+		// Disable cards not possible to select (e.g. hand, cards in your play area)
+
+		// Should the GM inform the GUI or should the GUI know what should be enabled/disabled?
+		
+		return waitForSelectedCard();
 	}
 
 	@Override
@@ -135,24 +152,10 @@ public class LocalGUIPlayer implements PlayerInterface {
 	}
 
 	@Override
-	public void updateGameBoard() {
-		// TODO Auto-generated method stub
+	public void updateGameBoard(final ImmutableGameBoard gameBoard) {
 		
-	}
-
-	@Override
-	public void setCardHand(CardHand cardHand) {
-		this.cardHand = cardHand;		
-	}
-
-	@Override
-	public void setGameBoard(GameBoard gameBoard) {
-		this.gameBoard = gameBoard;		
-	}
-
-	@Override
-	public void setTurnState(TurnState turnState) {
-		this.turnState = turnState;		
+		// render / update game board (changes per player turn)
+		this.gameBoard = gameBoard;
 	}
 
 	@Override

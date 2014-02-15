@@ -44,7 +44,7 @@ public class GameMaster {
 			// i.e. players = players - currentPlayers = otherPlayers
 			currentPlayer = players.remove();
 			
-			currentPlayer.getPlayerInterface().updateGameBoard();
+			currentPlayer.getPlayerInterface().updateGameBoard(new ImmutableGameBoard(gameBoard));
 			currentPlayer.setOtherPlayers(players);
 			currentPlayer.playTurn();			
 			
@@ -110,7 +110,6 @@ public class GameMaster {
 			
 			buildDeckForPlayer(player);
 			player.drawNewHand();
-			player.getPlayerInterface().setGameBoard(gameBoard);
 		}
 	}
 	

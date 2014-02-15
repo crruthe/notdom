@@ -7,42 +7,6 @@ import com.dominion.game.cards.ReactionCard;
 public class MockPlayerInterface implements PlayerInterface {
 
 	@Override
-	public void updateCardHand() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void updateGameBoard() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void updateTurnState() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void setCardHand(CardHand cardHand) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void setGameBoard(GameBoard gameBoard) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void setTurnState(TurnState turnState) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public String getPlayerName() {
 		// TODO Auto-generated method stub
 		return null;
@@ -106,6 +70,24 @@ public class MockPlayerInterface implements PlayerInterface {
 	public Card getVictoryCardToReveal() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void updateCardHand(ImmutableCardHand cardHand) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateGameBoard(ImmutableGameBoard gameBoard) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateTurnState(ImmutableTurnState turnState) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

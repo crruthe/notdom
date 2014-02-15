@@ -19,12 +19,13 @@ import com.dominion.game.cards.basic.SilverCard;
 
 public class SimpleConsolePlayer implements PlayerInterface {
 	private String playerName = "";
-	private CardHand cardHand;
-	private TurnState turnState;
-	private GameBoard gameBoard;
+	private ImmutableCardHand cardHand;
+	private ImmutableTurnState turnState;
+	private ImmutableGameBoard gameBoard;
 	
 	@Override
-	public void updateCardHand() {
+	public void updateCardHand(final ImmutableCardHand cardHand) {
+		this.cardHand = cardHand;
 	}
 	
 	public static void main(String[] args) {
@@ -43,7 +44,7 @@ public class SimpleConsolePlayer implements PlayerInterface {
 		System.out.println("=== Current Hand ===" );
 		int i = 0;
 		for (Card c : cardHand.getCards()) {
-			System.out.println(i + " => " + c.getDescription());
+			System.out.println(i + " => " + c.getClass().getName());
 			i++;
 		}		
 	}
@@ -104,7 +105,8 @@ public class SimpleConsolePlayer implements PlayerInterface {
 	}
 
 	@Override
-	public void updateTurnState() {			
+	public void updateTurnState(final ImmutableTurnState turnState) {
+		this.turnState = turnState;
 	}
 
 	@Override
@@ -128,23 +130,9 @@ public class SimpleConsolePlayer implements PlayerInterface {
 		
 		if (cardStr.equals("-1")) {
 			return null;
-		} else if (cardStr.equals("estate")) {
-			return gameBoard.getEstateCard();
-		} else if (cardStr.equals("duchy")) {
-			return gameBoard.getDuchyCard();
-		} else if (cardStr.equals("province")) {
-			return gameBoard.getProvinceCard();
-		} else if (cardStr.equals("copper")) {
-			return gameBoard.getCopperCard();
-		} else if (cardStr.equals("silver")) {
-			return gameBoard.getSilverCard();
-		} else if (cardStr.equals("gold")) {
-			return gameBoard.getGoldCard();
-		} else if (cardStr.equals("curse")) {
-			return gameBoard.getCurseCard();
+		} else {
+			return getCardByString(cardStr);
 		}
-		
-		return gameBoard.getKingdomCard(cardStr);
 	}
 
 	@Override
@@ -164,37 +152,22 @@ public class SimpleConsolePlayer implements PlayerInterface {
 			e.printStackTrace();
 		}			
 		
-		if (cardStr.equals("estate")) {
-			return gameBoard.getEstateCard();
-		} else if (cardStr.equals("duchy")) {
-			return gameBoard.getDuchyCard();
-		} else if (cardStr.equals("province")) {
-			return gameBoard.getProvinceCard();
-		} else if (cardStr.equals("copper")) {
-			return gameBoard.getCopperCard();
-		} else if (cardStr.equals("silver")) {
-			return gameBoard.getSilverCard();
-		} else if (cardStr.equals("gold")) {
-			return gameBoard.getGoldCard();
-		} else if (cardStr.equals("curse")) {
-			return gameBoard.getCurseCard();
-		}
-		
-		return gameBoard.getKingdomCard(cardStr);
+		return getCardByString(cardStr);
 	}
 
 	@Override
-	public void updateGameBoard() {		
+	public void updateGameBoard(final ImmutableGameBoard gameBoard) {
+		this.gameBoard = gameBoard;
 	}
 	
 	private void displayGameBoard() {
-		System.out.println("estate : " + EstateCard.COST + " : " + gameBoard.getEstateStackSize());
-		System.out.println("duchy : " + DuchyCard.COST + " : " + gameBoard.getDuchyStackSize());
-		System.out.println("province : " + ProvinceCard.COST + " : " + gameBoard.getProvinceStackSize());
-		System.out.println("copper : " + CopperCard.COST);
-		System.out.println("silver : " + SilverCard.COST);
-		System.out.println("gold : " + GoldCard.COST);
-		System.out.println("curse : " + CurseCard.COST + " : " + gameBoard.getCurseStackSize());
+		System.out.println(EstateCard.class.getName() + " : " + EstateCard.COST + " : " + gameBoard.getEstateStackSize());
+		System.out.println(DuchyCard.class.getName() + " : " + DuchyCard.COST + " : " + gameBoard.getDuchyStackSize());
+		System.out.println(ProvinceCard.class.getName() + " : " + ProvinceCard.COST + " : " + gameBoard.getProvinceStackSize());
+		System.out.println(CopperCard.class.getName() + " : " + CopperCard.COST);
+		System.out.println(SilverCard.class.getName() + " : " + SilverCard.COST);
+		System.out.println(GoldCard.class.getName() + " : " + GoldCard.COST);
+		System.out.println(CurseCard.class.getName() + " : " + CurseCard.COST + " : " + gameBoard.getCurseStackSize());
 		
 		for (String key : gameBoard.getKingdomCards().keySet()) {
 			try {
@@ -218,21 +191,6 @@ public class SimpleConsolePlayer implements PlayerInterface {
 				e.printStackTrace();
 			}			
 		}
-	}
-
-	@Override
-	public void setCardHand(CardHand cardHand) {
-		this.cardHand = cardHand;		
-	}
-
-	@Override
-	public void setGameBoard(GameBoard gameBoard) {
-		this.gameBoard = gameBoard;
-	}
-
-	@Override
-	public void setTurnState(TurnState turnState) {
-		this.turnState = turnState;
 	}
 
 	@Override
@@ -475,4 +433,26 @@ public class SimpleConsolePlayer implements PlayerInterface {
 		
 		return card;	
 	}
+	
+	/**
+	 * Returns an instantiation of the card based on the string
+	 * e.g. com.dominion.game.cards.basic.CopperCard
+	 * 
+	 * @param cardName
+	 * @return
+	 */
+	private Card getCardByString(String cardClass) {
+		try {
+			return (Card) Class.forName(cardClass).newInstance();
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			throw new RuntimeException(e);
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			throw new RuntimeException(e);
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			throw new RuntimeException(e);
+		}
+	}	
 }

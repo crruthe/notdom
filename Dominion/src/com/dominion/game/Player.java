@@ -26,12 +26,10 @@ public class Player {
 	
 	public Player(PlayerInterface playerInterface) {
 		this.playerInterface = playerInterface;
-		this.playerInterface.setCardHand(cardHand);
 	}
 	
 	public void playTurn() {
 		turnState = new TurnState();
-		playerInterface.setTurnState(turnState);
 		
 		actionPhase();
 		buyPhase();
@@ -40,7 +38,7 @@ public class Player {
 	}
 	
 	private void actionPhase() {
-		playerInterface.updateTurnState();
+		updateTurnState();
 		
 		// Continue while the player has actions left
 		while(turnState.getNumberOfActions() > 0) {
@@ -58,14 +56,22 @@ public class Player {
 				turnState.decrementActions();
 			}
 			
-			playerInterface.updateTurnState();
+			updateTurnState();
 		}
+	}
+	
+	private void updateTurnState() {
+		playerInterface.updateTurnState(new ImmutableTurnState(turnState));
+	}
+	
+	private void updateCardHand() {
+		playerInterface.updateCardHand(new ImmutableCardHand(cardHand));
 	}
 	
 	private void buyPhase() {
 		// Determine amount of coins to buy with
 		turnState.incrementCoins(countTotalCoinsInHand());
-		playerInterface.updateTurnState();
+		updateTurnState();
 		
 		while(turnState.getNumberOfBuys() > 0) {
 			Card card = playerInterface.getCardToBuy();
@@ -85,7 +91,7 @@ public class Player {
 				turnState.decrementCoins(card.getCost());
 				turnState.decrementBuys();
 			}
-			playerInterface.updateTurnState();
+			updateTurnState();
 		}		
 	}
 
@@ -98,7 +104,7 @@ public class Player {
 
 		playCard(actionCard);
 		
-		playerInterface.updateCardHand();
+		updateCardHand();
 		
 		// Iterate through actions for action card
 		for (CardAction action : actionCard.buildActionList()) {
@@ -244,6 +250,7 @@ public class Player {
 		for (int i = 0; i < NUM_CARDS_IN_HAND; i++) {
 			cardHand.addCard(drawCard());
 		}
+		updateCardHand();
 	}
 	
 	/** 

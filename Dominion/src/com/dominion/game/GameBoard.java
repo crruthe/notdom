@@ -230,7 +230,11 @@ public class GameBoard {
 	public void addToTrashPile(Card card) {
 		trashPile.add(card);
 	}
-	
+
+	public List<Card> getTrashPile() {
+		return trashPile;
+	}
+
 	public Card getKingdomCard(String cardType) {
 		Integer numCardLeft = kingdomCards.get(cardType);
 		if (numCardLeft == null) {
