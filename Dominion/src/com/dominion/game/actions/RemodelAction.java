@@ -11,12 +11,11 @@ import com.dominion.game.cards.Card;
 public class RemodelAction extends CardAction {
 	@Override
 	public void execute() {
-		Card trashCard = player.getPlayerInterface().getCardToTrash();
+		Card trashCard = player.getCardToTrash();
 		
 		player.trashCard(trashCard);
-		player.getGameBoard().addToTrashPile(trashCard);
 		
-		Card card = player.getPlayerInterface().getCardToGain(trashCard.getCost() + 2);
+		Card card = player.getCardToGain(trashCard.getCost() + 2);
 		player.addCardToHand(card);
 	}
 }

@@ -1,4 +1,4 @@
-package com.dominion.game;
+package com.dominion.game.interfaces;
 
 import com.dominion.game.cards.ActionCard;
 import com.dominion.game.cards.Card;

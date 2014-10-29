@@ -9,7 +9,7 @@ public class CellarAction extends CardAction {
 		int numberDiscardedOfCards = 0;
 		
 		while (!endAction) {
-			Card card = player.getPlayerInterface().getCardToDiscard();
+			Card card = player.getCardToDiscard();
 			
 			if (card == null) {
 				endAction = true;

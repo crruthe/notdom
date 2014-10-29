@@ -11,55 +11,36 @@ import com.dominion.game.cards.basic.*;
 import com.dominion.game.cards.kingdom.*;
 
 public class GameBoard {
-	/**
-	 * @return the estateStackSize
-	 */
-	public int getEstateStackSize() {
-		return estateStackSize;
-	}
 
-	/**
-	 * @return the duchyStackSize
+	/* Check if a stack is empty (usually for end of game)
 	 */
-	public int getDuchyStackSize() {
-		return duchyStackSize;
+	public boolean isStackEmpty(String stack) {
+		return supplyStacks.get(stack).isEmpty();
 	}
-
-	/**
-	 * @return the provinceStackSize
-	 */
-	public int getProvinceStackSize() {
-		return provinceStackSize;
-	}
-
-	/**
-	 * @return the curseStackSize
-	 */
-	public int getCurseStackSize() {
-		return curseStackSize;
-	}
-
-	/**
-	 * @return the kingdomCards
-	 */
-	public HashMap<String, Integer> getKingdomCards() {
-		return kingdomCards;
-	}
-
-	private int estateStackSize;
-	private int duchyStackSize;
-	private int provinceStackSize;
 	
-	private int curseStackSize;
-	
+	public int countNumberOfEmptyStacks() {
+		int numOfEmptyStacks = 0;
+		for (List<Card> cards : supplyStacks.values()) {
+			if (cards.isEmpty()) {
+				numOfEmptyStacks++;
+			}
+		}
+		return numOfEmptyStacks;
+	}
+
 	private final LinkedList<Card> trashPile = new LinkedList<Card>();
 	
-	private final HashMap<String, Integer> kingdomCards = new HashMap<String, Integer>();
+	private final HashMap<String, List<Card>> supplyStacks = new HashMap<String, List<Card>>();
 	
+	public HashMap<String, List<Card>> getSupplyStacks() {
+		return supplyStacks;
+	}
+
 	public void setup(int numberOfPlayers) {
 		setupKingdomCards(numberOfPlayers);
-		setupUpVictoryCards(numberOfPlayers);
-		setupUpCurseCards(numberOfPlayers);
+		setupVictoryCards(numberOfPlayers);
+		setupCurseCards(numberOfPlayers);
+		setupTreasureCards();
 	}
 	
 	private List<Class<? extends Card>> selectRandomKingdomCards(List<Class<? extends Card>> cardClassList) {
@@ -77,12 +58,6 @@ public class GameBoard {
 	 */	
 	private void setupKingdomCards(int numberOfPlayers) {
 		int numOfCards;		
-		
-		if (numberOfPlayers == 2) {
-			numOfCards = 8;
-		} else {
-			numOfCards = 12;
-		}
 		
 		List<Class<? extends Card>> cardClassList = new LinkedList<Class<? extends Card>>();
 		
@@ -107,15 +82,15 @@ public class GameBoard {
 		cardClassList.add(AdventurerCard.class);		
 		cardClassList.add(RemodelCard.class);		
 		cardClassList.add(BureaucratCard.class);		
-		cardClassList.add(ThroneRoomCard.class);		
-				
-/*		cardClassList.add(ChapelCard.class);
+		cardClassList.add(ThroneRoomCard.class);						
+		cardClassList.add(ChapelCard.class);
 		cardClassList.add(MoatCard.class);
 		cardClassList.add(ChancellorCard.class);
-*/		
+		
 		cardClassList = selectRandomKingdomCards(cardClassList);
 		
-		for (Class<? extends Card> cardClass : cardClassList) {			
+		for (Class<? extends Card> cardClass : cardClassList) {
+			// If kingdom card is a victory cards, we only have 10
 			if (!VictoryCard.class.isAssignableFrom(cardClass)) {
 				numOfCards = 10;
 			} else if (numberOfPlayers == 2) {
@@ -124,7 +99,16 @@ public class GameBoard {
 				numOfCards = 12;
 			}
 			
-			kingdomCards.put(cardClass.getName(), numOfCards);
+			// Build a stack of kingdom cards
+			List<Card> cards = new LinkedList<Card>();
+			for (int i=0; i<numOfCards; i++) {
+				try {
+					cards.add(cardClass.newInstance());
+				} catch (InstantiationException | IllegalAccessException e) {
+					e.printStackTrace();
+				}
+			}
+			supplyStacks.put(cardClass.getName(), cards);
 		}		
 	}
 	
@@ -134,23 +118,33 @@ public class GameBoard {
 	 * In a 2 player game, place only 8 of each
 	 * of these Victory cards in the Supply.
 	 */
-	private void setupUpVictoryCards(int numberOfPlayers) {
+	private void setupVictoryCards(int numberOfPlayers) {
 		int numOfCards = 12;
 		
 		if (numberOfPlayers == 2) {
 			numOfCards = 8;
 		}
 		
-		estateStackSize = numOfCards;
-		duchyStackSize = numOfCards;
-		provinceStackSize = numOfCards;
+		List<Card> estateStack = new LinkedList<Card>();
+		List<Card> duchyStack = new LinkedList<Card>();
+		List<Card> provinceStack = new LinkedList<Card>();
+
+		for (int i=0; i<numOfCards; i++) {
+			estateStack.add(new EstateCard());
+			duchyStack.add(new DuchyCard());
+			provinceStack.add(new ProvinceCard());;			
+		}
+		
+		supplyStacks.put(EstateCard.class.getName(), estateStack);
+		supplyStacks.put(DuchyCard.class.getName(), duchyStack);
+		supplyStacks.put(ProvinceCard.class.getName(), provinceStack);
 	}
 
 	/* Place 10 Curse cards in the Supply for a 2
 	 * player game, 20 Curse cards for 3 players,
 	 * and 30 Curse cards for 4 players.
 	 */
-	private void setupUpCurseCards(int numberOfPlayers) {		
+	private void setupCurseCards(int numberOfPlayers) {		
 		int numOfCards = 10;
 		
 		if (numberOfPlayers == 3) {
@@ -159,72 +153,31 @@ public class GameBoard {
 			numOfCards = 30;
 		}
 		
-		curseStackSize = numOfCards;
-	}
-	
-	/**
-	 * @return copper card from infinite copper stack
-	 */
-	public Card getCopperCard() {
-		return new CopperCard();
+		List<Card> curseStack = new LinkedList<Card>();		
+		for (int i=0; i<numOfCards; i++) {
+			curseStack.add(new CurseCard());
+		}
+		
+		supplyStacks.put(CurseCard.class.getName(), curseStack);
 	}
 
-	/**
-	 * @return silver card from infinite silver stack
+	/* Treasure cards are "unlimited", 50 should be enough
 	 */
-	public Card getSilverCard() {
-		return new SilverCard();
-	}
+	private void setupTreasureCards() {		
 
-	/**
-	 * @return gold card from infinite gold stack
-	 */
-	public Card getGoldCard() {
-		return new GoldCard();
-	}
-	
-	/**
-	 * @return estate card from estate stack
-	 */
-	public Card getEstateCard() {
-		if (estateStackSize > 0) {
-			estateStackSize--;
-			return new EstateCard();
-		}
-		return null;
-	}
+		List<Card> copperStack = new LinkedList<Card>();
+		List<Card> silverStack = new LinkedList<Card>();
+		List<Card> goldStack = new LinkedList<Card>();
 
-	/**
-	 * @return duchy card from duchy stack
-	 */	
-	public Card getDuchyCard() {
-		if (duchyStackSize > 0) {
-			duchyStackSize--;
-			return new DuchyCard();
+		for (int i=0; i<50; i++) {
+			copperStack.add(new CopperCard());
+			silverStack.add(new SilverCard());
+			goldStack.add(new GoldCard());;			
 		}
-		return null;
-	}
-	
-	/**
-	 * @return province card from province stack
-	 */	
-	public Card getProvinceCard() {
-		if (provinceStackSize > 0) {
-			provinceStackSize--;
-			return new ProvinceCard();
-		}
-		return null;
-	}
-
-	/**
-	 * @return curse card from curse stack
-	 */	
-	public Card getCurseCard() {
-		if (curseStackSize > 0) {
-			curseStackSize--;
-			return new CurseCard();
-		}
-		return null;
+		
+		supplyStacks.put(CopperCard.class.getName(), copperStack);
+		supplyStacks.put(SilverCard.class.getName(), silverStack);
+		supplyStacks.put(GoldCard.class.getName(), goldStack);
 	}
 	
 	public void addToTrashPile(Card card) {
@@ -234,26 +187,39 @@ public class GameBoard {
 	public List<Card> getTrashPile() {
 		return trashPile;
 	}
-
-	public Card getKingdomCard(String cardType) {
-		Integer numCardLeft = kingdomCards.get(cardType);
-		if (numCardLeft == null) {
-			throw new RuntimeException("kingdom card does not exist");
+	
+	/**
+	 * Build up a list of cards that the player can buy
+	 * 
+	 * @param amount of coins to buy with
+	 * @return collection of cards
+	 */
+	public List<Card> listCardsToBuy(int amount) {
+		List<Card> cards = new LinkedList<Card>();
+		
+		for (List<Card> cardStack : supplyStacks.values()) {	
+			// Check if any cards are left in stack
+			if (!cardStack.isEmpty()) {
+				// Grab the first card on the stack
+				Card card = cardStack.get(0);
+				
+				// Check if player can afford this card
+				if (card.getCost() <= amount) {
+					cards.add(card);
+				}
+			}
 		}
 		
-		if (numCardLeft > 0) {
-			try {
-				kingdomCards.put(cardType, Integer.valueOf(numCardLeft.intValue() - 1));
-				return (Card)Class.forName(cardType).newInstance();
-			} catch (InstantiationException e) {
-				throw new RuntimeException(e.getMessage(), e);
-			} catch (IllegalAccessException e) {
-				throw new RuntimeException(e.getMessage(), e);
-			} catch (ClassNotFoundException e) {				
-				throw new RuntimeException(e.getMessage(), e);
-			}
-		}		
-		
-		return null;
+		return cards;
+	}
+	
+	/**
+	 * Remove the top card from the stack and return it
+	 * 
+	 * @param stack
+	 * @return Card from top of stack
+	 */
+	public Card removeCardFromSupplyStack(String stack) {
+		return supplyStacks.get(stack).remove(0);
 	}
 }

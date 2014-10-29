@@ -1,8 +1,5 @@
-package com.dominion.game;
+package com.dominion.game.interfaces;
 
-import android.view.View;
-
-import com.dominion.R;
 import com.dominion.game.cards.ActionCard;
 import com.dominion.game.cards.Card;
 import com.dominion.game.cards.ReactionCard;
@@ -72,44 +69,6 @@ public class LocalGUIPlayer implements PlayerInterface {
 			} catch(InterruptedException e) {
 				throw new RuntimeException(e);
 			}
-		}
-	}
-
-	/**
-	 * GUI will call this method when a user selects a card to buy
-	 * This will update selectedCard for the GM to use
-	 * 
-	 * @param v
-	 */
-	public void selectCardToBuy(View v) {
-		switch (v.getId()) {
-			case R.drawable.card_money_copper:
-				selectedCard = getCardByString("com.dominion.game.cards.basic.CopperCard");
-			//case R.drawable.skip:
-				//skip = true;
-		}
-		updateGM();
-	}
-	
-	/**
-	 * Returns an instantiation of the card based on the string
-	 * e.g. com.dominion.game.cards.basic.CopperCard
-	 * 
-	 * @param cardName
-	 * @return
-	 */
-	private Card getCardByString(String cardClass) {
-		try {
-			return (Card) Class.forName(cardClass).newInstance();
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			throw new RuntimeException(e);
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			throw new RuntimeException(e);
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			throw new RuntimeException(e);
 		}
 	}
 	

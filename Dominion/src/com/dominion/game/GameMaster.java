@@ -6,6 +6,7 @@ import java.util.LinkedList;
 
 import com.dominion.game.cards.basic.CopperCard;
 import com.dominion.game.cards.basic.EstateCard;
+import com.dominion.game.cards.basic.ProvinceCard;
 
 
 public class GameMaster {
@@ -44,7 +45,6 @@ public class GameMaster {
 			// i.e. players = players - currentPlayers = otherPlayers
 			currentPlayer = players.remove();
 			
-			currentPlayer.getPlayerInterface().updateGameBoard(new ImmutableGameBoard(gameBoard));
 			currentPlayer.setOtherPlayers(players);
 			currentPlayer.playTurn();			
 			
@@ -61,7 +61,7 @@ public class GameMaster {
 			player.discardHand();
 			player.moveDiscardPileToCardDeck();
 			
-			System.out.println(player.getPlayerInterface().getPlayerName() + " - " + player.countVictoryPointsInCardDeck());
+			System.out.println(player.getPlayerName() + " - " + player.countVictoryPointsInCardDeck());
 		}
 	}
 		
@@ -70,38 +70,22 @@ public class GameMaster {
 	}
 
 	/**
-	 * The game ends at the end of any player’s turn when either:
+	 * The game ends at the end of any playerï¿½s turn when either:
 	 * 1) the Supply pile of Province cards is empty or
 	 * 2) any 3 Supply piles are empty.
 	 * 
 	 * @return whether the game should end
 	 */
 	private boolean hasGameEnded() {
-		int numberOfEmptySupplies = 0;
-		
-		if (gameBoard.getProvinceStackSize() == 0) {
+		if (gameBoard.isStackEmpty(ProvinceCard.class.getName())) {
+			return true;
+		}
+
+		if (gameBoard.countNumberOfEmptyStacks() >= 3) {
 			return true;
 		}
 		
-		if (gameBoard.getCurseStackSize() == 0) { 
-			numberOfEmptySupplies++;
-		}
-		
-		if (gameBoard.getDuchyStackSize() == 0) { 
-			numberOfEmptySupplies++;
-		}
-		
-		if (gameBoard.getEstateStackSize() == 0) { 
-			numberOfEmptySupplies++;
-		}
-		
-		for (Integer stackSize : gameBoard.getKingdomCards().values()) {
-			if (stackSize == 0) {
-				numberOfEmptySupplies++;				
-			}
-		}
-		
-		return (numberOfEmptySupplies >= 3);
+		return false;
 	}
 
 	private void setupAllPlayers() {
@@ -123,11 +107,11 @@ public class GameMaster {
 	 */
 	private void buildDeckForPlayer(Player player) {
 		for (int i = 0; i < NUM_ESTATE_SETUP; i++) {
-			player.gainCard(new EstateCard());
+			player.gainCardFromSupply(EstateCard.class.getName());
 		}
 		
 		for (int i = 0; i < NUM_COPPER_SETUP; i++) {
-			player.gainCard(new CopperCard());
+			player.gainCardFromSupply(CopperCard.class.getName());
 		}
 	}
 	

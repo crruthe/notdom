@@ -13,7 +13,7 @@ public class LibraryAction extends CardAction {
 		while (player.getHandSize() < 7) {
 			Card card = player.drawCard();
 			if (card instanceof ActionCard) {
-				if (player.getPlayerInterface().wantsToSetAsideCard(card)) {
+				if (player.wantsToSetAsideCard(card)) {
 					setAside.add(card);
 				} else {
 					player.addCardToHand(card);
@@ -22,6 +22,7 @@ public class LibraryAction extends CardAction {
 				player.addCardToHand(card);
 			}			
 		}
+		
 		player.addCardsToDiscardPile(setAside);
 	}	
 }

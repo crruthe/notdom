@@ -1,4 +1,4 @@
-package com.dominion.game;
+package com.dominion.game.interfaces;
 
 import java.io.BufferedReader;
 import java.io.IOException;

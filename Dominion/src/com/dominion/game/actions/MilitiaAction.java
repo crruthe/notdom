@@ -7,7 +7,7 @@ public class MilitiaAction extends AttackAction {
 	@Override
 	public void executeAttackOnPlayer(Player attackPlayer) {
 		while (attackPlayer.getHandSize() > 3) {
-			Card card = attackPlayer.getPlayerInterface().getCardToDiscard();
+			Card card = attackPlayer.getCardToDiscard();
 			attackPlayer.discardCardFromHand(card);
 		}
 	}

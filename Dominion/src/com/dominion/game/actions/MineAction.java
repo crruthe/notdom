@@ -12,16 +12,15 @@ import com.dominion.game.cards.TreasureCard;
 public class MineAction extends CardAction {
 	@Override
 	public void execute() {
-		Card trashCard = player.getPlayerInterface().getTreasureCardToTrash();
+		Card trashCard = player.getTreasureCardToTrash();
 		
 		if (!(trashCard instanceof TreasureCard)) {
 			throw new RuntimeException("trash card not a treasure card");
 		}
 		
 		player.trashCard(trashCard);
-		player.getGameBoard().addToTrashPile(trashCard);
 		
-		Card card = player.getPlayerInterface().getCardToGain(trashCard.getCost() + 3);
+		Card card = player.getCardToGain(trashCard.getCost() + 3);
 		player.addCardToHand(card);
 	}
 }

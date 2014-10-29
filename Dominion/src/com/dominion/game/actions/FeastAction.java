@@ -12,7 +12,6 @@ public class FeastAction extends CardAction {
 	@Override
 	public void execute() {
 		player.trashCard(trashCard);
-		player.getGameBoard().addToTrashPile(trashCard);
 		
 		CardAction gainCardAction = new GainCardAction(5);
 		gainCardAction.setPlayer(player);

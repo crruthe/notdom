@@ -9,13 +9,12 @@ public class ChapelAction extends CardAction {
 		int numberToTrash = 4;
 		
 		while (!endAction && numberToTrash > 0) {
-			Card card = player.getPlayerInterface().getCardToTrash();
+			Card card = player.getCardToTrash();
 			
 			if (card == null) {
 				endAction = true;
 			} else {
 				player.trashCard(card);
-				player.getGameBoard().addToTrashPile(card);
 				numberToTrash--;
 			}
 		}

@@ -52,4 +52,8 @@ public class DiscardPile {
 	public void addCard(Card card) {
 		cards.add(card);
 	}
+	
+	public Card getTopCard() {
+		return cards.get(cards.size());
+	}
 }
