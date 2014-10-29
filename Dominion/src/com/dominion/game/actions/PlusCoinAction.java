@@ -10,6 +10,6 @@ public class PlusCoinAction extends CardAction {
 
 	@Override
 	public void execute() {
-		player.getTurnState().incrementCoins(coins);		
+		player.incrementCoins(coins);		
 	}	
 }

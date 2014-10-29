@@ -10,6 +10,6 @@ public class PlusBuyAction extends CardAction {
 
 	@Override
 	public void execute() {
-		player.getTurnState().incrementBuys(numBuys);		
+		player.incrementBuys(numBuys);		
 	}	
 }
