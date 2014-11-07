@@ -6,6 +6,13 @@ import com.dominion.game.visitors.CardVisitor;
 
 
 public class GardensCard implements Card, VictoryCard {
+	
+	@Override
+	public boolean equals(Object obj) {
+		// Only really card if card types match
+		return this.getClass().isInstance(obj);
+	}
+	
 	@Override
 	public int getVictoryPoints() {
 		return 0;

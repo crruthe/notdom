@@ -12,45 +12,59 @@ import com.dominion.game.cards.ActionCard;
 import com.dominion.game.cards.Card;
 import com.dominion.game.cards.ReactionCard;
 import com.dominion.game.cards.TreasureCard;
+import com.google.gson.Gson;
 
 public class NetworkPlayer implements PlayerInterface {
+	private Jedis jedis;
+	private String clientid;
 
 	public static void main(String[] args) {
 		GameMaster gm = new GameMaster();
 		
 		NetworkPlayer n = new NetworkPlayer();
-		n.setup();
 		
-		//gm.addPlayer(new Player(new SimpleConsolePlayer()));
-		//gm.addPlayer(new Player(new SimpleConsolePlayer()));
+		gm.addPlayer(new Player(new SimpleConsolePlayer()));
+		gm.addPlayer(new Player(n));
 		//gm.addPlayer(new Player(new SimpleConsolePlayer()));
 		
-		//gm.startGame();
+		gm.startGame();
 	}
 	
-	public void setup() {
-		final Jedis jedis = new Jedis("localhost");
+	public NetworkPlayer() {
+		jedis = new Jedis("localhost");
+		
+		setup();
+	}
+	
+	private void sendMessage(String json) {
+		jedis.rpush("client:"+clientid, json);
+	}
+	
+	private String waitForMessage() {
+		List<String> result = jedis.blpop(0, "server:"+clientid);
+		return result.get(1);
+	}
+	
+	private void setup() {		
 		List<String> result = jedis.blpop(0, "newclient");
-		final String clientid = result.get(1);
-		System.out.println(clientid);
-		jedis.rpush("client:"+clientid, "testing, mofo!");
-		while(true) {
-			System.out.println("waiting for client..." + clientid);
-			List<String> result1 = jedis.blpop(0, "server:"+clientid);
-			String response = result1.get(1);
-			System.out.println(response);
-		}				
+		clientid = result.get(1);
+		System.out.println("Client found: " + clientid);						
 	}
 	
 	@Override
 	public ReactionCard selectReactionCard(List<Card> cards) {
+		Gson gson = new Gson();
+		String json = gson.toJson(cards);
+		System.out.println(json);
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public Card selectCardFromHand(List<Card> cards) {
-		// TODO Auto-generated method stub
+		Gson gson = new Gson();
+		String json = gson.toJson(cards);
+		System.out.println(json);
 		return null;
 	}
 
@@ -105,24 +119,36 @@ public class NetworkPlayer implements PlayerInterface {
 	@Override
 	public ActionCard selectActionCardToPlay(List<Card> cards) {
 		// TODO Auto-generated method stub
+		Gson gson = new Gson();
+		String json = gson.toJson(cards);
+		System.out.println(json);
 		return null;
 	}
 
 	@Override
 	public TreasureCard selectTreasureCardToPlay(List<Card> cards) {
 		// TODO Auto-generated method stub
+		Gson gson = new Gson();
+		String json = gson.toJson(cards);
+		System.out.println(json);
 		return null;
 	}
 
 	@Override
 	public Card selectCardToBuy(List<Card> cards) {
 		// TODO Auto-generated method stub
+		Gson gson = new Gson();
+		String json = gson.toJson(cards);
+		System.out.println(json);
 		return null;
 	}
 
 	@Override
 	public Card selectCardToDiscard(List<Card> cards) {
 		// TODO Auto-generated method stub
+		Gson gson = new Gson();
+		String json = gson.toJson(cards);
+		System.out.println(json);
 		return null;
 	}
 
@@ -135,6 +161,9 @@ public class NetworkPlayer implements PlayerInterface {
 	@Override
 	public Card selectCardToTrash(List<Card> cards) {
 		// TODO Auto-generated method stub
+		Gson gson = new Gson();
+		String json = gson.toJson(cards);
+		System.out.println(json);
 		return null;
 	}
 

@@ -9,7 +9,12 @@ import com.dominion.game.cards.ActionCard;
 import com.dominion.game.visitors.CardVisitor;
 
 public class RemodelCard implements ActionCard {
-
+	@Override
+	public boolean equals(Object obj) {
+		// Only really card if card types match
+		return this.getClass().isInstance(obj);
+	}
+	
 	@Override
 	public void accept(CardVisitor visitor) {
 		visitor.visit(this);

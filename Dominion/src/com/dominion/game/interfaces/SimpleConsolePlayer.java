@@ -237,23 +237,24 @@ public class SimpleConsolePlayer implements PlayerInterface {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		
 		int handIndex = 0;
-		
-		try {
-			handIndex = Integer.valueOf(br.readLine());			
-		} catch (IOException e) {
-			throw new RuntimeException("unable to determine card", e);
-		} catch (NumberFormatException e) {
-			throw new RuntimeException("invalid card selection", e);
-		}		
-		
-		if (handIndex == -1) {
-			return null;
+		while (handIndex == 0 || handIndex >= cards.size()) {
+			try {
+				handIndex = Integer.valueOf(br.readLine());			
+			} catch (IOException e) {
+				throw new RuntimeException("unable to determine card", e);
+			} catch (NumberFormatException e) {
+				throw new RuntimeException("invalid card selection", e);
+			}		
+			
+			if (handIndex == -1) {
+				return null;
+			}
+			
+			if (handIndex >= cards.size()) {
+				System.out.println("card not found, try again.");
+			}
 		}
-		
-		if (handIndex >= cards.size()) {
-			throw new RuntimeException("card selection out of range");
-		}
-		
+	
 		Card card = cards.get(handIndex);
 
 		if (!(card instanceof TreasureCard)) {
@@ -273,20 +274,22 @@ public class SimpleConsolePlayer implements PlayerInterface {
 		
 		int handIndex = 0;
 		
-		try {
-			handIndex = Integer.valueOf(br.readLine());			
-		} catch (IOException e) {
-			throw new RuntimeException("unable to determine card", e);
-		} catch (NumberFormatException e) {
-			throw new RuntimeException("invalid card selection", e);
-		}		
-		
-		if (handIndex == -1) {
-			return null;
-		}
-		
-		if (handIndex >= cards.size()) {
-			throw new RuntimeException("card selection out of range");
+		while (handIndex == 0 || handIndex >= cards.size()) {
+			try {
+				handIndex = Integer.valueOf(br.readLine());			
+			} catch (IOException e) {
+				throw new RuntimeException("unable to determine card", e);
+			} catch (NumberFormatException e) {
+				throw new RuntimeException("invalid card selection", e);
+			}		
+			
+			if (handIndex == -1) {
+				return null;
+			}
+			
+			if (handIndex >= cards.size()) {
+				System.out.println("card not found, try again.");
+			}
 		}
 		
 		Card card = cards.get(handIndex);

@@ -6,6 +6,12 @@ import com.dominion.game.visitors.CardVisitor;
 
 public class GoldCard implements Card, TreasureCard {
 	private final int COINS = 3;
+
+	@Override
+	public boolean equals(Object obj) {
+		// Only really card if card types match
+		return this.getClass().isInstance(obj);
+	}
 	
 	@Override
 	public int getCoinAmount() {
