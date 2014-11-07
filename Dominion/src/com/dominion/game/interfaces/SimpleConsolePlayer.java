@@ -237,7 +237,7 @@ public class SimpleConsolePlayer implements PlayerInterface {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		
 		int handIndex = 0;
-		while (handIndex == 0 || handIndex >= cards.size()) {
+		do {
 			try {
 				handIndex = Integer.valueOf(br.readLine());			
 			} catch (IOException e) {
@@ -253,7 +253,7 @@ public class SimpleConsolePlayer implements PlayerInterface {
 			if (handIndex >= cards.size()) {
 				System.out.println("card not found, try again.");
 			}
-		}
+		} while (handIndex >= cards.size());
 	
 		Card card = cards.get(handIndex);
 
@@ -274,7 +274,7 @@ public class SimpleConsolePlayer implements PlayerInterface {
 		
 		int handIndex = 0;
 		
-		while (handIndex == 0 || handIndex >= cards.size()) {
+		do {
 			try {
 				handIndex = Integer.valueOf(br.readLine());			
 			} catch (IOException e) {
@@ -290,7 +290,7 @@ public class SimpleConsolePlayer implements PlayerInterface {
 			if (handIndex >= cards.size()) {
 				System.out.println("card not found, try again.");
 			}
-		}
+		} while (handIndex >= cards.size());
 		
 		Card card = cards.get(handIndex);
 		
