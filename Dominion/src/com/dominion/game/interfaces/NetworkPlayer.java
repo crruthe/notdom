@@ -1,93 +1,147 @@
 package com.dominion.game.interfaces;
 
+import java.util.HashMap;
+import java.util.List;
+
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPubSub;
+
+import com.dominion.game.GameMaster;
+import com.dominion.game.Player;
 import com.dominion.game.cards.ActionCard;
 import com.dominion.game.cards.Card;
 import com.dominion.game.cards.ReactionCard;
+import com.dominion.game.cards.TreasureCard;
 
 public class NetworkPlayer implements PlayerInterface {
 
-	@Override
-	public String getPlayerName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public ActionCard getActionCardToPlay() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Card getCardToBuy() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Card getCardToGain(int cost) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public ReactionCard getReactionCardToPlay() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Card getCardToDiscard() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Card getCardToTrash() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public boolean wantsToSetAsideCard(Card card) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean wantsToPutDeckInDiscard() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public Card getTreasureCardToTrash() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Card getVictoryCardToReveal() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void updateCardHand(ImmutableCardHand cardHand) {
-		// TODO Auto-generated method stub
+	public static void main(String[] args) {
+		GameMaster gm = new GameMaster();
 		
-	}
-
-	@Override
-	public void updateGameBoard(ImmutableGameBoard gameBoard) {
-		// TODO Auto-generated method stub
+		NetworkPlayer n = new NetworkPlayer();
+		n.setup();
 		
-	}
-
-	@Override
-	public void updateTurnState(ImmutableTurnState turnState) {
-		// TODO Auto-generated method stub
+		//gm.addPlayer(new Player(new SimpleConsolePlayer()));
+		//gm.addPlayer(new Player(new SimpleConsolePlayer()));
+		//gm.addPlayer(new Player(new SimpleConsolePlayer()));
 		
+		//gm.startGame();
 	}
 	
+	public void setup() {
+		final Jedis jedis = new Jedis("localhost");
+		List<String> result = jedis.blpop(0, "newclient");
+		final String clientid = result.get(1);
+		System.out.println(clientid);
+		jedis.rpush("client:"+clientid, "testing, mofo!");
+		while(true) {
+			System.out.println("waiting for client..." + clientid);
+			List<String> result1 = jedis.blpop(0, "server:"+clientid);
+			String response = result1.get(1);
+			System.out.println(response);
+		}				
+	}
+	
+	@Override
+	public ReactionCard selectReactionCard(List<Card> cards) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Card selectCardFromHand(List<Card> cards) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void updateSupply(HashMap<String, List<Card>> supplyStack) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateHand(List<Card> cards) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateOtherPlayer(Player player) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updatePlayArea(List<Card> cards) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateDeck(int numOfCards) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateDiscard(Card card) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateTrashPile(List<Card> cards) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateTurnState(int numOfActions, int numOfBuys, int numOfCoins) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public ActionCard selectActionCardToPlay(List<Card> cards) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public TreasureCard selectTreasureCardToPlay(List<Card> cards) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Card selectCardToBuy(List<Card> cards) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Card selectCardToDiscard(List<Card> cards) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean chooseIfPutDeckInDiscard() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public Card selectCardToTrash(List<Card> cards) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean chooseIfSetAsideCard(Card card) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

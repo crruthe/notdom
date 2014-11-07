@@ -12,6 +12,9 @@ public class GainCardAction extends CardAction {
 	@Override
 	public void execute() {
 		Card card = player.getCardToGain(gainCost);
-		player.gainCardFromSupply(card.getClass().getName());
+		
+		if (card != null) {
+			player.gainCardFromSupply(card.getClass().getName());
+		}
 	}
 }

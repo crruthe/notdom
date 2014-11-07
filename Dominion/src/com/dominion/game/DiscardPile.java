@@ -54,6 +54,10 @@ public class DiscardPile {
 	}
 	
 	public Card getTopCard() {
-		return cards.get(cards.size());
+		if (cards.isEmpty()) {
+			return null;
+		}
+		
+		return cards.get(cards.size()-1);
 	}
 }
