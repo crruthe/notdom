@@ -31,7 +31,7 @@ public class SmithyCard implements ActionCard {
 	@Override
 	public boolean equals(Object obj) {
 		// Cards are the same if names match (even if different instances)
-		return NAME == ((Card)obj).getName();
+		return NAME.equals(((Card)obj).getName());
 	}
 
 	@Override
