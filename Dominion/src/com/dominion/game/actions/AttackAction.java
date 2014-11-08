@@ -23,7 +23,7 @@ public abstract class AttackAction extends CardAction {
 				}
 				
 				// If card doesn't provide immunity (e.g. moat card), allow attack
-				if (!card.grantsImmunity()) {
+				if (card == null || !card.grantsImmunity()) {
 					executeAttackOnPlayer(otherPlayer);
 				}
 			} while (card != null);
