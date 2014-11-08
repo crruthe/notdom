@@ -6,35 +6,20 @@ import java.util.LinkedList;
 import com.dominion.game.actions.CardAction;
 import com.dominion.game.actions.NoAction;
 import com.dominion.game.actions.PlusCardAction;
+import com.dominion.game.cards.Card;
 import com.dominion.game.cards.ReactionCard;
 import com.dominion.game.visitors.CardVisitor;
 
 public class MoatCard implements ReactionCard {
-	@Override
-	public boolean equals(Object obj) {
-		// Only really card if card types match
-		return this.getClass().isInstance(obj);
-	}
-	
+	public static final int COST = 2;
+	public static final String NAME = "Moat";	
+	private final int PLUS_CARDS = 2;
+
 	@Override
 	public void accept(CardVisitor visitor) {
 		visitor.visit(this);
 	}
 
-	@Override
-	public String getDescription() {
-		return "Moat";
-	}
-
-	public static final int COST = 2;
-	
-	@Override
-	public int getCost() {
-		return COST;
-	}
-
-	private final int PLUS_CARDS = 2;
-	
 	@Override
 	public Collection<CardAction> buildActionList() {
 		LinkedList<CardAction> cardActions = new LinkedList<CardAction>();
@@ -43,14 +28,30 @@ public class MoatCard implements ReactionCard {
 		
 		return cardActions;
 	}
-
+	
 	@Override
-	public boolean grantsImmunity() {
-		return true;
+	public boolean equals(Object obj) {
+		// Cards are the same if names match (even if different instances)
+		return NAME == ((Card)obj).getName();
+	}
+	
+	@Override
+	public int getCost() {
+		return COST;
+	}
+	
+	@Override
+	public String getName() {
+		return NAME;
 	}
 
 	@Override
 	public CardAction getReaction() {
 		return new NoAction();
+	}
+
+	@Override
+	public boolean grantsImmunity() {
+		return true;
 	}
 }

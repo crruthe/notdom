@@ -6,34 +6,19 @@ import java.util.LinkedList;
 import com.dominion.game.actions.CardAction;
 import com.dominion.game.actions.GainCardAction;
 import com.dominion.game.cards.ActionCard;
+import com.dominion.game.cards.Card;
 import com.dominion.game.visitors.CardVisitor;
 
 public class WorkshopCard implements ActionCard {
-	@Override
-	public boolean equals(Object obj) {
-		// Only really card if card types match
-		return this.getClass().isInstance(obj);
-	}
-	
+	public static final int COST = 3;
+	public static final String NAME = "Workshop";
+	private final int GAIN_COST = 4;
+
 	@Override
 	public void accept(CardVisitor visitor) {
 		visitor.visit(this);
 	}
 
-	@Override
-	public String getDescription() {
-		return "Workshop";
-	}
-
-	public static final int COST = 3;
-	
-	@Override
-	public int getCost() {
-		return COST;
-	}
-
-	private final int GAIN_COST = 4;
-	
 	@Override
 	public Collection<CardAction> buildActionList() {
 		LinkedList<CardAction> cardActions = new LinkedList<CardAction>();
@@ -41,5 +26,21 @@ public class WorkshopCard implements ActionCard {
 		cardActions.add(new GainCardAction(GAIN_COST));
 		
 		return cardActions;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		// Cards are the same if names match (even if different instances)
+		return NAME == ((Card)obj).getName();
+	}
+
+	@Override
+	public int getCost() {
+		return COST;
+	}
+	
+	@Override
+	public String getName() {
+		return NAME;
 	}
 }

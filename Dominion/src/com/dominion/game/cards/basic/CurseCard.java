@@ -5,6 +5,7 @@ import com.dominion.game.visitors.CardVisitor;
 
 public class CurseCard implements Card {
 	public static final int COST = 0;
+	public static final String NAME = "Curse";
 	
 	@Override
 	public void accept(CardVisitor visitor) {
@@ -12,19 +13,18 @@ public class CurseCard implements Card {
 	}
 
 	@Override
-	public String getDescription() {
-		// TODO Auto-generated method stub
-		return "Curse";
-	}
-
-	@Override
 	public boolean equals(Object obj) {
-		// Only really card if card types match
-		return this.getClass().isInstance(obj);
+		// Cards are the same if names match (even if different instances)
+		return NAME == ((Card)obj).getName();
 	}
 
 	@Override
 	public int getCost() {
 		return COST;
+	}
+
+	@Override
+	public String getName() {
+		return NAME;
 	}	
 }

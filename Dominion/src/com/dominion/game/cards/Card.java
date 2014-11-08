@@ -4,6 +4,6 @@ import com.dominion.game.visitors.CardVisitor;
 
 public interface Card {
 	public void accept(CardVisitor visitor);
-	public String getDescription();
+	public String getName();
 	public int getCost();
 }

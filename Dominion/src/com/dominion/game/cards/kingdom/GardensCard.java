@@ -5,34 +5,34 @@ import com.dominion.game.cards.VictoryCard;
 import com.dominion.game.visitors.CardVisitor;
 
 
-public class GardensCard implements Card, VictoryCard {
+public class GardensCard implements Card, VictoryCard {	
+	public static final int COST = 4;
+	public static final String NAME = "Gardens";
+	public static final int POINTS = 6;
 	
-	@Override
-	public boolean equals(Object obj) {
-		// Only really card if card types match
-		return this.getClass().isInstance(obj);
-	}
-	
-	@Override
-	public int getVictoryPoints() {
-		return 0;
-	}
-
 	@Override
 	public void accept(CardVisitor visitor) {
 		visitor.visit(this);
 	}
 
 	@Override
-	public String getDescription() {
-		// TODO Auto-generated method stub
-		return "Gardens";
+	public boolean equals(Object obj) {
+		// Cards are the same if names match (even if different instances)
+		return NAME == ((Card)obj).getName();
 	}
-	
-	public static final int COST = 4;
-	
+
 	@Override
 	public int getCost() {
 		return COST;
+	}
+	
+	@Override
+	public String getName() {
+		return NAME;
+	}
+	
+	@Override
+	public int getVictoryPoints() {
+		return POINTS;
 	}	
 }

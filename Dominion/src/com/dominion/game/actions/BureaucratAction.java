@@ -7,7 +7,7 @@ import com.dominion.game.cards.basic.SilverCard;
 public class BureaucratAction extends AttackAction {
 	@Override
 	public void execute() {
-		player.gainCardFromSupplyToDeck(SilverCard.class.getName());
+		player.gainCardFromSupplyToDeck(SilverCard.NAME);
 		super.execute();
 	}
 

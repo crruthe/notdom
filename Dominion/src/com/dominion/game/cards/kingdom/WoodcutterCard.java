@@ -7,34 +7,19 @@ import com.dominion.game.actions.CardAction;
 import com.dominion.game.actions.PlusBuyAction;
 import com.dominion.game.actions.PlusCoinAction;
 import com.dominion.game.cards.ActionCard;
+import com.dominion.game.cards.Card;
 import com.dominion.game.visitors.CardVisitor;
 
 public class WoodcutterCard implements ActionCard {
-	@Override
-	public boolean equals(Object obj) {
-		// Only really card if card types match
-		return this.getClass().isInstance(obj);
-	}
-	
+	public static final int COST = 3;
+	public static final String NAME = "Woodcutter";
+	private final int PLUS_BUYS = 1;
+	private final int PLUS_COINS = 2;
+
 	@Override
 	public void accept(CardVisitor visitor) {
 		visitor.visit(this);
 	}
-
-	@Override
-	public String getDescription() {
-		return "Wood Cutter";
-	}
-
-	public static final int COST = 3;
-	
-	@Override
-	public int getCost() {
-		return COST;
-	}
-
-	private final int PLUS_BUYS = 1;
-	private final int PLUS_COINS = 2;
 	
 	@Override
 	public Collection<CardAction> buildActionList() {
@@ -44,5 +29,21 @@ public class WoodcutterCard implements ActionCard {
 		cardActions.add(new PlusCoinAction(PLUS_COINS));
 		
 		return cardActions;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		// Cards are the same if names match (even if different instances)
+		return NAME == ((Card)obj).getName();
+	}
+	
+	@Override
+	public int getCost() {
+		return COST;
+	}
+	
+	@Override
+	public String getName() {
+		return NAME;
 	}
 }

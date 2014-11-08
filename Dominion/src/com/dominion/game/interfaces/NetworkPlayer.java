@@ -1,6 +1,8 @@
 package com.dominion.game.interfaces;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 import redis.clients.jedis.Jedis;
@@ -12,6 +14,7 @@ import com.dominion.game.cards.ActionCard;
 import com.dominion.game.cards.Card;
 import com.dominion.game.cards.ReactionCard;
 import com.dominion.game.cards.TreasureCard;
+import com.dominion.game.interfaces.messages.CardsMessage;
 import com.google.gson.Gson;
 
 public class NetworkPlayer implements PlayerInterface {
@@ -32,7 +35,6 @@ public class NetworkPlayer implements PlayerInterface {
 	
 	public NetworkPlayer() {
 		jedis = new Jedis("localhost");
-		
 		setup();
 	}
 	
@@ -46,25 +48,40 @@ public class NetworkPlayer implements PlayerInterface {
 	}
 	
 	private void setup() {		
+		System.out.println("Waiting for player to connect...");
 		List<String> result = jedis.blpop(0, "newclient");
 		clientid = result.get(1);
 		System.out.println("Client found: " + clientid);						
 	}
 	
+	/**
+	 * Converts all cards into a collection of strings to formats into json
+	 * 
+	 * @param cards
+	 * @return String json
+	 */
+	private String convertCardsToJson(final String message, List<Card> cards) {
+		Gson gson = new Gson();		
+		String json = gson.toJson(new CardsMessage(message, cards));
+		System.out.println(json);
+		return json;
+	}
+	
 	@Override
 	public ReactionCard selectReactionCard(List<Card> cards) {
-		Gson gson = new Gson();
-		String json = gson.toJson(cards);
-		System.out.println(json);
+		System.out.println("selectReactionCard");
+		String json = convertCardsToJson("selectReactionCard", cards);
+
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public Card selectCardFromHand(List<Card> cards) {
-		Gson gson = new Gson();
-		String json = gson.toJson(cards);
-		System.out.println(json);
+		System.out.println("selectCardFromHand");
+		String json = convertCardsToJson("selectCardFromHand", cards);
+
+		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -119,36 +136,43 @@ public class NetworkPlayer implements PlayerInterface {
 	@Override
 	public ActionCard selectActionCardToPlay(List<Card> cards) {
 		// TODO Auto-generated method stub
-		Gson gson = new Gson();
-		String json = gson.toJson(cards);
-		System.out.println(json);
+		System.out.println("selectActionCardToPlay");
+		String json = convertCardsToJson("selectActionCardToPlay", cards);
 		return null;
 	}
 
 	@Override
 	public TreasureCard selectTreasureCardToPlay(List<Card> cards) {
+		
 		// TODO Auto-generated method stub
-		Gson gson = new Gson();
-		String json = gson.toJson(cards);
-		System.out.println(json);
+		System.out.println("selectTreasureCardToPlay");
+		String json = convertCardsToJson("selectTreasureCardToPlay", cards);
+		sendMessage(json);
+		String result = waitForMessage();
+		System.out.println(result);
+		
+		for(Card card : cards) {
+			if (card.getName() == result) {
+				return (TreasureCard) card;
+			}
+		}
+		
 		return null;
 	}
 
 	@Override
 	public Card selectCardToBuy(List<Card> cards) {
 		// TODO Auto-generated method stub
-		Gson gson = new Gson();
-		String json = gson.toJson(cards);
-		System.out.println(json);
+		System.out.println("selectCardToBuy");
+		String json = convertCardsToJson("selectCardToBuy", cards);
 		return null;
 	}
 
 	@Override
 	public Card selectCardToDiscard(List<Card> cards) {
 		// TODO Auto-generated method stub
-		Gson gson = new Gson();
-		String json = gson.toJson(cards);
-		System.out.println(json);
+		System.out.println("selectCardToDiscard");
+		String json = convertCardsToJson("selectCardToDiscard", cards);
 		return null;
 	}
 
@@ -161,9 +185,8 @@ public class NetworkPlayer implements PlayerInterface {
 	@Override
 	public Card selectCardToTrash(List<Card> cards) {
 		// TODO Auto-generated method stub
-		Gson gson = new Gson();
-		String json = gson.toJson(cards);
-		System.out.println(json);
+		System.out.println("selectCardToTrash");
+		String json = convertCardsToJson("selectCardToDiscard", cards);
 		return null;
 	}
 

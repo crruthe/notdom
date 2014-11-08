@@ -447,7 +447,7 @@ public class Player {
 				break;
 			} else {
 				// Gain a card
-				gainCardFromSupply(card.getClass().getName());
+				gainCardFromSupply(card.getName());
 				
 				turnState.decrementCoins(card.getCost());
 				turnState.decrementBuys();

@@ -6,13 +6,9 @@ import com.dominion.game.visitors.CardVisitor;
 
 
 public class ProvinceCard implements Card, VictoryCard {
-	final static int POINTS = 6;
-
-	@Override
-	public boolean equals(Object obj) {
-		// Only really card if card types match
-		return this.getClass().isInstance(obj);
-	}
+	public static final int COST = 8;
+	public static final String NAME = "Province";
+	public static final int POINTS = 6;
 	
 	@Override
 	public void accept(CardVisitor visitor) {
@@ -20,20 +16,23 @@ public class ProvinceCard implements Card, VictoryCard {
 	}
 
 	@Override
-	public int getVictoryPoints() {
-		return POINTS;
+	public boolean equals(Object obj) {
+		// Cards are the same if names match (even if different instances)
+		return NAME == ((Card)obj).getName();
 	}
 
 	@Override
-	public String getDescription() {
-		// TODO Auto-generated method stub
-		return "Province";
-	}
-	
-	public static final int COST = 8;
-	
-	@Override
 	public int getCost() {
 		return COST;
+	}
+	
+	@Override
+	public String getName() {
+		return NAME;
+	}
+	
+	@Override
+	public int getVictoryPoints() {
+		return POINTS;
 	}	
 }

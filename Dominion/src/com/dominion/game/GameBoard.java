@@ -43,9 +43,20 @@ public class GameBoard {
 		setupTreasureCards();
 	}
 	
-	private List<Class<? extends Card>> selectRandomKingdomCards(List<Class<? extends Card>> cardClassList) {
-		Collections.shuffle(cardClassList);
-		return cardClassList.subList(0, 10);
+	private HashMap<String, Class<? extends Card>> selectRandomKingdomCards(HashMap<String, Class<? extends Card>> cardList) {
+		HashMap<String, Class<? extends Card>> newCards = new HashMap<String, Class<? extends Card>>();
+
+		// Build a list of keys
+		LinkedList<String> cards = new LinkedList<String>(cardList.keySet());
+		
+		// Shuffle the keys
+		Collections.shuffle(cards);
+		
+		// Select 10 of the new keys and place them in a new hashmap
+		for(String card : cards.subList(0, 10)) {
+			newCards.put(card, cardList.get(card));
+		}
+		return newCards;
 	}
 
 	/* The players select 10 Kingdom
@@ -59,37 +70,39 @@ public class GameBoard {
 	private void setupKingdomCards(int numberOfPlayers) {
 		int numOfCards;		
 		
-		List<Class<? extends Card>> cardClassList = new LinkedList<Class<? extends Card>>();
+		HashMap<String, Class<? extends Card>> cardList = new HashMap<String, Class<? extends Card>>();
 		
-		cardClassList.add(WoodcutterCard.class);
-		cardClassList.add(VillageCard.class);
-		cardClassList.add(WorkshopCard.class);
-		cardClassList.add(SmithyCard.class);
-		cardClassList.add(CouncilRoomCard.class);		
-		cardClassList.add(LaboratoryCard.class);		
-		cardClassList.add(FestivalCard.class);		
-		cardClassList.add(MarketCard.class);		
-		cardClassList.add(WitchCard.class);		
-		cardClassList.add(MoatCard.class);		
-		cardClassList.add(GardensCard.class);		
-		cardClassList.add(CellarCard.class);		
-		cardClassList.add(ChapelCard.class);		
-		cardClassList.add(FeastCard.class);		
-		cardClassList.add(LibraryCard.class);		
-		cardClassList.add(ChancellorCard.class);		
-		cardClassList.add(MilitiaCard.class);		
-		cardClassList.add(MineCard.class);		
-		cardClassList.add(AdventurerCard.class);		
-		cardClassList.add(RemodelCard.class);		
-		cardClassList.add(BureaucratCard.class);		
-		cardClassList.add(ThroneRoomCard.class);						
-		cardClassList.add(ChapelCard.class);
-		cardClassList.add(MoatCard.class);
-		cardClassList.add(ChancellorCard.class);
+		cardList.put(WoodcutterCard.NAME, WoodcutterCard.class);
+		cardList.put(VillageCard.NAME, VillageCard.class);
+		cardList.put(WorkshopCard.NAME, WorkshopCard.class);
+		cardList.put(SmithyCard.NAME, SmithyCard.class);
+		cardList.put(CouncilRoomCard.NAME, CouncilRoomCard.class);		
+		cardList.put(LaboratoryCard.NAME, LaboratoryCard.class);		
+		cardList.put(FestivalCard.NAME, FestivalCard.class);		
+		cardList.put(MarketCard.NAME, MarketCard.class);		
+		cardList.put(WitchCard.NAME, WitchCard.class);		
+		cardList.put(MoatCard.NAME, MoatCard.class);		
+		cardList.put(GardensCard.NAME, GardensCard.class);		
+		cardList.put(CellarCard.NAME, CellarCard.class);		
+		cardList.put(ChapelCard.NAME, ChapelCard.class);		
+		cardList.put(FeastCard.NAME, FeastCard.class);		
+		cardList.put(LibraryCard.NAME, LibraryCard.class);		
+		cardList.put(ChancellorCard.NAME, ChancellorCard.class);		
+		cardList.put(MilitiaCard.NAME, MilitiaCard.class);		
+		cardList.put(MineCard.NAME, MineCard.class);		
+		cardList.put(AdventurerCard.NAME, AdventurerCard.class);		
+		cardList.put(RemodelCard.NAME, RemodelCard.class);		
+		cardList.put(BureaucratCard.NAME, BureaucratCard.class);		
+		cardList.put(ThroneRoomCard.NAME, ThroneRoomCard.class);						
+		cardList.put(ChapelCard.NAME, ChapelCard.class);
+		cardList.put(MoatCard.NAME, MoatCard.class);
+		cardList.put(ChancellorCard.NAME, ChancellorCard.class);
 		
-		cardClassList = selectRandomKingdomCards(cardClassList);
+		cardList = selectRandomKingdomCards(cardList);
 		
-		for (Class<? extends Card> cardClass : cardClassList) {
+		for (String card : cardList.keySet()) {
+			Class<? extends Card> cardClass = cardList.get(card);
+			
 			// If kingdom card is a victory cards, we only have 10
 			if (!VictoryCard.class.isAssignableFrom(cardClass)) {
 				numOfCards = 10;
@@ -108,7 +121,7 @@ public class GameBoard {
 					e.printStackTrace();
 				}
 			}
-			supplyStacks.put(cardClass.getName(), cards);
+			supplyStacks.put(card, cards);
 		}		
 	}
 	
@@ -135,9 +148,9 @@ public class GameBoard {
 			provinceStack.add(new ProvinceCard());;			
 		}
 		
-		supplyStacks.put(EstateCard.class.getName(), estateStack);
-		supplyStacks.put(DuchyCard.class.getName(), duchyStack);
-		supplyStacks.put(ProvinceCard.class.getName(), provinceStack);
+		supplyStacks.put(EstateCard.NAME, estateStack);
+		supplyStacks.put(DuchyCard.NAME, duchyStack);
+		supplyStacks.put(ProvinceCard.NAME, provinceStack);
 	}
 
 	/* Place 10 Curse cards in the Supply for a 2
@@ -158,7 +171,7 @@ public class GameBoard {
 			curseStack.add(new CurseCard());
 		}
 		
-		supplyStacks.put(CurseCard.class.getName(), curseStack);
+		supplyStacks.put(CurseCard.NAME, curseStack);
 	}
 
 	/* Treasure cards are "unlimited", 50 should be enough
@@ -175,9 +188,9 @@ public class GameBoard {
 			goldStack.add(new GoldCard());;			
 		}
 		
-		supplyStacks.put(CopperCard.class.getName(), copperStack);
-		supplyStacks.put(SilverCard.class.getName(), silverStack);
-		supplyStacks.put(GoldCard.class.getName(), goldStack);
+		supplyStacks.put(CopperCard.NAME, copperStack);
+		supplyStacks.put(SilverCard.NAME, silverStack);
+		supplyStacks.put(GoldCard.NAME, goldStack);
 	}
 	
 	public void addToTrashPile(Card card) {

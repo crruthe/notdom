@@ -14,7 +14,7 @@ public class GainCardAction extends CardAction {
 		Card card = player.getCardToGain(gainCost);
 		
 		if (card != null) {
-			player.gainCardFromSupply(card.getClass().getName());
+			player.gainCardFromSupply(card.getName());
 		}
 	}
 }

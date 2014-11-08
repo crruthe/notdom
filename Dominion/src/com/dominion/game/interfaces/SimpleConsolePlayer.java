@@ -66,7 +66,7 @@ public class SimpleConsolePlayer implements PlayerInterface {
 	private void displayCards(List<Card> cards) {
 		int i = 0;
 		for (Card card : cards) {
-			System.out.println(i + card.getDescription() + "(" + card.getCost() + ")");
+			System.out.println(i + card.getName() + "(" + card.getCost() + ")");
 			i++;
 		}
 	}
@@ -194,7 +194,7 @@ public class SimpleConsolePlayer implements PlayerInterface {
 
 	@Override
 	public boolean chooseIfSetAsideCard(final Card card) {
-		System.out.println(card.getDescription());
+		System.out.println(card.getName());
 		System.out.println("Set action card aside (1 for yes)> ");
 				
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));

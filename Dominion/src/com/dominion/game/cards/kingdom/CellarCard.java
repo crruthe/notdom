@@ -7,35 +7,19 @@ import com.dominion.game.actions.CardAction;
 import com.dominion.game.actions.CellarAction;
 import com.dominion.game.actions.PlusActionAction;
 import com.dominion.game.cards.ActionCard;
+import com.dominion.game.cards.Card;
 import com.dominion.game.visitors.CardVisitor;
 
 public class CellarCard implements ActionCard {
+	public static final int COST = 2;
+	public static final String NAME = "Cellar";
+	private final int PLUS_ACTIONS = 1;
 
-	@Override
-	public boolean equals(Object obj) {
-		// Only really card if card types match
-		return this.getClass().isInstance(obj);
-	}
-	
 	@Override
 	public void accept(CardVisitor visitor) {
 		visitor.visit(this);
 	}
 
-	@Override
-	public String getDescription() {
-		return "Cellar";
-	}
-
-	public static final int COST = 2;
-	
-	@Override
-	public int getCost() {
-		return COST;
-	}
-
-	private final int PLUS_ACTIONS = 1;
-	
 	@Override
 	public Collection<CardAction> buildActionList() {
 		LinkedList<CardAction> cardActions = new LinkedList<CardAction>();
@@ -44,5 +28,21 @@ public class CellarCard implements ActionCard {
 		cardActions.add(new CellarAction());
 		
 		return cardActions;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		// Cards are the same if names match (even if different instances)
+		return NAME == ((Card)obj).getName();
+	}
+
+	@Override
+	public int getCost() {
+		return COST;
+	}
+	
+	@Override
+	public String getName() {
+		return NAME;
 	}
 }

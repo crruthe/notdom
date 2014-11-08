@@ -13,35 +13,17 @@ import com.dominion.game.cards.Card;
 import com.dominion.game.visitors.CardVisitor;
 
 public class MarketCard implements Card, ActionCard {
+	public static final int COST = 5;
+	public static final String NAME = "Market";
+	private final int PLUS_ACTIONS = 1;
+	private final int PLUS_BUYS = 1;
+	private final int PLUS_CARDS = 1;
+	private final int PLUS_COINS = 1;
 
-	@Override
-	public boolean equals(Object obj) {
-		// Only really card if card types match
-		return this.getClass().isInstance(obj);
-	}
-	
 	@Override
 	public void accept(CardVisitor visitor) {
 		visitor.visit(this);
 	}
-
-	@Override
-	public String getDescription() {
-		return "Market";
-	}
-
-	public static final int COST = 5;
-	
-	@Override
-	public int getCost() {
-		return COST;
-	}
-
-	private final int PLUS_CARDS = 1;
-	private final int PLUS_ACTIONS = 1;
-	private final int PLUS_BUYS = 1;
-	private final int PLUS_COINS = 1;
-	
 	@Override
 	public Collection<CardAction> buildActionList() {
 		LinkedList<CardAction> cardActions = new LinkedList<CardAction>();
@@ -52,5 +34,21 @@ public class MarketCard implements Card, ActionCard {
 		cardActions.add(new PlusCoinAction(PLUS_COINS));
 		
 		return cardActions;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		// Cards are the same if names match (even if different instances)
+		return NAME == ((Card)obj).getName();
+	}
+	
+	@Override
+	public int getCost() {
+		return COST;
+	}
+	
+	@Override
+	public String getName() {
+		return NAME;
 	}
 }

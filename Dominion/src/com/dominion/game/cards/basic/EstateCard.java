@@ -6,34 +6,33 @@ import com.dominion.game.visitors.CardVisitor;
 
 
 public class EstateCard implements Card, VictoryCard {
+	public static final int COST = 2;
+	public static final String NAME = "Estate";
 	final static int POINTS = 1;
-
-	@Override
-	public boolean equals(Object obj) {
-		// Only really card if card types match
-		return this.getClass().isInstance(obj);
-	}
 	
-	@Override
-	public int getVictoryPoints() {
-		return POINTS;
-	}
-
 	@Override
 	public void accept(CardVisitor visitor) {
 		visitor.visit(this);
 	}
 
 	@Override
-	public String getDescription() {
-		// TODO Auto-generated method stub
-		return "Estate";
+	public boolean equals(Object obj) {
+		// Cards are the same if names match (even if different instances)
+		return NAME == ((Card)obj).getName();
 	}
-	
-	public static final int COST = 2;
-	
+
 	@Override
 	public int getCost() {
 		return COST;
+	}
+	
+	@Override
+	public String getName() {
+		return NAME;
+	}
+	
+	@Override
+	public int getVictoryPoints() {
+		return POINTS;
 	}	
 }

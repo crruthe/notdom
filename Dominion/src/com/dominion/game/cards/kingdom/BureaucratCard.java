@@ -7,25 +7,31 @@ import com.dominion.game.actions.BureaucratAction;
 import com.dominion.game.actions.CardAction;
 import com.dominion.game.cards.ActionCard;
 import com.dominion.game.cards.AttackCard;
+import com.dominion.game.cards.Card;
 import com.dominion.game.visitors.CardVisitor;
 
 public class BureaucratCard implements ActionCard, AttackCard {
 	public static final int COST = 4;
-	
-	@Override
-	public boolean equals(Object obj) {
-		// Only really card if card types match
-		return this.getClass().isInstance(obj);
-	}
+	public static final String NAME = "Bureaucrat";
 	
 	@Override
 	public void accept(CardVisitor visitor) {
 		visitor.visit(this);
 	}
+	
+	@Override
+	public Collection<CardAction> buildActionList() {
+		LinkedList<CardAction> cardActions = new LinkedList<CardAction>();
+		
+		cardActions.add(new BureaucratAction());
+		
+		return cardActions;
+	}
 
 	@Override
-	public String getDescription() {
-		return "Bureaucrat";
+	public boolean equals(Object obj) {
+		// Cards are the same if names match (even if different instances)
+		return NAME == ((Card)obj).getName();
 	}
 
 	@Override
@@ -34,11 +40,7 @@ public class BureaucratCard implements ActionCard, AttackCard {
 	}
 
 	@Override
-	public Collection<CardAction> buildActionList() {
-		LinkedList<CardAction> cardActions = new LinkedList<CardAction>();
-		
-		cardActions.add(new BureaucratAction());
-		
-		return cardActions;
+	public String getName() {
+		return NAME;
 	}
 }

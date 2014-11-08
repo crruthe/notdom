@@ -77,7 +77,7 @@ public class GameMaster {
 	 * @return whether the game should end
 	 */
 	private boolean hasGameEnded() {
-		if (gameBoard.isStackEmpty(ProvinceCard.class.getName())) {
+		if (gameBoard.isStackEmpty(ProvinceCard.NAME)) {
 			return true;
 		}
 
@@ -107,11 +107,11 @@ public class GameMaster {
 	 */
 	private void buildDeckForPlayer(Player player) {
 		for (int i = 0; i < NUM_ESTATE_SETUP; i++) {
-			player.gainCardFromSupply(EstateCard.class.getName());
+			player.gainCardFromSupply(EstateCard.NAME);
 		}
 		
 		for (int i = 0; i < NUM_COPPER_SETUP; i++) {
-			player.gainCardFromSupply(CopperCard.class.getName());
+			player.gainCardFromSupply(CopperCard.NAME);
 		}
 	}
 	

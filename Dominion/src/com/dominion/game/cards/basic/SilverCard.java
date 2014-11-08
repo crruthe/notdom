@@ -5,33 +5,33 @@ import com.dominion.game.cards.TreasureCard;
 import com.dominion.game.visitors.CardVisitor;
 
 public class SilverCard implements Card, TreasureCard {
+	public static final int COST = 3;
+	public static final String NAME = "Silver";
 	private final int COINS = 2;
 	
-	@Override
-	public boolean equals(Object obj) {
-		// Only really card if card types match
-		return this.getClass().isInstance(obj);
-	}
-	
-	@Override
-	public int getCoinAmount() {		
-		return COINS;
-	}
-
 	@Override
 	public void accept(CardVisitor visitor) {
 		visitor.visit(this);
 	}
 
 	@Override
-	public String getDescription() {
-		return "Silver";
+	public boolean equals(Object obj) {
+		// Cards are the same if names match (even if different instances)
+		return NAME == ((Card)obj).getName();
 	}
 
-	public static final int COST = 3;
-	
+	@Override
+	public int getCoinAmount() {		
+		return COINS;
+	}
+
 	@Override
 	public int getCost() {
 		return COST;
+	}
+	
+	@Override
+	public String getName() {
+		return NAME;
 	}
 }
