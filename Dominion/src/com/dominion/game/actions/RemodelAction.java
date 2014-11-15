@@ -13,9 +13,14 @@ public class RemodelAction extends CardAction {
 	public void execute() {
 		Card trashCard = player.getCardToTrash();
 		
-		player.trashCard(trashCard);
-		
-		Card card = player.getCardToGain(trashCard.getCost() + 2);
-		player.addCardToHand(card);
+		if (trashCard != null) {
+			player.trashCard(trashCard);
+			
+			Card card = player.getCardToGain(trashCard.getCost() + 2);
+			
+			if (card != null) {
+				player.gainCardFromSupply(card.getName());
+			}
+		}
 	}
 }
