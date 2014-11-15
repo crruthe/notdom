@@ -11,7 +11,7 @@ import com.dominion.game.cards.TreasureCard;
 
 public interface PlayerInterface {
 	public ReactionCard selectReactionCard(final List<Card> cards);
-	public Card selectCardFromHand(final List<Card> cards);
+	public Card selectVictoryCardToReveal(final List<Card> cards);
 	public void updateSupply(final HashMap<String, List<Card>> supplyStack);
 	public void updateHand(final List<Card> cards);
 	public void updateOtherPlayer(final Player player);
