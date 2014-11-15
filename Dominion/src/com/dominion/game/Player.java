@@ -234,7 +234,7 @@ public class Player {
 		}
 		
 		if (!cards.isEmpty()) {
-			return playerInterface.selectCardFromHand(cards);
+			return playerInterface.selectVictoryCardToReveal(cards);
 		}
 		
 		return null;
@@ -427,11 +427,14 @@ public class Player {
 			}
 			
 			TreasureCard treasureCard = playerInterface.selectTreasureCardToPlay(cards);
+			System.out.println(treasureCard);
 			
 			// If null, player didn't select any cards and wants to end phase
 			if (treasureCard == null) {
 				break;
 			}
+
+			System.out.println(treasureCard.getName());
 			
 			playTreasureCard(treasureCard);
 		}

@@ -12,7 +12,8 @@ import com.dominion.game.cards.kingdom.*;
 
 public class GameBoard {
 
-	/* Check if a stack is empty (usually for end of game)
+	/**
+	 * Check if a stack is empty (usually for end of game)
 	 */
 	public boolean isStackEmpty(String stack) {
 		return supplyStacks.get(stack).isEmpty();
