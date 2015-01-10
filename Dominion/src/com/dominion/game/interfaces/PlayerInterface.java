@@ -27,4 +27,5 @@ public interface PlayerInterface {
 	public boolean chooseIfPutDeckInDiscard();
 	public Card selectCardToTrash(final List<Card> cards);
 	public boolean chooseIfSetAsideCard(final Card card);
+	public void updateScore(final int score);
 }

@@ -265,7 +265,7 @@ public class SimpleConsolePlayer implements PlayerInterface {
 	}
 
 	@Override
-	public Card selectCardFromHand(List<Card> cards) {
+	public Card selectVictoryCardToReveal(List<Card> cards) {
 		displayCards(cards);
 		
 		System.out.print("Select card from hand (-1 to end phase)> ");

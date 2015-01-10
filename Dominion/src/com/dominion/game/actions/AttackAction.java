@@ -11,7 +11,7 @@ public abstract class AttackAction extends CardAction {
 		for (Player otherPlayer : player.getOtherPlayers()) {
 			
 			// Other players can keep revealing reaction cards
-			ReactionCard card;			
+			ReactionCard card;
 			do {
 				// Allow the player to reveal any reaction cards
 				card = otherPlayer.getReactionCardToPlay();
@@ -20,13 +20,13 @@ public abstract class AttackAction extends CardAction {
 		
 					action.setPlayer(otherPlayer);
 					action.execute();
-				}
-				
-				// If card doesn't provide immunity (e.g. moat card), allow attack
-				if (card == null || !card.grantsImmunity()) {
-					executeAttackOnPlayer(otherPlayer);
-				}
+				}				
 			} while (card != null);
+
+			// If they played a moat, they are immune to attacks
+			if (!otherPlayer.isImmune()) {
+				executeAttackOnPlayer(otherPlayer);
+			}
 		}
 	}
 	

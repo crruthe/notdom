@@ -25,6 +25,7 @@ public class NetworkPlayer implements PlayerInterface {
 		
 		//gm.addPlayer(new Player(new SimpleConsolePlayer()));
 		gm.addPlayer(new Player(new NetworkPlayer()));
+		gm.addPlayer(new Player(new NetworkPlayer()));		
 		gm.addPlayer(new Player(new NetworkPlayer()));
 		
 		gm.startGame();
@@ -156,6 +157,7 @@ public class NetworkPlayer implements PlayerInterface {
 	@Override
 	public void updateDeck(int numOfCards) {
 		// TODO Auto-generated method stub
+		System.out.println("updateDeck");
 		Gson gson = new Gson();
 		String json = gson.toJson(new Message("updateDeck", numOfCards));		
 		sendMessage(json);
@@ -169,6 +171,15 @@ public class NetworkPlayer implements PlayerInterface {
 		sendMessage(json);
 	}
 
+	@Override
+	public void updateScore(final int score) {
+		// TODO Auto-generated method stub
+		System.out.println("updateScore");
+		Gson gson = new Gson();
+		String json = gson.toJson(new Message("updateScore", score));
+		sendMessage(json);
+	}
+	
 	@Override
 	public void updateTrashPile(List<Card> cards) {
 		// TODO Auto-generated method stub

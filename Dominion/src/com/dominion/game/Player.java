@@ -29,6 +29,8 @@ public class Player {
 
 	private TurnState turnState;
 	
+	private boolean immune;
+	
 	/**
 	 * Constructor
 	 * @param playerInterface
@@ -336,7 +338,7 @@ public class Player {
 	/**
 	 * Move card from hand into the play area
 	 * @param card
-	 */
+	 */	
 	public void playCard(Card card) {
 		cardHand.removeCard(card);
 		playArea.addCard(card);
@@ -359,6 +361,7 @@ public class Player {
 	
 	public void playTurn() {
 		turnState = new TurnState();
+		setImmune(false);
 		
 		actionPhase();
 		buyPhase();
@@ -385,6 +388,14 @@ public class Player {
 		notifyOfHand();
 		notifyOfTrash();
 	}
+	
+	public void trashCardFromPlayArea(Card card) {
+		playArea.removeCard(card);
+		gameBoard.addToTrashPile(card);
+		
+		notifyOfPlayArea();
+		notifyOfTrash();
+	}
 
 	public boolean wantsToPutDeckInDiscard() {
 		return playerInterface.chooseIfPutDeckInDiscard();
@@ -392,6 +403,18 @@ public class Player {
 
 	public boolean wantsToSetAsideCard(Card card) {
 		return playerInterface.chooseIfSetAsideCard(card);
+	}
+	
+	public void actionEndGameScore(int score) {		
+		playerInterface.updateScore(score);
+	}
+	
+	public void setImmune(boolean immune) {
+		this.immune = immune;
+	}
+	
+	public boolean isImmune() {
+		return this.immune;
 	}
 
 	private void actionPhase() {

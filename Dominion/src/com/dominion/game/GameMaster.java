@@ -61,7 +61,9 @@ public class GameMaster {
 			player.discardHand();
 			player.moveDiscardPileToCardDeck();
 			
-			System.out.println(player.getPlayerName() + " - " + player.countVictoryPointsInCardDeck());
+			int count = player.countVictoryPointsInCardDeck();
+			player.actionEndGameScore(count);
+			System.out.println("Score: " + count);			
 		}
 	}
 		

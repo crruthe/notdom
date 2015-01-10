@@ -26,4 +26,8 @@ public class PlayArea {
 	public List<Card> getCards() {
 		return cards;
 	}
+	
+	public void removeCard(Card card) {
+		cards.remove(card);		
+	}
 }

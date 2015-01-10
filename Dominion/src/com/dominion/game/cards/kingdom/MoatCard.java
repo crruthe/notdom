@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import com.dominion.game.actions.CardAction;
+import com.dominion.game.actions.MoatReaction;
 import com.dominion.game.actions.NoAction;
 import com.dominion.game.actions.PlusCardAction;
 import com.dominion.game.cards.Card;
@@ -47,11 +48,6 @@ public class MoatCard implements ReactionCard {
 
 	@Override
 	public CardAction getReaction() {
-		return new NoAction();
-	}
-
-	@Override
-	public boolean grantsImmunity() {
-		return true;
+		return new MoatReaction();
 	}
 }

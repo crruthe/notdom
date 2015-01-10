@@ -147,6 +147,11 @@ public class GameBoard {
 			estateStack.add(new EstateCard());
 			duchyStack.add(new DuchyCard());
 			provinceStack.add(new ProvinceCard());;			
+		}		
+
+		// When players are setup they start with 3 estates in their hand
+		for (int i=0; i<(numberOfPlayers * 3); i++) {
+			estateStack.add(new EstateCard());
 		}
 		
 		supplyStacks.put(EstateCard.NAME, estateStack);
