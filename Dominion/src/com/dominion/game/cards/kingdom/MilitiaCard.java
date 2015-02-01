@@ -14,7 +14,7 @@ import com.dominion.game.visitors.CardVisitor;
 public class MilitiaCard implements ActionCard, AttackCard {
 	public static final int COST = 4;
 	public static final String NAME = "Militia";
-	private final int PLUS_COINS = 1;
+	private final int PLUS_COINS = 2;
 
 	@Override
 	public void accept(CardVisitor visitor) {
