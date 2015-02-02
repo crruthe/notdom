@@ -98,6 +98,7 @@ public class GameBoard {
 		cardList.put(ChapelCard.NAME, ChapelCard.class);
 		cardList.put(MoatCard.NAME, MoatCard.class);
 		cardList.put(ChancellorCard.NAME, ChancellorCard.class);
+		cardList.put(MoneylenderCard.NAME, MoneylenderCard.class);
 		
 		cardList = selectRandomKingdomCards(cardList);
 		
@@ -239,6 +240,9 @@ public class GameBoard {
 	 * @return Card from top of stack
 	 */
 	public Card removeCardFromSupplyStack(String stack) {
+		if (supplyStacks.get(stack).isEmpty()) {			
+			return null;
+		}
 		return supplyStacks.get(stack).remove(0);
 	}
 }
