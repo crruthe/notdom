@@ -6,7 +6,7 @@ public class CouncilRoomAction extends CardAction {
 	@Override
 	public void execute() {
 		for (Player otherPlayer : player.getOtherPlayers()) {
-			otherPlayer.addCardToHand(otherPlayer.drawCard());
+			otherPlayer.drawCardToHand();
 		}
 	}	
 }
