@@ -13,6 +13,9 @@ public class MineAction extends CardAction {
 	@Override
 	public void execute() {
 		Card trashCard = player.getTreasureCardToTrash();
+		if (trashCard == null) {
+			return;
+		}
 		
 		if (!(trashCard instanceof TreasureCard)) {
 			throw new RuntimeException("trash card not a treasure card");
@@ -20,7 +23,7 @@ public class MineAction extends CardAction {
 		
 		player.trashCard(trashCard);
 		
-		Card card = player.getCardToGain(trashCard.getCost() + 3);
+		Card card = player.getTreasureCardToGain(trashCard.getCost() + 3);
 		player.addCardToHand(card);
 	}
 }
