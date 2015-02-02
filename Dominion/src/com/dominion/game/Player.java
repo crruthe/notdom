@@ -1,6 +1,7 @@
 package com.dominion.game;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -10,6 +11,8 @@ import com.dominion.game.cards.Card;
 import com.dominion.game.cards.ReactionCard;
 import com.dominion.game.cards.TreasureCard;
 import com.dominion.game.cards.VictoryCard;
+import com.dominion.game.cards.basic.CopperCard;
+import com.dominion.game.cards.basic.CurseCard;
 import com.dominion.game.interfaces.PlayerInterface;
 import com.dominion.game.visitors.VictoryPointCounterCardVisitor;
 
@@ -122,6 +125,11 @@ public class Player {
 		if (cardDeck.isEmpty()) {
 			moveDiscardPileToCardDeck(); 
 			
+			// No more cards to draw
+			if (cardDeck.isEmpty()) {
+				return null;
+			}
+			
 			cardDeck.shuffle();
 		}
 		
@@ -133,9 +141,11 @@ public class Player {
 	}
 	
 	public void drawCardToHand() {
-		cardHand.addCard(drawCard());
-		
-		notifyOfHand();
+		Card card = drawCard();
+		if (card != null) {
+			cardHand.addCard(card);
+			notifyOfHand();
+		}		
 	}
 
 	/**
@@ -143,14 +153,17 @@ public class Player {
 	 */
 	public void drawNewHand() {
 		for (int i = 0; i < NUM_CARDS_IN_HAND; i++) {
-			cardHand.addCard(drawCard());
+			drawCardToHand();
 		}
-		
-		notifyOfHand();
 	}
 
 	public void gainCardFromSupply(String stack) {
 		Card card = gameBoard.removeCardFromSupplyStack(stack);
+		// Should only occur for forced cards like witch
+		if (card == null) {
+			return;
+		}
+		
 		discardPile.addCard(card);
 		
 		notifyOfSupply();
@@ -177,7 +190,22 @@ public class Player {
 	}	
 	
 	public Card getCardToDiscard() {
+		if (cardHand.getCards().isEmpty()) {
+			return null;
+		}
 		return playerInterface.selectCardToDiscard(cardHand.getCards());
+	}
+	
+	public Card getTreasureCardToGain(int gainCost) {
+		List<Card> cards = gameBoard.listCardsToBuy(gainCost);
+		List<Card> treasureCards = new LinkedList<Card>();
+		for (Card c: cards) {
+			if (c instanceof TreasureCard) {
+				treasureCards.add(c);
+			}
+		}
+		Card card = playerInterface.selectCardToBuy(treasureCards);
+		return card;
 	}
 	
 	public Card getCardToGain(int gainCost) {
@@ -185,8 +213,11 @@ public class Player {
 		Card card = playerInterface.selectCardToBuy(cards);
 		return card;
 	}
-	
+
 	public Card getCardToTrash() {
+		if (cardHand.getCards().isEmpty()) {
+			return null;
+		}
 		return playerInterface.selectCardToTrash(cardHand.getCards());
 	}
 	
@@ -222,8 +253,28 @@ public class Player {
 		return null;
 	}
 	
+	public Card getCopperCardToTrash() {
+		List<Card> cards = new LinkedList<Card>();
+		
+		for (Card card : cardHand.getCards()) {
+			if (card instanceof CopperCard) {
+				cards.add(card);
+			}
+		}
+		
+		if (!cards.isEmpty()) {
+			return playerInterface.selectCardToTrash(cards);
+		}
+		
+		return null;
+	}
+
 	public Card getTreasureCardToTrash() {
-		return playerInterface.selectCardToTrash(getTreasureCardsFromHand());
+		List<Card> cards = getTreasureCardsFromHand();
+		if (cards.isEmpty()) {
+			return null;
+		}
+		return playerInterface.selectCardToTrash(cards);
 	}
 
 	public Card getVictoryCardToReveal() {
@@ -297,7 +348,8 @@ public class Player {
 	
 	public void notifyOfDiscard() {
 		// Update with last card added (top of pile)
-		playerInterface.updateDiscard(discardPile.getTopCard());
+		Card card = discardPile.getTopCard();
+		playerInterface.updateDiscard(card);
 	}
 
 	public void notifyOfHand() {
@@ -405,7 +457,8 @@ public class Player {
 		return playerInterface.chooseIfSetAsideCard(card);
 	}
 	
-	public void actionEndGameScore(int score) {		
+	public void actionEndGameScore(int score) {
+		System.out.println(cardDeck.getCards());
 		playerInterface.updateScore(score);
 	}
 	
@@ -420,6 +473,7 @@ public class Player {
 	private void actionPhase() {
 		// Continue while the player has actions left
 		while(turnState.getNumberOfActions() > 0) {
+			notifyOfTurnState();
 			
 			ActionCard actionCard = getActionCardToPlay();
 
@@ -433,8 +487,6 @@ public class Player {
 			
 			// Consume on action for this turn
 			turnState.decrementActions();
-			
-			notifyOfTurnState();
 		}
 	}
 
@@ -464,6 +516,8 @@ public class Player {
 		
 		while(turnState.getNumberOfBuys() > 0) {
 			
+			notifyOfTurnState();
+			
 			List<Card> cards = gameBoard.listCardsToBuy(turnState.getTotalCoins());
 			
 			Card card = playerInterface.selectCardToBuy(cards);
@@ -476,9 +530,7 @@ public class Player {
 				gainCardFromSupply(card.getName());
 				
 				turnState.decrementCoins(card.getCost());
-				turnState.decrementBuys();
-				
-				notifyOfTurnState();
+				turnState.decrementBuys();				
 			}
 		}		
 	}
@@ -508,5 +560,28 @@ public class Player {
 			}
 		}
 		return cards;
+	}
+	
+	public int countCurseCardsInDeck() {
+		int count = 0;
+		for (Card c: cardDeck.getCards())
+		{
+			if (c instanceof CurseCard) {
+				count++;
+			}
+		}
+		return count;
+	}
+	
+	public void displayCardDeck() {
+		HashMap<String, Integer> cardTally = new HashMap<String, Integer>();
+		
+		for (Card c: cardDeck.getCards()) {
+			if (!cardTally.containsKey(c.getName())) {
+				cardTally.put(c.getName(), 0);
+			}
+			cardTally.put(c.getName(), cardTally.get(c.getName())+1);
+		}
+		System.out.println(cardTally);
 	}
 }
