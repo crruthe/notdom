@@ -23,11 +23,22 @@ public class NetworkPlayer implements PlayerInterface {
 	public static void main(String[] args) {
 		GameMaster gm = new GameMaster();
 		
-		//gm.addPlayer(new Player(new SimpleConsolePlayer()));
-		gm.addPlayer(new Player(new NetworkPlayer()));
-		gm.addPlayer(new Player(new NetworkPlayer()));		
-		gm.addPlayer(new Player(new NetworkPlayer()));
+		Jedis j = new Jedis("localhost");
+		j.flushAll();
+		j.close();
 		
+		//gm.addPlayer(new Player(new SimpleConsolePlayer()));
+		Player player1 = new Player(new NetworkPlayer());
+		Player player2 = new Player(new NetworkPlayer());
+		Player player3 = new Player(new BasicRulesAIPlayer());
+		player1.setPlayerName("Larry");
+		player2.setPlayerName("Susan");
+		player3.setPlayerName("BasicAI");
+		
+		gm.addPlayer(player1);
+		gm.addPlayer(player2);		
+		gm.addPlayer(player3);
+
 		gm.startGame();
 	}
 	
@@ -307,5 +318,21 @@ public class NetworkPlayer implements PlayerInterface {
 		sendMessage(json);
 		String result = waitForMessage();
 		return result.equals("Y");
+	}
+
+	@Override
+	public void notifyCardPlayed(Player player, Card card) {
+		System.out.println("notifyLog");
+		Gson gson = new Gson();
+		String json = gson.toJson(new Message("notifyLog", player.getPlayerName() + " played " + card.getName() + "."));
+		sendMessage(json);
+	}
+
+	@Override
+	public void notifyCardGained(Player player, Card card) {
+		System.out.println("notifyLog");
+		Gson gson = new Gson();
+		String json = gson.toJson(new Message("notifyLog", player.getPlayerName() + " gained " + card.getName() + "."));
+		sendMessage(json);
 	}
 }
