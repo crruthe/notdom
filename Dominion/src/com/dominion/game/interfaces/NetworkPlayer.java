@@ -335,4 +335,30 @@ public class NetworkPlayer implements PlayerInterface {
 		String json = gson.toJson(new Message("notifyLog", player.getPlayerName() + " gained " + card.getName() + "."));
 		sendMessage(json);
 	}
+
+	@Override
+	public void notifyCardRevealed(Player player, Card card) {
+		System.out.println("notifyLog");
+		Gson gson = new Gson();
+		String json = gson.toJson(new Message("notifyLog", player.getPlayerName() + " revealed " + card.getName() + "."));
+		sendMessage(json);
+	}
+
+	@Override
+	public boolean chooseIfTrashCard(Card card) {
+		System.out.println("chooseIfTrashCard");
+		String json = convertCardToJson("chooseIfTrashCard", card);
+		sendMessage(json);
+		String result = waitForMessage();
+		return result.equals("Y");
+	}
+
+	@Override
+	public boolean chooseIfGainCard(Card card) {
+		System.out.println("chooseIfGainCard");
+		String json = convertCardToJson("chooseIfGainCard", card);
+		sendMessage(json);
+		String result = waitForMessage();
+		return result.equals("Y");
+	}
 }

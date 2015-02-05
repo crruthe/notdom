@@ -13,6 +13,8 @@ import com.dominion.game.interfaces.messages.NotifyMessage;
 public interface PlayerInterface {
 	public boolean chooseIfPutDeckInDiscard();
 	public boolean chooseIfSetAsideCard(final Card card);
+	public boolean chooseIfTrashCard(final Card card);
+	public boolean chooseIfGainCard(final Card card);
 	public void notifyCardPlayed(Player player, Card card);
 	public void notifyCardGained(Player player, Card card);
 	public ActionCard selectActionCardToPlay(final List<Card> cards);
@@ -31,4 +33,5 @@ public interface PlayerInterface {
 	public void updateSupply(final HashMap<String, List<Card>> supplyStack);
 	public void updateTrashPile(final List<Card> cards);
 	public void updateTurnState(int numOfActions, int numOfBuys, int numOfCoins);
+	public void notifyCardRevealed(Player player, Card card);
 }

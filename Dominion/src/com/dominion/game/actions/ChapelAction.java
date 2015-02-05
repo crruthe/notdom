@@ -13,7 +13,7 @@ public class ChapelAction extends CardAction {
 			if (card == null) {
 				break;
 			} else {
-				player.trashCard(card);
+				player.trashCardFromHand(card);
 				numberToTrash--;
 			}
 		}

@@ -7,7 +7,7 @@ public class MoneylenderAction extends CardAction {
 	public void execute() {
 		Card card = player.getCopperCardToTrash();
 		if (card != null) {
-			player.trashCard(card);
+			player.trashCardFromHand(card);
 			player.incrementCoins(3);
 		}		
 	}	

@@ -2,6 +2,7 @@ package com.dominion.game.actions;
 
 import com.dominion.game.Player;
 import com.dominion.game.cards.ReactionCard;
+import com.dominion.game.interfaces.messages.CardRevealedMessage;
 
 public abstract class AttackAction extends CardAction {
 
@@ -17,6 +18,7 @@ public abstract class AttackAction extends CardAction {
 				card = otherPlayer.getReactionCardToPlay();
 				if (card != null) {
 					CardAction action = card.getReaction();
+					player.broadcastMessage(new CardRevealedMessage(otherPlayer, card));
 		
 					action.setPlayer(otherPlayer);
 					action.execute();

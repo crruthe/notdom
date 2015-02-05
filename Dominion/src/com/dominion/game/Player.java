@@ -16,6 +16,8 @@ import com.dominion.game.cards.basic.CurseCard;
 import com.dominion.game.interfaces.PlayerInterface;
 import com.dominion.game.interfaces.messages.CardGainedMessage;
 import com.dominion.game.interfaces.messages.CardPlayedMessage;
+import com.dominion.game.interfaces.messages.Message;
+import com.dominion.game.interfaces.messages.NotifyMessage;
 import com.dominion.game.visitors.VictoryPointCounterCardVisitor;
 
 public class Player {	
@@ -55,6 +57,12 @@ public class Player {
 	 */
 	public void addCardsToDiscardPile(Collection<Card> cards) {
 		discardPile.addCards(cards);
+		
+		notifyOfDiscard();
+	}
+
+	public void addCardToDiscardPile(Card card) {
+		discardPile.addCard(card);
 		
 		notifyOfDiscard();
 	}
@@ -196,7 +204,7 @@ public class Player {
 		
 		discardPile.addCard(card);
 		
-		broadcast.notify(new CardGainedMessage(this, card));
+		broadcastMessage(new CardGainedMessage(this, card));
 		notifyOfSupply();
 		notifyOfDiscard();
 	}
@@ -205,9 +213,13 @@ public class Player {
 		Card card = gameBoard.removeCardFromSupplyStack(stack);
 		cardDeck.addCard(card);
 		
-		broadcast.notify(new CardGainedMessage(this, card));
+		broadcastMessage(new CardGainedMessage(this, card));
 		notifyOfSupply();
 		notifyOfCardDeck();
+	}
+	
+	public void broadcastMessage(NotifyMessage message) {
+		broadcast.notify(message);
 	}
 	
 	public ActionCard getActionCardToPlay() {
@@ -428,7 +440,7 @@ public class Player {
 		cardHand.removeCard(card);
 		playArea.addCard(card);
 		
-		broadcast.notify(new CardPlayedMessage(this, card));
+		broadcastMessage(new CardPlayedMessage(this, card));
 		notifyOfHand();
 		notifyOfPlayArea();
 	}
@@ -472,11 +484,17 @@ public class Player {
 		this.otherPlayers = otherPlayers;
 	}
 
-	public void trashCard(Card card) {
+	public void trashCardFromHand(Card card) {
 		cardHand.removeCard(card);
 		gameBoard.addToTrashPile(card);
 		
 		notifyOfHand();
+		notifyOfTrash();
+	}
+
+	public void trashCard(Card card) {
+		gameBoard.addToTrashPile(card);
+		
 		notifyOfTrash();
 	}
 
@@ -594,5 +612,13 @@ public class Player {
 
 	public void setPlayerName(String playerName) {
 		this.playerName = playerName;
+	}
+
+	public boolean wantsToTrashCard(Card card) {
+		return playerInterface.chooseIfTrashCard(card);
+	}
+
+	public boolean wantsToGainCard(Card card) {
+		return playerInterface.chooseIfGainCard(card);
 	}
 }

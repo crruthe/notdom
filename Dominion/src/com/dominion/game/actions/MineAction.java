@@ -21,7 +21,7 @@ public class MineAction extends CardAction {
 			throw new RuntimeException("trash card not a treasure card");
 		}
 		
-		player.trashCard(trashCard);
+		player.trashCardFromHand(trashCard);
 		
 		Card card = player.getTreasureCardToGain(trashCard.getCost() + 3);
 		player.addCardToHand(card);

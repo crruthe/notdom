@@ -253,4 +253,26 @@ public class BasicRulesAIPlayer implements PlayerInterface {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public boolean chooseIfTrashCard(Card card) {
+		if (Math.random() < 0.5) {
+			return true;
+		}		
+		return false;
+	}
+
+	@Override
+	public boolean chooseIfGainCard(Card card) {
+		if (Math.random() < 0.5) {
+			return true;
+		}		
+		return false;
+	}
+
+	@Override
+	public void notifyCardRevealed(Player player, Card card) {
+		// TODO Auto-generated method stub
+		
+	}
 }
