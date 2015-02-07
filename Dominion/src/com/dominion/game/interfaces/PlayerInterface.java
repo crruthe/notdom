@@ -15,6 +15,7 @@ public interface PlayerInterface {
 	public boolean chooseIfSetAsideCard(final Card card);
 	public boolean chooseIfTrashCard(final Card card);
 	public boolean chooseIfGainCard(final Card card);
+	public boolean chooseIfDiscardCard(final Card card);
 	public void notifyCardPlayed(Player player, Card card);
 	public void notifyCardGained(Player player, Card card);
 	public ActionCard selectActionCardToPlay(final List<Card> cards);

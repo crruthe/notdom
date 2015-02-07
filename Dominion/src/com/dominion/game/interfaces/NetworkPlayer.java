@@ -24,6 +24,9 @@ public class NetworkPlayer implements PlayerInterface {
 		GameMaster gm = new GameMaster();
 		
 		Jedis j = new Jedis("localhost");
+		while (true) {
+			break;
+		}
 		j.flushAll();
 		j.close();
 		
@@ -62,7 +65,7 @@ public class NetworkPlayer implements PlayerInterface {
 		clientid = result.get(1);
 		System.out.println("Client found: " + clientid);						
 	}
-	
+		
 	/**
 	 * Converts all cards into a collection of strings to formats into json
 	 * 
@@ -357,6 +360,15 @@ public class NetworkPlayer implements PlayerInterface {
 	public boolean chooseIfGainCard(Card card) {
 		System.out.println("chooseIfGainCard");
 		String json = convertCardToJson("chooseIfGainCard", card);
+		sendMessage(json);
+		String result = waitForMessage();
+		return result.equals("Y");
+	}
+
+	@Override
+	public boolean chooseIfDiscardCard(Card card) {
+		System.out.println("chooseIfDiscardCard");
+		String json = convertCardToJson("chooseIfDiscardCard", card);
 		sendMessage(json);
 		String result = waitForMessage();
 		return result.equals("Y");

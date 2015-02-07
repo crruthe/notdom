@@ -67,6 +67,12 @@ public class Player {
 		notifyOfDiscard();
 	}
 
+	public void addCardToCardDeck(Card card) {
+		cardDeck.addCard(card);
+		
+		notifyOfCardDeck();
+	}
+
 	/**
 	 * Move a card into the hand
 	 * @param card
@@ -620,5 +626,9 @@ public class Player {
 
 	public boolean wantsToGainCard(Card card) {
 		return playerInterface.chooseIfGainCard(card);
+	}
+
+	public boolean wantsToDiscardCard(Card card) {
+		return playerInterface.chooseIfDiscardCard(card);
 	}
 }

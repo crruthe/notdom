@@ -102,6 +102,7 @@ public class GameBoard {
 		cardList.put(ChancellorCard.NAME, ChancellorCard.class);
 		cardList.put(MoneylenderCard.NAME, MoneylenderCard.class);
 		cardList.put(ThiefCard.NAME, ThiefCard.class);
+		cardList.put(SpyCard.NAME, SpyCard.class);
 		
 		cardList = selectRandomKingdomCards(cardList);
 		
