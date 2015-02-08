@@ -8,6 +8,7 @@ import com.dominion.game.cards.basic.CopperCard;
 import com.dominion.game.cards.basic.EstateCard;
 import com.dominion.game.cards.basic.ProvinceCard;
 import com.dominion.game.interfaces.PlayerInterface;
+import com.dominion.game.interfaces.messages.EndGameScoreMessage;
 import com.dominion.game.interfaces.messages.Message;
 import com.google.gson.Gson;
 
@@ -66,8 +67,8 @@ public class GameMaster {
 			player.moveDiscardPileToCardDeck();
 			
 			int count = player.countVictoryPointsInCardDeck() - player.countCurseCardsInDeck();
-			player.actionEndGameScore(count);
-			player.displayCardDeck();
+			player.broadcastMessage(new EndGameScoreMessage(player, count));
+			player.broadcastCardDeck();
 			System.out.println("Score: " + count);			
 		}
 	}

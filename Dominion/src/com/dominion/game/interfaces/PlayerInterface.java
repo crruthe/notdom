@@ -16,8 +16,8 @@ public interface PlayerInterface {
 	public boolean chooseIfTrashCard(final Card card);
 	public boolean chooseIfGainCard(final Card card);
 	public boolean chooseIfDiscardCard(final Card card);
-	public void notifyCardPlayed(Player player, Card card);
-	public void notifyCardGained(Player player, Card card);
+	public void notifyCardPlayed(final Player player, final Card card);
+	public void notifyCardGained(final Player player, final Card card);
 	public ActionCard selectActionCardToPlay(final List<Card> cards);
 	public Card selectCardToBuy(final List<Card> cards);
 	public Card selectCardToDiscard(final List<Card> cards);
@@ -30,9 +30,10 @@ public interface PlayerInterface {
 	public void updateHand(final List<Card> cards);
 	public void updateOtherPlayer(final Player player);
 	public void updatePlayArea(final List<Card> cards);
-	public void updateScore(final int score);
+	public void notifyEndGameScore(final Player player, int score);
+	public void notifyEndGameCards(final Player player, String cards);
 	public void updateSupply(final HashMap<String, List<Card>> supplyStack);
 	public void updateTrashPile(final List<Card> cards);
 	public void updateTurnState(int numOfActions, int numOfBuys, int numOfCoins);
-	public void notifyCardRevealed(Player player, Card card);
+	public void notifyCardRevealed(final Player player, final Card card);
 }

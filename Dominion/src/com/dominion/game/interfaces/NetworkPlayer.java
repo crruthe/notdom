@@ -34,13 +34,16 @@ public class NetworkPlayer implements PlayerInterface {
 		Player player1 = new Player(new NetworkPlayer());
 		Player player2 = new Player(new NetworkPlayer());
 		Player player3 = new Player(new BasicRulesAIPlayer());
-		player1.setPlayerName("Larry");
+		//Player player4 = new Player(new NetworkPlayer());
+		player1.setPlayerName("BobTheMagnificent");
 		player2.setPlayerName("Susan");
 		player3.setPlayerName("BasicAI");
+		//player4.setPlayerName("Jesus");
 		
 		gm.addPlayer(player1);
 		gm.addPlayer(player2);		
-		gm.addPlayer(player3);
+		//gm.addPlayer(player3);
+		//gm.addPlayer(player4);
 
 		gm.startGame();
 	}
@@ -186,16 +189,23 @@ public class NetworkPlayer implements PlayerInterface {
 	}
 
 	@Override
-	public void updateScore(final int score) {
-		// TODO Auto-generated method stub
-		System.out.println("updateScore");
+	public void notifyEndGameScore(Player player, final int score) {
+		System.out.println("notifyLog");
 		Gson gson = new Gson();
-		String json = gson.toJson(new Message("updateScore", score));
+		String json = gson.toJson(new Message("notifyLog", player.getPlayerName() + " scored " + score + "."));
 		sendMessage(json);
 	}
-	
+
 	@Override
-	public void updateTrashPile(List<Card> cards) {
+	public void notifyEndGameCards(Player player, final String cards) {
+		System.out.println("notifyLog");
+		Gson gson = new Gson();
+		String json = gson.toJson(new Message("notifyLog", player.getPlayerName() + " cards: " + cards + "."));
+		sendMessage(json);
+	}
+
+	@Override
+	public void updateTrashPile(final List<Card> cards) {
 		// TODO Auto-generated method stub
 		System.out.println("updateTrashPile");
 		String json = convertCardsToJson("updateTrashPile", cards);
@@ -215,7 +225,7 @@ public class NetworkPlayer implements PlayerInterface {
 	}
 
 	@Override
-	public ActionCard selectActionCardToPlay(List<Card> cards) {
+	public ActionCard selectActionCardToPlay(final List<Card> cards) {
 		// TODO Auto-generated method stub
 		System.out.println("selectActionCardToPlay");
 		String json = convertCardsToJson("selectActionCardToPlay", cards);
@@ -233,7 +243,7 @@ public class NetworkPlayer implements PlayerInterface {
 	}
 
 	@Override
-	public TreasureCard selectTreasureCardToPlay(List<Card> cards) {
+	public TreasureCard selectTreasureCardToPlay(final List<Card> cards) {
 		
 		// TODO Auto-generated method stub
 		System.out.println("selectTreasureCardToPlay");
@@ -252,7 +262,7 @@ public class NetworkPlayer implements PlayerInterface {
 	}
 
 	@Override
-	public Card selectCardToBuy(List<Card> cards) {
+	public Card selectCardToBuy(final List<Card> cards) {
 		// TODO Auto-generated method stub
 		System.out.println("selectCardToBuy");
 		String json = convertCardsToJson("selectCardToBuy", cards);
@@ -269,7 +279,7 @@ public class NetworkPlayer implements PlayerInterface {
 	}
 
 	@Override
-	public Card selectCardToDiscard(List<Card> cards) {
+	public Card selectCardToDiscard(final List<Card> cards) {
 		// TODO Auto-generated method stub
 		System.out.println("selectCardToDiscard");
 		String json = convertCardsToJson("selectCardToDiscard", cards);
@@ -297,7 +307,7 @@ public class NetworkPlayer implements PlayerInterface {
 	}
 
 	@Override
-	public Card selectCardToTrash(List<Card> cards) {
+	public Card selectCardToTrash(final List<Card> cards) {
 		// TODO Auto-generated method stub
 		System.out.println("selectCardToTrash");
 		String json = convertCardsToJson("selectCardToTrash", cards);

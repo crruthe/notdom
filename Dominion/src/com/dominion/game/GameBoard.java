@@ -73,7 +73,6 @@ public class GameBoard {
 		
 		HashMap<String, Class<? extends Card>> cardList = new HashMap<String, Class<? extends Card>>();
 		
-		/*
 		cardList.put(WoodcutterCard.NAME, WoodcutterCard.class);
 		cardList.put(VillageCard.NAME, VillageCard.class);
 		cardList.put(WorkshopCard.NAME, WorkshopCard.class);
@@ -90,10 +89,9 @@ public class GameBoard {
 		cardList.put(FeastCard.NAME, FeastCard.class);		
 		cardList.put(LibraryCard.NAME, LibraryCard.class);		
 		cardList.put(ChancellorCard.NAME, ChancellorCard.class);		
-		cardList.put(MilitiaCard.NAME, MilitiaCard.class);		
-		*/
+		cardList.put(MilitiaCard.NAME, MilitiaCard.class);	
 		cardList.put(MineCard.NAME, MineCard.class);		
-		cardList.put(AdventurerCard.NAME, AdventurerCard.class);		
+		cardList.put(AdventurerCard.NAME, AdventurerCard.class);
 		cardList.put(RemodelCard.NAME, RemodelCard.class);		
 		cardList.put(BureaucratCard.NAME, BureaucratCard.class);		
 		cardList.put(ThroneRoomCard.NAME, ThroneRoomCard.class);						
@@ -103,6 +101,7 @@ public class GameBoard {
 		cardList.put(MoneylenderCard.NAME, MoneylenderCard.class);
 		cardList.put(ThiefCard.NAME, ThiefCard.class);
 		cardList.put(SpyCard.NAME, SpyCard.class);
+		cardList.put(CourtyardCard.NAME, CourtyardCard.class);
 		
 		cardList = selectRandomKingdomCards(cardList);
 		

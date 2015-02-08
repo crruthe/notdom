@@ -238,8 +238,7 @@ public class BasicRulesAIPlayer implements PlayerInterface {
 	}
 
 	@Override
-	public void updateScore(int score) {
-		System.out.println("BasicRule Score: " + score);
+	public void notifyEndGameScore(Player player, int score) {
 	}
 
 	@Override
@@ -279,6 +278,12 @@ public class BasicRulesAIPlayer implements PlayerInterface {
 	}	
 	@Override
 	public void notifyCardRevealed(Player player, Card card) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void notifyEndGameCards(Player player, String cards) {
 		// TODO Auto-generated method stub
 		
 	}

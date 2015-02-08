@@ -143,8 +143,13 @@ public class RandomAIPlayer implements PlayerInterface {
 	}
 
 	@Override
-	public void updateScore(int score) {
-		System.out.println("Random Score: " + score);
+	public void notifyEndGameScore(Player player, int score) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void notifyEndGameCards(Player player, String cards) {
+		// TODO Auto-generated method stub
 	}
 
 	@Override

@@ -16,8 +16,10 @@ import com.dominion.game.cards.basic.CurseCard;
 import com.dominion.game.interfaces.PlayerInterface;
 import com.dominion.game.interfaces.messages.CardGainedMessage;
 import com.dominion.game.interfaces.messages.CardPlayedMessage;
+import com.dominion.game.interfaces.messages.EndGameCardsMessage;
 import com.dominion.game.interfaces.messages.Message;
 import com.dominion.game.interfaces.messages.NotifyMessage;
+import com.dominion.game.interfaces.messages.NotifySupplyMessage;
 import com.dominion.game.visitors.VictoryPointCounterCardVisitor;
 
 public class Player {	
@@ -46,11 +48,6 @@ public class Player {
 		this.playerInterface = playerInterface;
 	}
 	
-	public void actionEndGameScore(int score) {
-		System.out.println(cardDeck.getCards());
-		playerInterface.updateScore(score);
-	}
-
 	/**
 	 * Add multiple cards to the discard pile
 	 * @param cards
@@ -147,7 +144,7 @@ public class Player {
 		notifyOfPlayArea();
 	}
 
-	public void displayCardDeck() {
+	public void broadcastCardDeck() {
 		HashMap<String, Integer> cardTally = new HashMap<String, Integer>();
 		
 		for (Card c: cardDeck.getCards()) {
@@ -156,7 +153,7 @@ public class Player {
 			}
 			cardTally.put(c.getName(), cardTally.get(c.getName())+1);
 		}
-		System.out.println(cardTally);
+		broadcastMessage(new EndGameCardsMessage(this, "" + cardTally));
 	}
 
 	/**
@@ -211,7 +208,7 @@ public class Player {
 		discardPile.addCard(card);
 		
 		broadcastMessage(new CardGainedMessage(this, card));
-		notifyOfSupply();
+		broadcastMessage(new NotifySupplyMessage(gameBoard.getSupplyStacks()));
 		notifyOfDiscard();
 	}
 	
@@ -220,7 +217,7 @@ public class Player {
 		cardDeck.addCard(card);
 		
 		broadcastMessage(new CardGainedMessage(this, card));
-		notifyOfSupply();
+		broadcastMessage(new NotifySupplyMessage(gameBoard.getSupplyStacks()));
 		notifyOfCardDeck();
 	}
 	
@@ -412,10 +409,6 @@ public class Player {
 		playerInterface.updatePlayArea(playArea.getCards());	
 	}
 
-	public void notifyOfSupply() {
-		playerInterface.updateSupply(gameBoard.getSupplyStacks());	
-	}
-	
 	public void notifyOfTrash() {
 		playerInterface.updateTrashPile(gameBoard.getTrashPile());
 	}
