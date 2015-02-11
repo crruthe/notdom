@@ -5,19 +5,18 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.dominion.game.cards.Card;
 import com.dominion.game.cards.*;
 import com.dominion.game.cards.basic.*;
 import com.dominion.game.cards.kingdom.*;
 
 public class GameBoard {
 
-	private final HashMap<String, List<Card>> supplyStacks = new HashMap<String, List<Card>>();
+	private final HashMap<Class<? extends Card>, Integer> supplyStacks = new HashMap<Class<? extends Card>, Integer>();
 	
-	private final LinkedList<Card> trashPile = new LinkedList<Card>();
+	private CardCollection trashPile = new CardCollection();
 
 	public void addToTrashPile(Card card) {
-		trashPile.add(card);
+		trashPile.addCardToTop(card);
 	}
 	
 	/**
@@ -28,27 +27,27 @@ public class GameBoard {
 	 */
 	public int countNumberOfEmptyStacks() {
 		int numOfEmptyStacks = 0;
-		for (List<Card> cards : supplyStacks.values()) {
-			if (cards.isEmpty()) {
+		for (Integer numOfCards: supplyStacks.values()) {
+			if (numOfCards == 0) {
 				numOfEmptyStacks++;
 			}
 		}
 		return numOfEmptyStacks;
 	}
 	
-	public HashMap<String, List<Card>> getSupplyStacks() {
+	public HashMap<Class<? extends Card>, Integer> getSupplyStacks() {
 		return supplyStacks;
 	}
 
-	public List<Card> getTrashPile() {
+	public CardCollection getTrashPile() {
 		return trashPile;
 	}
 	
 	/**
 	 * Check if a stack is empty (usually for end of game)
 	 */
-	public boolean isStackEmpty(String stack) {
-		return supplyStacks.get(stack).isEmpty();
+	public boolean isStackEmpty(Class<? extends Card> cardName) {
+		return supplyStacks.get(cardName) == 0;
 	}
 
 	/**
@@ -60,11 +59,10 @@ public class GameBoard {
 	public List<Card> listCardsFilterByCost(int amount) {
 		List<Card> cards = new LinkedList<Card>();
 		
-		for (List<Card> cardStack : supplyStacks.values()) {	
+		for (Class<? extends Card> cardClass : supplyStacks.keySet()) {	
 			// Check if any cards are left in stack
-			if (!cardStack.isEmpty()) {
-				// Grab the first card on the stack
-				Card card = cardStack.get(0);
+			if (supplyStacks.get(cardClass) > 0) {
+				Card card = getCard(cardClass);
 				
 				// Check if player can afford this card
 				if (card.getCost() <= amount) {
@@ -74,6 +72,19 @@ public class GameBoard {
 		}
 		
 		return cards;
+	}
+	
+	private Card getCard(Class<? extends Card> cardClass) {
+		try {
+			return cardClass.newInstance();
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	/**
@@ -85,13 +96,12 @@ public class GameBoard {
 	public List<TreasureCard> listTreasureCardsFilterByCost(int amount) {
 		List<TreasureCard> cards = new LinkedList<TreasureCard>();
 
-		for (List<Card> cardStack : supplyStacks.values()) {	
+		for (Class<? extends Card> cardClass : supplyStacks.keySet()) {	
 			// Check if any cards are left in stack
-			if (!cardStack.isEmpty()) {
-				// Grab the first card on the stack
-				Card card = cardStack.get(0);
+			if (supplyStacks.get(cardClass) > 0) {
+				Card card = getCard(cardClass);
 				
-				// Check if player can afford this card and it's a treasure card
+				// Check if player can afford this card
 				if (card.getCost() <= amount && card instanceof TreasureCard) {
 					cards.add((TreasureCard)card);
 				}
@@ -107,11 +117,15 @@ public class GameBoard {
 	 * @param stack
 	 * @return Card from top of stack
 	 */
-	public Card removeCardFromSupplyStack(String stack) {
-		if (supplyStacks.get(stack).isEmpty()) {			
+	public Card removeCard(Class<? extends Card> cardClass) {
+		if (supplyStacks.get(cardClass) == 0) {			
 			return null;
 		}
-		return supplyStacks.get(stack).remove(0);
+
+		// Decrement the stack size by 1
+		supplyStacks.put(cardClass, supplyStacks.get(cardClass)-1);
+		
+		return getCard(cardClass);
 	}
 
 	public void setup(int numberOfPlayers) {
@@ -121,22 +135,6 @@ public class GameBoard {
 		setupTreasureCards();
 	}
 	
-	private HashMap<String, Class<? extends Card>> selectRandomKingdomCards(HashMap<String, Class<? extends Card>> cardList) {
-		HashMap<String, Class<? extends Card>> newCards = new HashMap<String, Class<? extends Card>>();
-
-		// Build a list of keys
-		LinkedList<String> cards = new LinkedList<String>(cardList.keySet());
-		
-		// Shuffle the keys
-		Collections.shuffle(cards);
-		
-		// Select 10 of the new keys and place them in a new hashmap
-		for(String card : cards.subList(0, 10)) {
-			newCards.put(card, cardList.get(card));
-		}
-		return newCards;
-	}
-
 	/**
 	 * Place 10 Curse cards in the Supply for a 2
 	 * player game, 20 Curse cards for 3 players,
@@ -151,12 +149,7 @@ public class GameBoard {
 			numOfCards = 30;
 		}
 		
-		List<Card> curseStack = new LinkedList<Card>();		
-		for (int i=0; i<numOfCards; i++) {
-			curseStack.add(new CurseCard());
-		}
-		
-		supplyStacks.put(CurseCard.NAME, curseStack);
+		supplyStacks.put(CurseCard.class, numOfCards);
 	}
 	
 	/** 
@@ -171,42 +164,41 @@ public class GameBoard {
 	private void setupKingdomCards(int numberOfPlayers) {
 		int numOfCards;		
 		
-		HashMap<String, Class<? extends Card>> cardList = new HashMap<String, Class<? extends Card>>();
+		LinkedList<Class<? extends Card>> cardList = new LinkedList<Class<? extends Card>>();
 		
-		cardList.put(WoodcutterCard.NAME, WoodcutterCard.class);
-		cardList.put(VillageCard.NAME, VillageCard.class);
-		cardList.put(WorkshopCard.NAME, WorkshopCard.class);
-		cardList.put(SmithyCard.NAME, SmithyCard.class);
-		cardList.put(CouncilRoomCard.NAME, CouncilRoomCard.class);		
-		cardList.put(LaboratoryCard.NAME, LaboratoryCard.class);		
-		cardList.put(FestivalCard.NAME, FestivalCard.class);		
-		cardList.put(MarketCard.NAME, MarketCard.class);		
-		cardList.put(WitchCard.NAME, WitchCard.class);		
-		cardList.put(MoatCard.NAME, MoatCard.class);		
-		cardList.put(GardensCard.NAME, GardensCard.class);		
-		cardList.put(CellarCard.NAME, CellarCard.class);		
-		cardList.put(ChapelCard.NAME, ChapelCard.class);		
-		cardList.put(FeastCard.NAME, FeastCard.class);		
-		cardList.put(LibraryCard.NAME, LibraryCard.class);		
-		cardList.put(ChancellorCard.NAME, ChancellorCard.class);		
-		cardList.put(MilitiaCard.NAME, MilitiaCard.class);	
-		cardList.put(MineCard.NAME, MineCard.class);		
-		cardList.put(AdventurerCard.NAME, AdventurerCard.class);
-		cardList.put(RemodelCard.NAME, RemodelCard.class);		
-		cardList.put(BureaucratCard.NAME, BureaucratCard.class);		
-		cardList.put(ThroneRoomCard.NAME, ThroneRoomCard.class);						
-		cardList.put(ChapelCard.NAME, ChapelCard.class);
-		cardList.put(MoatCard.NAME, MoatCard.class);
-		cardList.put(ChancellorCard.NAME, ChancellorCard.class);
-		cardList.put(MoneylenderCard.NAME, MoneylenderCard.class);
-		cardList.put(ThiefCard.NAME, ThiefCard.class);
-		cardList.put(SpyCard.NAME, SpyCard.class);
-		cardList.put(CourtyardCard.NAME, CourtyardCard.class);
+		cardList.add(WoodcutterCard.class);
+		cardList.add(VillageCard.class);
+		cardList.add(WorkshopCard.class);
+		cardList.add(SmithyCard.class);
+		cardList.add(CouncilRoomCard.class);		
+		cardList.add(LaboratoryCard.class);		
+		cardList.add(FestivalCard.class);		
+		cardList.add(MarketCard.class);		
+		cardList.add(WitchCard.class);		
+		cardList.add(MoatCard.class);		
+		cardList.add(GardensCard.class);		
+		cardList.add(CellarCard.class);		
+		cardList.add(ChapelCard.class);		
+		cardList.add(FeastCard.class);		
+		cardList.add(LibraryCard.class);		
+		cardList.add(ChancellorCard.class);		
+		cardList.add(MilitiaCard.class);	
+		cardList.add(MineCard.class);		
+		cardList.add(AdventurerCard.class);
+		cardList.add(RemodelCard.class);		
+		cardList.add(BureaucratCard.class);		
+		cardList.add(ThroneRoomCard.class);						
+		cardList.add(ChapelCard.class);
+		cardList.add(MoatCard.class);
+		cardList.add(ChancellorCard.class);
+		cardList.add(MoneylenderCard.class);
+		cardList.add(ThiefCard.class);
+		cardList.add(SpyCard.class);
+		cardList.add(CourtyardCard.class);
 		
-		cardList = selectRandomKingdomCards(cardList);
+		Collections.shuffle(cardList);
 		
-		for (String card : cardList.keySet()) {
-			Class<? extends Card> cardClass = cardList.get(card);
+		for (Class<? extends Card> cardClass: cardList) {
 			
 			// If kingdom card is a victory cards, we only have 10
 			if (!VictoryCard.class.isAssignableFrom(cardClass)) {
@@ -217,39 +209,8 @@ public class GameBoard {
 				numOfCards = 12;
 			}
 			
-			// Build a stack of kingdom cards
-			List<Card> cards = new LinkedList<Card>();
-			for (int i=0; i<numOfCards; i++) {
-				try {
-					cards.add(cardClass.newInstance());
-				} catch (InstantiationException | IllegalAccessException e) {
-					e.printStackTrace();
-				}
-			}
-			supplyStacks.put(card, cards);
+			supplyStacks.put(cardClass, numOfCards);
 		}		
-	}
-	
-	/** 
-	 * Treasure cards are "unlimited", 50 should be enough
-	 */
-	private void setupTreasureCards() {		
-
-		// TODO: No point tracking these unlimited stacks
-		
-		List<Card> copperStack = new LinkedList<Card>();
-		List<Card> silverStack = new LinkedList<Card>();
-		List<Card> goldStack = new LinkedList<Card>();
-
-		for (int i=0; i<50; i++) {
-			copperStack.add(new CopperCard());
-			silverStack.add(new SilverCard());
-			goldStack.add(new GoldCard());;			
-		}
-		
-		supplyStacks.put(CopperCard.NAME, copperStack);
-		supplyStacks.put(SilverCard.NAME, silverStack);
-		supplyStacks.put(GoldCard.NAME, goldStack);
 	}
 	
 	/**
@@ -266,18 +227,18 @@ public class GameBoard {
 			numOfCards = 8;
 		}
 		
-		List<Card> estateStack = new LinkedList<Card>();
-		List<Card> duchyStack = new LinkedList<Card>();
-		List<Card> provinceStack = new LinkedList<Card>();
-
-		for (int i=0; i<numOfCards; i++) {
-			estateStack.add(new EstateCard());
-			duchyStack.add(new DuchyCard());
-			provinceStack.add(new ProvinceCard());;			
-		}		
-		
-		supplyStacks.put(EstateCard.NAME, estateStack);
-		supplyStacks.put(DuchyCard.NAME, duchyStack);
-		supplyStacks.put(ProvinceCard.NAME, provinceStack);
+		supplyStacks.put(EstateCard.class, numOfCards);
+		supplyStacks.put(DuchyCard.class, numOfCards);
+		supplyStacks.put(ProvinceCard.class, numOfCards);
 	}
+	
+	/**
+	 * Game supply has "unlimited" cards. 50 should be enough.
+	 * @param numberOfPlayers
+	 */
+	private void setupTreasureCards() {
+		supplyStacks.put(CopperCard.class, 50);
+		supplyStacks.put(SilverCard.class, 50);
+		supplyStacks.put(GoldCard.class, 50);
+	}	
 }
