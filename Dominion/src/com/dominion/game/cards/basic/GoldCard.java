@@ -4,7 +4,7 @@ import com.dominion.game.cards.Card;
 import com.dominion.game.cards.TreasureCard;
 import com.dominion.game.visitors.CardVisitor;
 
-public class GoldCard implements Card, TreasureCard {
+public class GoldCard extends Card implements TreasureCard {
 	public static final int COST = 6;
 	public static final String NAME = "Gold";
 	private final int COINS = 3;

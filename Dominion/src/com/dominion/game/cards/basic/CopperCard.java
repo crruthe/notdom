@@ -5,7 +5,7 @@ import com.dominion.game.cards.TreasureCard;
 import com.dominion.game.visitors.CardVisitor;
 
 
-public class CopperCard implements Card, TreasureCard {
+public class CopperCard extends Card implements TreasureCard {
 	public static final int COST = 0;
 	public static final String NAME = "Copper";
 	private final int COINS = 1;

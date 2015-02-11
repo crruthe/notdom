@@ -5,7 +5,7 @@ import com.dominion.game.cards.VictoryCard;
 import com.dominion.game.visitors.CardVisitor;
 
 
-public class EstateCard implements Card, VictoryCard {
+public class EstateCard extends Card implements VictoryCard {
 	public static final int COST = 2;
 	public static final String NAME = "Estate";
 	final static int POINTS = 1;
