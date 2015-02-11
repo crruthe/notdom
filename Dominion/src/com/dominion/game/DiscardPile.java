@@ -1,6 +1,5 @@
 package com.dominion.game;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -8,17 +7,16 @@ import com.dominion.game.cards.Card;
 
 
 public class DiscardPile {
-	private final LinkedList<Card> cards = new LinkedList<Card>();
+	private LinkedList<Card> cards = new LinkedList<Card>();
 	
 	/**
-	 * @return collection containing the discard pile
 	 * Empties the discard pile and returns the cards
+	 * @return collection containing the discard pile
 	 */
 	public Collection<Card> clearDiscardPile() {		
-		List<Card> resultList = new LinkedList<Card>(cards);
-		Collections.copy(resultList, cards);
+		List<Card> resultList = cards;
 		
-		cards.clear();
+		cards = new LinkedList<Card>();
 		
 		return resultList;
 	}	
@@ -38,26 +36,30 @@ public class DiscardPile {
 	}
 	
 	/**
-	 * @param cards
 	 * Add a collection of cards to the discard pile
+	 * @param cards
 	 */
 	public void addCards(Collection<Card> cards) {
 		this.cards.addAll(cards);
 	}
 	
 	/**
+	 * Add a card to the top of discard pile (last card)
 	 * @param card
-	 * Add a card to the discard pile
 	 */
 	public void addCard(Card card) {
 		cards.add(card);
 	}
 	
+	/**
+	 * Since cards are added to end, return the last card 
+	 * @return top card on the discard pile
+	 */
 	public Card getTopCard() {
 		if (cards.isEmpty()) {
 			return null;
 		}
 		
-		return cards.get(cards.size()-1);
+		return cards.getLast();
 	}
 }

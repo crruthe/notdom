@@ -12,41 +12,30 @@ import com.dominion.game.cards.Card;
  *
  */
 public class CardDeck {
-	private final LinkedList<Card> cards = new LinkedList<Card>();
+	private LinkedList<Card> cards = new LinkedList<Card>();
 		
 	/**
-	 * Shuffle the deck
-	 */
-	public void shuffle() {
-		Collections.shuffle(cards);
-	}	
-	
-	/**
-	 * @param cards
 	 * Add a collection of cards to the deck
+	 * @param cards
 	 */
 	public void addCards(Collection<Card> cards) {
 		this.cards.addAll(cards);
-	}
+	}	
 	
 	/**
+	 * Add a card to the top of the deck (last card)
 	 * @param card
-	 * Add a card to the top of the deck
 	 */
 	public void addCardToTop(Card card) {
-		cards.addFirst(card);		
+		cards.add(card);		
 	}
 	
-	/**
-	 * @return drawn card
-	 * Draw a card from the top of the deck
-	 */
-	public Card drawCard() {
-		if (cards.isEmpty()) { 
-			return null;
-		}
+	public Collection<Card> clearCardDeck() {
+		List<Card> resultList = cards;
 		
-		return cards.removeFirst();
+		cards = new LinkedList<Card>();
+		
+		return resultList;
 	}
 	
 	/**
@@ -55,7 +44,23 @@ public class CardDeck {
 	public int count() {
 		return cards.size();
 	}
+	
+	/**
+	 * Draw a card from the top of the deck
+	 * @return drawn card
+	 */
+	public Card drawCard() {
+		if (cards.isEmpty()) { 
+			return null;
+		}
+		
+		return cards.removeLast();
+	}
 
+	public Collection<Card> getCards() {
+		return cards;
+	}
+	
 	/**
 	 * @return whether deck is empty
 	 */
@@ -63,16 +68,10 @@ public class CardDeck {
 		return cards.isEmpty();
 	}
 	
-	public Collection<Card> getCards() {
-		return cards;
-	}
-	
-	public Collection<Card> clearCardDeck() {
-		List<Card> resultList = new LinkedList<Card>(cards);
-		Collections.copy(resultList, cards);
-		
-		cards.clear();
-		
-		return resultList;
+	/**
+	 * Shuffle the deck
+	 */
+	public void shuffle() {
+		Collections.shuffle(cards);
 	}
 }

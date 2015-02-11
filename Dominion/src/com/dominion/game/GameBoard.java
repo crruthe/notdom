@@ -6,19 +6,26 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.dominion.game.cards.Card;
-import com.dominion.game.cards.VictoryCard;
+import com.dominion.game.cards.*;
 import com.dominion.game.cards.basic.*;
 import com.dominion.game.cards.kingdom.*;
 
 public class GameBoard {
 
-	/**
-	 * Check if a stack is empty (usually for end of game)
-	 */
-	public boolean isStackEmpty(String stack) {
-		return supplyStacks.get(stack).isEmpty();
+	private final HashMap<String, List<Card>> supplyStacks = new HashMap<String, List<Card>>();
+	
+	private final LinkedList<Card> trashPile = new LinkedList<Card>();
+
+	public void addToTrashPile(Card card) {
+		trashPile.add(card);
 	}
 	
+	/**
+	 * Count the number of stacks that are empty.
+	 * Used for determining if the game is finished.
+	 * 
+	 * @return number of empty stacks
+	 */
 	public int countNumberOfEmptyStacks() {
 		int numOfEmptyStacks = 0;
 		for (List<Card> cards : supplyStacks.values()) {
@@ -28,13 +35,83 @@ public class GameBoard {
 		}
 		return numOfEmptyStacks;
 	}
-
-	private final LinkedList<Card> trashPile = new LinkedList<Card>();
-	
-	private final HashMap<String, List<Card>> supplyStacks = new HashMap<String, List<Card>>();
 	
 	public HashMap<String, List<Card>> getSupplyStacks() {
 		return supplyStacks;
+	}
+
+	public List<Card> getTrashPile() {
+		return trashPile;
+	}
+	
+	/**
+	 * Check if a stack is empty (usually for end of game)
+	 */
+	public boolean isStackEmpty(String stack) {
+		return supplyStacks.get(stack).isEmpty();
+	}
+
+	/**
+	 * Build up a list of cards that the player can buy
+	 * 
+	 * @param amount of coins to buy with
+	 * @return collection of cards
+	 */
+	public List<Card> listCardsFilterByCost(int amount) {
+		List<Card> cards = new LinkedList<Card>();
+		
+		for (List<Card> cardStack : supplyStacks.values()) {	
+			// Check if any cards are left in stack
+			if (!cardStack.isEmpty()) {
+				// Grab the first card on the stack
+				Card card = cardStack.get(0);
+				
+				// Check if player can afford this card
+				if (card.getCost() <= amount) {
+					cards.add(card);
+				}
+			}
+		}
+		
+		return cards;
+	}
+
+	/**
+	 * Build up a list of treasure cards that the player can buy
+	 * 
+	 * @param amount of coins to buy with
+	 * @return collection of treasure cards
+	 */
+	public List<TreasureCard> listTreasureCardsFilterByCost(int amount) {
+		List<TreasureCard> cards = new LinkedList<TreasureCard>();
+
+		for (List<Card> cardStack : supplyStacks.values()) {	
+			// Check if any cards are left in stack
+			if (!cardStack.isEmpty()) {
+				// Grab the first card on the stack
+				Card card = cardStack.get(0);
+				
+				// Check if player can afford this card and it's a treasure card
+				if (card.getCost() <= amount && card instanceof TreasureCard) {
+					cards.add((TreasureCard)card);
+				}
+			}
+		}
+		
+		return cards;
+	}
+
+	/**
+	 * Remove the top card from the stack and return it
+	 * 
+	 * @param stack
+	 * @return Card from top of stack
+	 */
+	public Card removeCardFromSupplyStack(String stack) {
+		if (supplyStacks.get(stack).isEmpty()) {			
+			return null;
+		}
+		return supplyStacks.get(stack).remove(0);
 	}
 
 	public void setup(int numberOfPlayers) {
@@ -60,7 +137,30 @@ public class GameBoard {
 		return newCards;
 	}
 
-	/* The players select 10 Kingdom
+	/**
+	 * Place 10 Curse cards in the Supply for a 2
+	 * player game, 20 Curse cards for 3 players,
+	 * and 30 Curse cards for 4 players.
+	 */
+	private void setupCurseCards(int numberOfPlayers) {		
+		int numOfCards = 10;
+		
+		if (numberOfPlayers == 3) {
+			numOfCards = 20;
+		} else if (numberOfPlayers == 4) {
+			numOfCards = 30;
+		}
+		
+		List<Card> curseStack = new LinkedList<Card>();		
+		for (int i=0; i<numOfCards; i++) {
+			curseStack.add(new CurseCard());
+		}
+		
+		supplyStacks.put(CurseCard.NAME, curseStack);
+	}
+	
+	/** 
+	 * The players select 10 Kingdom
 	 * cards and place 10 of each in face-up piles
 	 * on the table.
 	 * Exception: Kingdom Victory card piles
@@ -130,7 +230,30 @@ public class GameBoard {
 		}		
 	}
 	
-	/* Place 12 each of the Estate,
+	/** 
+	 * Treasure cards are "unlimited", 50 should be enough
+	 */
+	private void setupTreasureCards() {		
+
+		// TODO: No point tracking these unlimited stacks
+		
+		List<Card> copperStack = new LinkedList<Card>();
+		List<Card> silverStack = new LinkedList<Card>();
+		List<Card> goldStack = new LinkedList<Card>();
+
+		for (int i=0; i<50; i++) {
+			copperStack.add(new CopperCard());
+			silverStack.add(new SilverCard());
+			goldStack.add(new GoldCard());;			
+		}
+		
+		supplyStacks.put(CopperCard.NAME, copperStack);
+		supplyStacks.put(SilverCard.NAME, silverStack);
+		supplyStacks.put(GoldCard.NAME, goldStack);
+	}
+	
+	/**
+	 * Place 12 each of the Estate,
 	 * Duchy, and Province cards in face-up piles
 	 * in the Supply in a 3 or 4 player game.
 	 * In a 2 player game, place only 8 of each
@@ -152,100 +275,9 @@ public class GameBoard {
 			duchyStack.add(new DuchyCard());
 			provinceStack.add(new ProvinceCard());;			
 		}		
-
-		// When players are setup they start with 3 estates in their hand
-		for (int i=0; i<(numberOfPlayers * 3); i++) {
-			estateStack.add(new EstateCard());
-		}
 		
 		supplyStacks.put(EstateCard.NAME, estateStack);
 		supplyStacks.put(DuchyCard.NAME, duchyStack);
 		supplyStacks.put(ProvinceCard.NAME, provinceStack);
-	}
-
-	/* Place 10 Curse cards in the Supply for a 2
-	 * player game, 20 Curse cards for 3 players,
-	 * and 30 Curse cards for 4 players.
-	 */
-	private void setupCurseCards(int numberOfPlayers) {		
-		int numOfCards = 10;
-		
-		if (numberOfPlayers == 3) {
-			numOfCards = 20;
-		} else if (numberOfPlayers == 4) {
-			numOfCards = 30;
-		}
-		
-		List<Card> curseStack = new LinkedList<Card>();		
-		for (int i=0; i<numOfCards; i++) {
-			curseStack.add(new CurseCard());
-		}
-		
-		supplyStacks.put(CurseCard.NAME, curseStack);
-	}
-
-	/* Treasure cards are "unlimited", 50 should be enough
-	 */
-	private void setupTreasureCards() {		
-
-		List<Card> copperStack = new LinkedList<Card>();
-		List<Card> silverStack = new LinkedList<Card>();
-		List<Card> goldStack = new LinkedList<Card>();
-
-		for (int i=0; i<50; i++) {
-			copperStack.add(new CopperCard());
-			silverStack.add(new SilverCard());
-			goldStack.add(new GoldCard());;			
-		}
-		
-		supplyStacks.put(CopperCard.NAME, copperStack);
-		supplyStacks.put(SilverCard.NAME, silverStack);
-		supplyStacks.put(GoldCard.NAME, goldStack);
-	}
-	
-	public void addToTrashPile(Card card) {
-		trashPile.add(card);
-	}
-
-	public List<Card> getTrashPile() {
-		return trashPile;
-	}
-	
-	/**
-	 * Build up a list of cards that the player can buy
-	 * 
-	 * @param amount of coins to buy with
-	 * @return collection of cards
-	 */
-	public List<Card> listCardsToBuy(int amount) {
-		List<Card> cards = new LinkedList<Card>();
-		
-		for (List<Card> cardStack : supplyStacks.values()) {	
-			// Check if any cards are left in stack
-			if (!cardStack.isEmpty()) {
-				// Grab the first card on the stack
-				Card card = cardStack.get(0);
-				
-				// Check if player can afford this card
-				if (card.getCost() <= amount) {
-					cards.add(card);
-				}
-			}
-		}
-		
-		return cards;
-	}
-	
-	/**
-	 * Remove the top card from the stack and return it
-	 * 
-	 * @param stack
-	 * @return Card from top of stack
-	 */
-	public Card removeCardFromSupplyStack(String stack) {
-		if (supplyStacks.get(stack).isEmpty()) {			
-			return null;
-		}
-		return supplyStacks.get(stack).remove(0);
 	}
 }
