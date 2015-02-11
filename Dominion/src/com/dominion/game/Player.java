@@ -24,7 +24,6 @@ import com.dominion.game.visitors.VictoryPointCounterCardVisitor;
 
 public class Player {	
 	private final static int NUM_CARDS_IN_HAND = 5;
-	private PlayerBroadcaster broadcast;
 	private final CardDeck cardDeck = new CardDeck();
 	private final CardHand cardHand = new CardHand();
 	
@@ -65,7 +64,7 @@ public class Player {
 	}
 
 	public void addCardToCardDeck(Card card) {
-		cardDeck.addCard(card);
+		cardDeck.addCardToTop(card);
 		
 		notifyOfCardDeck();
 	}
@@ -214,15 +213,11 @@ public class Player {
 	
 	public void gainCardFromSupplyToDeck(String stack) {
 		Card card = gameBoard.removeCardFromSupplyStack(stack);
-		cardDeck.addCard(card);
+		cardDeck.addCardToTop(card);
 		
 		broadcastMessage(new CardGainedMessage(this, card));
 		broadcastMessage(new NotifySupplyMessage(gameBoard.getSupplyStacks()));
 		notifyOfCardDeck();
-	}
-	
-	public void broadcastMessage(NotifyMessage message) {
-		broadcast.notify(message);
 	}
 	
 	public ActionCard getActionCardToPlay() {
@@ -375,7 +370,7 @@ public class Player {
 	 */
 	public void moveCardFromHandToDeck(Card card) {
 		cardHand.removeCard(card);
-		cardDeck.addCard(card);
+		cardDeck.addCardToTop(card);
 		
 		notifyOfHand();
 		notifyOfCardDeck();
@@ -466,11 +461,6 @@ public class Player {
 		drawNewHand();	
 	}
 
-	public void setBroadcast(PlayerBroadcaster broadcast) {
-		this.broadcast = broadcast;
-		broadcast.registerInterface(playerInterface);
-	}
-	
 	public void setGameBoard(GameBoard gameBoard) {
 		this.gameBoard = gameBoard;
 	}
@@ -623,5 +613,23 @@ public class Player {
 
 	public boolean wantsToDiscardCard(Card card) {
 		return playerInterface.chooseIfDiscardCard(card);
+	}
+
+	public Card getCardFromHandToPutInDeck() {
+		if (cardHand.getCards().isEmpty()) {
+			return null;
+		}
+		return playerInterface.selectCardToPutOnDeck(cardHand.getCards());
+	}
+	
+	public void broadcastMessage(NotifyMessage message) {
+		notifyMessage(message);
+		for (Player p: otherPlayers) {
+			p.notifyMessage(message);
+		}
+	}
+
+	public void notifyMessage(NotifyMessage message) {
+		message.notify(playerInterface);		
 	}
 }

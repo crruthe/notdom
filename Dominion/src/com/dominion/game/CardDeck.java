@@ -31,15 +31,15 @@ public class CardDeck {
 	
 	/**
 	 * @param card
-	 * Add a card to the deck
+	 * Add a card to the top of the deck
 	 */
-	public void addCard(Card card) {
-		cards.add(card);
+	public void addCardToTop(Card card) {
+		cards.addFirst(card);		
 	}
 	
 	/**
 	 * @return drawn card
-	 * Draw a card from the deck
+	 * Draw a card from the top of the deck
 	 */
 	public Card drawCard() {
 		if (cards.isEmpty()) { 

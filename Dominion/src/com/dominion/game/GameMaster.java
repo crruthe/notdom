@@ -19,7 +19,6 @@ public class GameMaster {
 	
 	private final LinkedList<Player> players = new LinkedList<Player>();
 	private final GameBoard gameBoard = new GameBoard();
-	private final PlayerBroadcaster broadcast = new PlayerBroadcaster();
 	
 	public void addPlayer(Player player) {
 		players.add(player);
@@ -99,7 +98,6 @@ public class GameMaster {
 	private void setupAllPlayers() {
 		for (Player player : players) {
 			player.setGameBoard(gameBoard);
-			player.setBroadcast(broadcast);
 			
 			buildDeckForPlayer(player);
 			player.drawNewHand();

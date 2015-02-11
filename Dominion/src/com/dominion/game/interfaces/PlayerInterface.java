@@ -4,11 +4,11 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.dominion.game.Player;
+import com.dominion.game.actions.CardAction;
 import com.dominion.game.cards.ActionCard;
 import com.dominion.game.cards.Card;
 import com.dominion.game.cards.ReactionCard;
 import com.dominion.game.cards.TreasureCard;
-import com.dominion.game.interfaces.messages.NotifyMessage;
 
 public interface PlayerInterface {
 	public boolean chooseIfPutDeckInDiscard();
@@ -22,6 +22,7 @@ public interface PlayerInterface {
 	public Card selectCardToBuy(final List<Card> cards);
 	public Card selectCardToDiscard(final List<Card> cards);
 	public Card selectCardToTrash(final List<Card> cards);
+	public Card selectCardToPutOnDeck(final List<Card> cards);
 	public ReactionCard selectReactionCard(final List<Card> cards);
 	public TreasureCard selectTreasureCardToPlay(final List<Card> cards);
 	public Card selectVictoryCardToReveal(final List<Card> cards);
@@ -36,4 +37,5 @@ public interface PlayerInterface {
 	public void updateTrashPile(final List<Card> cards);
 	public void updateTurnState(int numOfActions, int numOfBuys, int numOfCoins);
 	public void notifyCardRevealed(final Player player, final Card card);
+	public CardAction selectCardActionToPlay(List<CardAction> actions);
 }
