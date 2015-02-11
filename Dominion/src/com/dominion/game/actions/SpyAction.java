@@ -19,7 +19,7 @@ public class SpyAction extends AttackAction {
 	private void action(Player attackPlayer) {
 		// Reveal the top card
 		Card card = attackPlayer.drawCard();
-		player.broadcastMessage(new CardRevealedMessage(attackPlayer, card));
+		player.invokeMessageAll(new CardRevealedMessage(attackPlayer, card));
 	
 		
 		// You may discard this card or leave it on the deck

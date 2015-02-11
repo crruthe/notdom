@@ -4,7 +4,7 @@ import com.dominion.game.Player;
 import com.dominion.game.cards.Card;
 import com.dominion.game.interfaces.PlayerInterface;
 
-public class EndGameScoreMessage implements NotifyMessage {
+public class EndGameScoreMessage implements PlayerInterfaceMessage {
 
 	private Player player;
 	private int score;
@@ -15,7 +15,7 @@ public class EndGameScoreMessage implements NotifyMessage {
 	}
 	
 	@Override
-	public void notify(PlayerInterface playerInterface) {		
+	public void invoke(PlayerInterface playerInterface) {		
 		playerInterface.notifyEndGameScore(player, score);
 	}
 }

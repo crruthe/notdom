@@ -18,7 +18,7 @@ public abstract class AttackAction extends CardAction {
 				card = otherPlayer.getReactionCardToPlay();
 				if (card != null) {
 					CardAction action = card.getReaction();
-					player.broadcastMessage(new CardRevealedMessage(otherPlayer, card));
+					player.invokeMessageAll(new CardRevealedMessage(otherPlayer, card));
 		
 					action.setPlayer(otherPlayer);
 					action.execute();

@@ -7,16 +7,16 @@ import com.dominion.game.Player;
 import com.dominion.game.cards.Card;
 import com.dominion.game.interfaces.PlayerInterface;
 
-public class NotifySupplyMessage implements NotifyMessage {
+public class UpdateSupplyMessage implements PlayerInterfaceMessage {
 
 	private HashMap<String, List<Card>> supplyStack;
 	
-	public NotifySupplyMessage(HashMap<String, List<Card>> supplyStack) {
+	public UpdateSupplyMessage(HashMap<String, List<Card>> supplyStack) {
 		this.supplyStack = supplyStack;
 	}
 	
 	@Override
-	public void notify(PlayerInterface playerInterface) {		
+	public void invoke(PlayerInterface playerInterface) {		
 		playerInterface.updateSupply(supplyStack);
 	}
 }

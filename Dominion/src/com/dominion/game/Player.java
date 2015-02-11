@@ -17,9 +17,8 @@ import com.dominion.game.interfaces.PlayerInterface;
 import com.dominion.game.interfaces.messages.CardGainedMessage;
 import com.dominion.game.interfaces.messages.CardPlayedMessage;
 import com.dominion.game.interfaces.messages.EndGameCardsMessage;
-import com.dominion.game.interfaces.messages.Message;
-import com.dominion.game.interfaces.messages.NotifyMessage;
-import com.dominion.game.interfaces.messages.NotifySupplyMessage;
+import com.dominion.game.interfaces.messages.PlayerInterfaceMessage;
+import com.dominion.game.interfaces.messages.UpdateSupplyMessage;
 import com.dominion.game.visitors.VictoryPointCounterCardVisitor;
 
 public class Player {	
@@ -152,7 +151,7 @@ public class Player {
 			}
 			cardTally.put(c.getName(), cardTally.get(c.getName())+1);
 		}
-		broadcastMessage(new EndGameCardsMessage(this, "" + cardTally));
+		invokeMessageAll(new EndGameCardsMessage(this, "" + cardTally));
 	}
 
 	/**
@@ -206,8 +205,8 @@ public class Player {
 		
 		discardPile.addCard(card);
 		
-		broadcastMessage(new CardGainedMessage(this, card));
-		broadcastMessage(new NotifySupplyMessage(gameBoard.getSupplyStacks()));
+		invokeMessageAll(new CardGainedMessage(this, card));
+		invokeMessageAll(new UpdateSupplyMessage(gameBoard.getSupplyStacks()));
 		notifyOfDiscard();
 	}
 	
@@ -215,8 +214,8 @@ public class Player {
 		Card card = gameBoard.removeCardFromSupplyStack(stack);
 		cardDeck.addCardToTop(card);
 		
-		broadcastMessage(new CardGainedMessage(this, card));
-		broadcastMessage(new NotifySupplyMessage(gameBoard.getSupplyStacks()));
+		invokeMessageAll(new CardGainedMessage(this, card));
+		invokeMessageAll(new UpdateSupplyMessage(gameBoard.getSupplyStacks()));
 		notifyOfCardDeck();
 	}
 	
@@ -434,7 +433,7 @@ public class Player {
 		cardHand.removeCard(card);
 		playArea.addCard(card);
 		
-		broadcastMessage(new CardPlayedMessage(this, card));
+		invokeMessageAll(new CardPlayedMessage(this, card));
 		notifyOfHand();
 		notifyOfPlayArea();
 	}
@@ -607,10 +606,6 @@ public class Player {
 		return playerInterface.chooseIfTrashCard(card);
 	}
 
-	public boolean wantsToGainCard(Card card) {
-		return playerInterface.chooseIfGainCard(card);
-	}
-
 	public boolean wantsToDiscardCard(Card card) {
 		return playerInterface.chooseIfDiscardCard(card);
 	}
@@ -622,14 +617,14 @@ public class Player {
 		return playerInterface.selectCardToPutOnDeck(cardHand.getCards());
 	}
 	
-	public void broadcastMessage(NotifyMessage message) {
-		notifyMessage(message);
+	public void invokeMessageAll(PlayerInterfaceMessage message) {
+		invokeMessage(message);
 		for (Player p: otherPlayers) {
-			p.notifyMessage(message);
+			p.invokeMessage(message);
 		}
 	}
 
-	public void notifyMessage(NotifyMessage message) {
-		message.notify(playerInterface);		
+	public void invokeMessage(PlayerInterfaceMessage message) {
+		message.invoke(playerInterface);		
 	}
 }

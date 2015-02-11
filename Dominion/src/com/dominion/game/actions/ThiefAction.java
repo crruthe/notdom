@@ -2,11 +2,11 @@ package com.dominion.game.actions;
 
 import java.util.LinkedList;
 
-import com.dominion.game.GameBoard;
 import com.dominion.game.Player;
 import com.dominion.game.cards.Card;
 import com.dominion.game.cards.TreasureCard;
 import com.dominion.game.interfaces.messages.CardRevealedMessage;
+import com.dominion.game.interfaces.messages.ChooseToGainCard;
 
 public class ThiefAction extends AttackAction {
 	@Override
@@ -21,8 +21,8 @@ public class ThiefAction extends AttackAction {
 		// Reveal the top two cards of their deck
 		Card first = attackPlayer.drawCard();
 		Card second = attackPlayer.drawCard();		
-		player.broadcastMessage(new CardRevealedMessage(attackPlayer, first));
-		player.broadcastMessage(new CardRevealedMessage(attackPlayer, second));
+		player.invokeMessageAll(new CardRevealedMessage(attackPlayer, first));
+		player.invokeMessageAll(new CardRevealedMessage(attackPlayer, second));
 		
 
 		// If the any of the cards are treasure, you must trash one, discard the others
@@ -52,7 +52,10 @@ public class ThiefAction extends AttackAction {
 		
 		// You may gain this trashed card
 		if (trash != null) {
-			if (player.wantsToGainCard(trash)) {
+			ChooseToGainCard message = new ChooseToGainCard(trash);
+			player.invokeMessage(message);
+
+			if (message.isYes()) {
 				player.addCardToDiscardPile(trash);
 			}
 		}
