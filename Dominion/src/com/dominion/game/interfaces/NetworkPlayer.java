@@ -19,6 +19,16 @@ import com.google.gson.Gson;
 public class NetworkPlayer implements PlayerInterface {
 	private Jedis jedis;
 	private String clientid;
+	
+	class Message {
+		private String message; 
+		private Object data;
+		
+		public Message(String message, Object data) {
+			this.message = message;
+			this.data = data;
+		}
+	}
 
 	public static void main(String[] args) {
 		GameMaster gm = new GameMaster();
@@ -307,10 +317,10 @@ public class NetworkPlayer implements PlayerInterface {
 	}
 
 	@Override
-	public Card selectCardToTrash(final List<Card> cards) {
+	public Card selectCardToTrashFromHand(final List<Card> cards) {
 		// TODO Auto-generated method stub
-		System.out.println("selectCardToTrash");
-		String json = convertCardsToJson("selectCardToTrash", cards);
+		System.out.println("selectCardToTrashFromHand");
+		String json = convertCardsToJson("selectCardToTrashFromHand", cards);
 		sendMessage(json);
 		String result = waitForMessage();
 		System.out.println(result);

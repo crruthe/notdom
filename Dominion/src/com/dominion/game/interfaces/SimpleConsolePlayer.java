@@ -162,7 +162,7 @@ public class SimpleConsolePlayer implements PlayerInterface {
 	}
 
 	@Override
-	public Card selectCardToTrash(final List<Card> cards) {
+	public Card selectCardToTrashFromHand(final List<Card> cards) {
 		displayCards(cards);
 		
 		System.out.print("Select card to trash (-1 to end phase)> ");

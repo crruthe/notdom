@@ -2,12 +2,13 @@ package com.dominion.game.actions;
 
 import java.util.LinkedList;
 
+import com.dominion.game.Player;
 import com.dominion.game.cards.Card;
 import com.dominion.game.cards.TreasureCard;
 
-public class AdventurerAction extends CardAction {
+public class AdventurerAction implements CardAction {
 	@Override
-	public void execute() {
+	public void execute(Player player) {
 		LinkedList<Card> setAside = new LinkedList<Card>();
 		int numberOfTreasureCards = 0;
 		

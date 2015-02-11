@@ -1,6 +1,8 @@
 package com.dominion.game.actions;
 
+import com.dominion.game.Player;
 import com.dominion.game.cards.Card;
+import com.dominion.game.interfaces.messages.SelectCardToTrashFromHandMessage;
 
 /**
  * 
@@ -8,19 +10,30 @@ import com.dominion.game.cards.Card;
  *
  * Trash a card from your hand. Gain a card costing up to 2 Coins more than the trashed card.
  */
-public class RemodelAction extends CardAction {
+public class RemodelAction implements CardAction {
 	@Override
-	public void execute() {
-		Card trashCard = player.getCardToTrash();
+	public void execute(Player player) {
+		// No cards to trash
+		if (player.getHandSize() == 0) {
+			return;
+		}
+				
+		SelectCardToTrashFromHandMessage message = new SelectCardToTrashFromHandMessage(player.getCardHand());			
+		player.invokeMessage(message);
 		
-		if (trashCard != null) {
-			player.trashCardFromHand(trashCard);
-			
-			Card card = player.getCardToGain(trashCard.getCost() + 2);
-			
-			if (card != null) {
-				player.gainCardFromSupply(card.getName());
-			}
+		// Player must select a card to trash, if possible
+		while (message.getCard() == null) {
+			player.invokeMessage(message);
+		}
+		
+		Card trashCard = message.getCard();
+		
+		player.trashCardFromHand(trashCard);
+		
+		Card card = player.getCardToGain(trashCard.getCost() + 2);
+		
+		if (card != null) {
+			player.gainCardFromSupply(card.getName());
 		}
 	}
 }

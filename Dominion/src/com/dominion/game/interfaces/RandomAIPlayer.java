@@ -125,7 +125,7 @@ public class RandomAIPlayer implements PlayerInterface {
 	}
 
 	@Override
-	public Card selectCardToTrash(List<Card> cards) {
+	public Card selectCardToTrashFromHand(List<Card> cards) {
 		// Chance to skip
 		if (Math.random() < (1 / cards.size())) {
 			return null;

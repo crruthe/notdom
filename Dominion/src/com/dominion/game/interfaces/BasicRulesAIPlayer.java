@@ -212,7 +212,7 @@ public class BasicRulesAIPlayer implements PlayerInterface {
 	}
 
 	@Override
-	public Card selectCardToTrash(List<Card> cards) {
+	public Card selectCardToTrashFromHand(List<Card> cards) {
 		for (Card c: cards) {
 			if (c instanceof CurseCard) {
 				return c;

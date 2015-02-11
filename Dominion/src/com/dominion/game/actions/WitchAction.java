@@ -5,7 +5,7 @@ import com.dominion.game.cards.basic.CurseCard;
 
 public class WitchAction extends AttackAction {
 	@Override
-	public void executeAttackOnPlayer(Player attackPlayer) {
-		attackPlayer.gainCardFromSupply(CurseCard.NAME);
+	public void executeAttackOnPlayer(Player attacker, Player victim) {
+		victim.gainCardFromSupply(CurseCard.NAME);
 	}
 }

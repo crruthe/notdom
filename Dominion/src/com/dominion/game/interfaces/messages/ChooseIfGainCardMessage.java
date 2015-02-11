@@ -3,12 +3,12 @@ package com.dominion.game.interfaces.messages;
 import com.dominion.game.cards.Card;
 import com.dominion.game.interfaces.PlayerInterface;
 
-public class ChooseToGainCard implements PlayerInterfaceMessage {
+public class ChooseIfGainCardMessage implements PlayerInterfaceMessage {
 
 	private Card card;
 	private boolean result;
 	
-	public ChooseToGainCard(Card card) {
+	public ChooseIfGainCardMessage(Card card) {
 		this.card = card;
 	}
 	

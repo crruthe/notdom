@@ -6,16 +6,16 @@ import com.dominion.game.cards.basic.SilverCard;
 
 public class BureaucratAction extends AttackAction {
 	@Override
-	public void execute() {
+	public void execute(Player player) {
 		player.gainCardFromSupplyToDeck(SilverCard.NAME);
-		super.execute();
+		super.execute(player);
 	}
 
 	@Override
-	public void executeAttackOnPlayer(Player attackPlayer) {
-		Card card = attackPlayer.getVictoryCardToReveal();
+	public void executeAttackOnPlayer(Player attacker, Player victim) {
+		Card card = victim.getVictoryCardToReveal();
 		if (card != null) {
-			attackPlayer.moveCardFromHandToDeck(card);
+			victim.moveCardFromHandToDeck(card);
 		}		
 	}	
 }

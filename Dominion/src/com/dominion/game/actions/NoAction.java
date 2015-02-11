@@ -1,8 +1,10 @@
 package com.dominion.game.actions;
 
-public class NoAction extends CardAction {
+import com.dominion.game.Player;
+
+public class NoAction implements CardAction {
 	@Override
-	public void execute() {
+	public void execute(Player player) {
 		// Do nothing
 	}	
 }

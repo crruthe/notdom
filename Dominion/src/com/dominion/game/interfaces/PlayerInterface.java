@@ -26,7 +26,7 @@ public interface PlayerInterface {
 	public Card selectCardToBuy(final List<Card> cards);
 	public Card selectCardToDiscard(final List<Card> cards);
 	public Card selectCardToPutOnDeck(final List<Card> cards);
-	public Card selectCardToTrash(final List<Card> cards);
+	public Card selectCardToTrashFromHand(final List<Card> cards);
 	public ReactionCard selectReactionCard(final List<Card> cards);
 	public TreasureCard selectTreasureCardToPlay(final List<Card> cards);
 	public Card selectVictoryCardToReveal(final List<Card> cards);

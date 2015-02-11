@@ -1,8 +1,10 @@
 package com.dominion.game.actions;
 
-public class MoatReaction extends CardAction {
+import com.dominion.game.Player;
+
+public class MoatReaction implements CardAction {
 	@Override
-	public void execute() {
+	public void execute(Player player) {
 		player.setImmune(true);
 	}	
 }

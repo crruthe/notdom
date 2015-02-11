@@ -1,10 +1,11 @@
 package com.dominion.game.actions;
 
+import com.dominion.game.Player;
 import com.dominion.game.cards.Card;
 
-public class CellarAction extends CardAction {
+public class CellarAction implements CardAction {
 	@Override
-	public void execute() {
+	public void execute(Player player) {
 		boolean endAction = false;
 		int numberDiscardedOfCards = 0;
 		
@@ -20,7 +21,6 @@ public class CellarAction extends CardAction {
 		}
 		
 		CardAction action = new PlusCardAction(numberDiscardedOfCards);
-		action.setPlayer(player);
-		action.execute();
+		action.execute(player);
 	}	
 }

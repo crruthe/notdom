@@ -1,5 +1,6 @@
 package com.dominion.game.actions;
 
+import com.dominion.game.Player;
 import com.dominion.game.cards.Card;
 import com.dominion.game.cards.TreasureCard;
 
@@ -9,9 +10,9 @@ import com.dominion.game.cards.TreasureCard;
  *
  * Trash a Treasure card from your hand. Gain a Treasure card costing up to 3 Coins more; put it into your hand.
  */
-public class MineAction extends CardAction {
+public class MineAction implements CardAction {
 	@Override
-	public void execute() {
+	public void execute(Player player) {
 		Card trashCard = player.getTreasureCardToTrash();
 		if (trashCard == null) {
 			return;

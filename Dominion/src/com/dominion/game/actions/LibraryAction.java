@@ -2,12 +2,13 @@ package com.dominion.game.actions;
 
 import java.util.LinkedList;
 
+import com.dominion.game.Player;
 import com.dominion.game.cards.ActionCard;
 import com.dominion.game.cards.Card;
 
-public class LibraryAction extends CardAction {
+public class LibraryAction implements CardAction {
 	@Override
-	public void execute() {
+	public void execute(Player player) {
 		LinkedList<Card> setAside = new LinkedList<Card>();
 		
 		while (player.getHandSize() < 7) {

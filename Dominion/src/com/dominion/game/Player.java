@@ -244,13 +244,6 @@ public class Player {
 		return card;
 	}
 	
-	public Card getCardToTrash() {
-		if (cardHand.getCards().isEmpty()) {
-			return null;
-		}
-		return playerInterface.selectCardToTrash(cardHand.getCards());
-	}
-	
 	public Card getCopperCardToTrash() {
 		List<Card> cards = new LinkedList<Card>();
 		
@@ -261,7 +254,7 @@ public class Player {
 		}
 		
 		if (!cards.isEmpty()) {
-			return playerInterface.selectCardToTrash(cards);
+			return playerInterface.selectCardToTrashFromHand(cards);
 		}
 		
 		return null;
@@ -312,7 +305,7 @@ public class Player {
 		if (cards.isEmpty()) {
 			return null;
 		}
-		return playerInterface.selectCardToTrash(cards);
+		return playerInterface.selectCardToTrashFromHand(cards);
 	}
 		
 	public Card getVictoryCardToReveal() {
@@ -420,8 +413,7 @@ public class Player {
 		
 		// Iterate through actions for action card
 		for (CardAction action : actionCard.buildActionList()) {
-			action.setPlayer(this);
-			action.execute();
+			action.execute(this);
 		}
 	}
 
@@ -606,15 +598,8 @@ public class Player {
 		return playerInterface.chooseIfTrashCard(card);
 	}
 
-	public boolean wantsToDiscardCard(Card card) {
-		return playerInterface.chooseIfDiscardCard(card);
-	}
-
-	public Card getCardFromHandToPutInDeck() {
-		if (cardHand.getCards().isEmpty()) {
-			return null;
-		}
-		return playerInterface.selectCardToPutOnDeck(cardHand.getCards());
+	public List<Card> getCardHand() {
+		return cardHand.getCards();
 	}
 	
 	public void invokeMessageAll(PlayerInterfaceMessage message) {

@@ -100,7 +100,7 @@ public class MockPlayerInterface implements PlayerInterface {
 	}
 
 	@Override
-	public Card selectCardToTrash(List<Card> cards) {
+	public Card selectCardToTrashFromHand(List<Card> cards) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -1,7 +1,9 @@
 package com.dominion.game.actions;
 
+import com.dominion.game.Player;
 
-public class PlusBuyAction extends CardAction {
+
+public class PlusBuyAction implements CardAction {
 	private int numBuys;
 	
 	public PlusBuyAction(int numBuys) {
@@ -9,7 +11,7 @@ public class PlusBuyAction extends CardAction {
 	}
 
 	@Override
-	public void execute() {
+	public void execute(Player player) {
 		player.incrementBuys(numBuys);		
 	}	
 }

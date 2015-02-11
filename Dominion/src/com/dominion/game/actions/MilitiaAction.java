@@ -5,11 +5,11 @@ import com.dominion.game.cards.Card;
 
 public class MilitiaAction extends AttackAction {
 	@Override
-	public void executeAttackOnPlayer(Player attackPlayer) {
-		while (attackPlayer.getHandSize() > 3) {
-			Card card = attackPlayer.getCardToDiscard();
+	public void executeAttackOnPlayer(Player attacker, Player victim) {
+		while (victim.getHandSize() > 3) {
+			Card card = victim.getCardToDiscard();
 			if (card != null) {
-				attackPlayer.discardCardFromHand(card);
+				victim.discardCardFromHand(card);
 			}			
 		}
 	}
