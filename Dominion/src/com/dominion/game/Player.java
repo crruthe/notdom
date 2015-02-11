@@ -23,20 +23,15 @@ import com.dominion.game.visitors.VictoryPointCounterCardVisitor;
 
 public class Player {	
 	private final static int NUM_CARDS_IN_HAND = 5;
-	private final CardDeck cardDeck = new CardDeck();
-	private final CardHand cardHand = new CardHand();
+	private final CardCollection cardDeck = new CardCollection();
+	private final CardCollection cardHand = new CardCollection();	
+	private final CardCollection discardPile = new CardCollection();
+	private final CardCollection playArea = new CardCollection();
 	
-	private final DiscardPile discardPile = new DiscardPile();
-	private GameBoard gameBoard;	
-	private boolean immune;
-	private Collection<Player> otherPlayers;
-	
-	private final PlayArea playArea = new PlayArea();
+	private boolean immune = false;	
 	
 	private final PlayerInterface playerInterface;
 	private String playerName;
-	
-	private TurnState turnState;
 	
 	/**
 	 * Constructor
@@ -45,7 +40,7 @@ public class Player {
 	public Player(PlayerInterface playerInterface) {
 		this.playerInterface = playerInterface;
 	}
-	
+
 	/**
 	 * Add multiple cards to the discard pile
 	 * @param cards
@@ -142,7 +137,13 @@ public class Player {
 		notifyOfPlayArea();
 	}
 
-	public void broadcastCardDeck() {
+	public void cleanUpPhase() {
+		discardPlayArea();
+		discardHand();
+		setImmune(false);
+	}	
+	
+	public String getCardDeck() {
 		HashMap<String, Integer> cardTally = new HashMap<String, Integer>();
 		
 		for (Card c: cardDeck.getCards()) {
@@ -151,7 +152,7 @@ public class Player {
 			}
 			cardTally.put(c.getName(), cardTally.get(c.getName())+1);
 		}
-		invokeMessageAll(new EndGameCardsMessage(this, "" + cardTally));
+		return "" + cardTally;
 	}
 
 	/**
@@ -195,30 +196,7 @@ public class Player {
 			drawCardToHand();
 		}
 	}	
-	
-	public void gainCardFromSupply(String stack) {
-		Card card = gameBoard.removeCardFromSupplyStack(stack);
-		// Should only occur for forced cards like witch
-		if (card == null) {
-			return;
-		}
 		
-		discardPile.addCard(card);
-		
-		invokeMessageAll(new CardGainedMessage(this, card));
-		invokeMessageAll(new UpdateSupplyMessage(gameBoard.getSupplyStacks()));
-		notifyOfDiscard();
-	}
-	
-	public void gainCardFromSupplyToDeck(String stack) {
-		Card card = gameBoard.removeCardFromSupplyStack(stack);
-		cardDeck.addCardToTop(card);
-		
-		invokeMessageAll(new CardGainedMessage(this, card));
-		invokeMessageAll(new UpdateSupplyMessage(gameBoard.getSupplyStacks()));
-		notifyOfCardDeck();
-	}
-	
 	public ActionCard getActionCardToPlay() {
 		List<Card> cards = getActionCardsFromHand();
 		
@@ -237,8 +215,7 @@ public class Player {
 		return playerInterface.selectCardToDiscard(cardHand.getCards());
 	}
 	
-	public Card getCardToGain(int gainCost) {
-		List<Card> cards = gameBoard.listCardsToBuy(gainCost);
+	public Card getCardToBuy(List<Card> cards) {
 		Card card = playerInterface.selectCardToBuy(cards);
 
 		return card;
@@ -268,10 +245,22 @@ public class Player {
 		return cardHand.getSize();
 	}
 
-	public Collection<Player> getOtherPlayers() {
-		return otherPlayers;
+	public TreasureCard getTreasureCardToPlay() {
+		List<Card> cards = new LinkedList<Card>();
+		
+		for (Card card : cardHand.getCards()) {
+			if (card instanceof TreasureCard) {
+				cards.add(card);
+			}
+		}
+		
+		if (!cards.isEmpty()) {
+			return playerInterface.selectTreasureCardToPlay(cards);
+		}
+		
+		return null;
 	}
-	
+
 	public ReactionCard getReactionCardToPlay() {
 		List<Card> cards = new LinkedList<Card>();
 		
@@ -288,15 +277,8 @@ public class Player {
 		return null;
 	}
 
-	public Card getTreasureCardToGain(int gainCost) {
-		List<Card> cards = gameBoard.listCardsToBuy(gainCost);
-		List<Card> treasureCards = new LinkedList<Card>();
-		for (Card c: cards) {
-			if (c instanceof TreasureCard) {
-				treasureCards.add(c);
-			}
-		}
-		Card card = playerInterface.selectCardToBuy(treasureCards);
+	public Card getTreasureCardToGain(List<Card> cards) {
+		Card card = playerInterface.selectCardToBuy(cards);
 		return card;
 	}
 	
@@ -400,28 +382,18 @@ public class Player {
 		playerInterface.updateTrashPile(gameBoard.getTrashPile());
 	}
 
-	public void notifyOfTurnState() {
+	public void notifyOfTurnState(TurnState turnState) {
 		playerInterface.updateTurnState(
 				turnState.getNumberOfActions(), 
 				turnState.getNumberOfBuys(), 
 				turnState.getTotalCoins());
 	}
 
-	public void playActionCard(ActionCard actionCard) {
-
-		playCard(actionCard);
-		
-		// Iterate through actions for action card
-		for (CardAction action : actionCard.buildActionList()) {
-			action.execute(this);
-		}
-	}
-
 	/**
 	 * Move card from hand into the play area
 	 * @param card
 	 */	
-	public void playCard(Card card) {
+	public void moveCardFromHandToPlayArea(Card card) {
 		cardHand.removeCard(card);
 		playArea.addCard(card);
 		
@@ -430,28 +402,6 @@ public class Player {
 		notifyOfPlayArea();
 	}
 	
-	/**
-	 * During buy phase you can play treasure cards
-	 * @param card
-	 */
-	public void playTreasureCard(TreasureCard card) {
-		playCard(card);
-		
-		turnState.incrementCoins(card.getCoinAmount());
-
-		notifyOfTurnState();
-	}
-
-	public void playTurn() {
-		turnState = new TurnState();
-		setImmune(false);
-		
-		actionPhase();
-		buyPhase();
-		cleanUpPhase();		
-		drawNewHand();	
-	}
-
 	public void setGameBoard(GameBoard gameBoard) {
 		this.gameBoard = gameBoard;
 	}
@@ -494,75 +444,6 @@ public class Player {
 		return playerInterface.chooseIfSetAsideCard(card);
 	}
 
-	private void actionPhase() {
-		// Continue while the player has actions left
-		while(turnState.getNumberOfActions() > 0) {
-			notifyOfTurnState();
-			
-			ActionCard actionCard = getActionCardToPlay();
-
-			// If null, player didn't select a card and wants to end the action phase
-			if (actionCard == null) {
-				break;
-			}
-			
-			// Play the selected action card
-			playActionCard(actionCard);
-			
-			// Consume on action for this turn
-			turnState.decrementActions();
-		}
-	}
-	
-	private void buyPhase() {
-		
-		while(true) {
-			
-			List<Card> cards = getTreasureCardsFromHand();
-			
-			// If the player has no treasure cards, we can end this phase
-			if (cards.isEmpty()) {
-				break;
-			}
-			
-			TreasureCard treasureCard = playerInterface.selectTreasureCardToPlay(cards);
-			System.out.println(treasureCard);
-			
-			// If null, player didn't select any cards and wants to end phase
-			if (treasureCard == null) {
-				break;
-			}
-
-			System.out.println(treasureCard.getName());
-			
-			playTreasureCard(treasureCard);
-		}
-		
-		while(turnState.getNumberOfBuys() > 0) {
-			
-			notifyOfTurnState();
-			
-			List<Card> cards = gameBoard.listCardsToBuy(turnState.getTotalCoins());
-			
-			Card card = playerInterface.selectCardToBuy(cards);
-			
-			// If null, player didn't select any cards and wants to end phase
-			if (card == null) {
-				break;
-			} else {
-				// Gain a card
-				gainCardFromSupply(card.getName());
-				
-				turnState.decrementCoins(card.getCost());
-				turnState.decrementBuys();				
-			}
-		}		
-	}
-	
-	private void cleanUpPhase() {
-		discardPlayArea();
-		discardHand();
-	}
 
 	private List<Card> getActionCardsFromHand() {
 		// Build a collection of action cards the player can play
@@ -575,7 +456,7 @@ public class Player {
 		return cards;
 	}
 
-	private List<Card> getTreasureCardsFromHand() {
+	public List<Card> getTreasureCardsFromHand() {
 		// Build a collection of cards the player can play
 		List<Card> cards = new LinkedList<Card>();
 		for (Card card : cardHand.getCards()) {
@@ -602,14 +483,20 @@ public class Player {
 		return cardHand.getCards();
 	}
 	
-	public void invokeMessageAll(PlayerInterfaceMessage message) {
-		invokeMessage(message);
-		for (Player p: otherPlayers) {
-			p.invokeMessage(message);
-		}
+	public List<Card> getDiscardPile() {
+		return discardPile.getCards();
 	}
-
+	
 	public void invokeMessage(PlayerInterfaceMessage message) {
 		message.invoke(playerInterface);		
+	}
+
+	public int getCurrentScore() {
+		LinkedList<Card> cards = new LinkedList<Card>();
+		cards.addAll(getCardHand());
+		cards.addAll(getDiscardPile());
+		cards.allAll(getPlayArea());
+		
+		return countVictoryPointsInCardDeck() - countCurseCardsInDeck();
 	}
 }

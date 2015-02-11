@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.dominion.game.cards.basic.CopperCard;
 import com.dominion.game.cards.basic.EstateCard;
+import com.dominion.game.cards.basic.ProvinceCard;
 
 /**
  * GameState is a container for everything that makes up a current state.
@@ -18,7 +19,7 @@ public class GameState {
 
 	private Player currentPlayer;
 	private final GameBoard gameBoard = new GameBoard();
-	private final List<Player> players = new LinkedList<Player>();	
+	private final LinkedList<Player> players = new LinkedList<Player>();	
 	private TurnState turnState = new TurnState();
 	
 	public void addPlayer(Player player) {
@@ -41,10 +42,39 @@ public class GameState {
 		return turnState;
 	}
 	
+	/**
+	 * The game ends at the end of any player's turn when either:
+	 * 1) the Supply pile of Province cards is empty or
+	 * 2) any 3 Supply piles are empty.
+	 * 
+	 * @return whether the game should end
+	 */
+	public boolean hasGameEnded() {
+		if (gameBoard.isStackEmpty(ProvinceCard.NAME)) {
+			return true;
+		}
+
+		if (gameBoard.countNumberOfEmptyStacks() >= 3) {
+			return true;
+		}
+		
+		return false;
+	}
+	
 	public void initialise() {
 		setupGameBoard();
 		setupAllPlayers();
 		randomisePlayers();
+		
+		// This will setup the current player
+		rotatePlayers();
+	}
+	
+	public void rotatePlayers() {
+		if (currentPlayer != null) {
+			players.addLast(currentPlayer);
+		}
+		currentPlayer = players.removeFirst();
 	}
 	
 	/**
@@ -88,5 +118,5 @@ public class GameState {
 	 */
 	private void setupGameBoard() {
 		gameBoard.setup(players.size());
-	}
+	}	
 }
