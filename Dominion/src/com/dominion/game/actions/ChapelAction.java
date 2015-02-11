@@ -1,26 +1,26 @@
 package com.dominion.game.actions;
 
-import com.dominion.game.Player;
-import com.dominion.game.interfaces.messages.SelectCardToTrashFromHandMessage;
+import com.dominion.game.GameState;
+import com.dominion.game.cards.Card;
 
 public class ChapelAction implements CardAction {
 	@Override
-	public void execute(Player player) {
+	public void execute(GameState state) {
 		int numberToTrash = 4;
 		
 		while (numberToTrash > 0) {
 			// No cards to trash
-			if (player.getHandSize() == 0) {
+			if (state.getCurrentPlayer().getHandSize() == 0) {
 				return;
 			}
 			
-			SelectCardToTrashFromHandMessage message = new SelectCardToTrashFromHandMessage(player.getCardHand());
-			player.invokeMessage(message);
+			Card card = state.getCurrentPlayer().getCardToTrashFromHand();
 			
-			if (message.getCard() == null) {
+			if (card == null) {
 				break;
 			} else {
-				player.trashCardFromHand(message.getCard());
+				state.getCurrentPlayer().removeFromHand(card);
+				state.getGameBoard().addToTrashPile(card);
 				numberToTrash--;
 			}
 		}

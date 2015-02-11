@@ -1,6 +1,6 @@
 package com.dominion.game.actions;
 
-import com.dominion.game.Player;
+import com.dominion.game.GameState;
 
 
 public class PlusCardAction implements CardAction {
@@ -11,9 +11,9 @@ public class PlusCardAction implements CardAction {
 	}
 	
 	@Override
-	public void execute(Player player) {
+	public void execute(GameState state) {
 		for (int i = 0; i < numCards; i++) {
-			player.drawCardToHand();
+			state.getCurrentPlayer().drawCardToHand();
 		}
 	}
 

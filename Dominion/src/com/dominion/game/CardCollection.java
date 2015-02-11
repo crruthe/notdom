@@ -42,7 +42,7 @@ public class CardCollection {
 	 * Clear the stack and return a copy
 	 * @return
 	 */
-	public Collection<Card> clearCards() {
+	public List<Card> clearCards() {
 		List<Card> resultList = cards;
 		
 		cards = new LinkedList<Card>();
@@ -58,7 +58,7 @@ public class CardCollection {
 	}
 	
 	/**
-	 * Draw a card from the top
+	 * Remove the card from the top and return it
 	 * @return drawn card
 	 */
 	public Card removeTopCard() {
@@ -69,8 +69,33 @@ public class CardCollection {
 		return cards.removeLast();
 	}
 
-	public Collection<Card> getCards() {
+	public List<Card> getCards() {
 		return cards;
+	}
+
+	/**
+	 * Generic method to filter and return cards by type e.g. VictoryCards
+	 * @param cardClass
+	 * @return
+	 */
+	public List<Card> getCardsFilterByClass(Class<?> cardClass) {
+		
+		// Build a list of cards from the collection filtered by class
+		LinkedList<Card> resultCards = new LinkedList<Card>();
+		for (Card card : cards) {
+			if (cardClass.isInstance(card)) {
+				resultCards.add((Card)card);
+			}
+		}
+		return resultCards;
+	}
+	
+	/**
+	 * Removes the card from the collection
+	 * @param card
+	 */
+	public void removeCard(Card card) {
+		cards.remove(card);		
 	}
 	
 	/**

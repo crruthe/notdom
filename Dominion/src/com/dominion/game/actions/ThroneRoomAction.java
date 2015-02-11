@@ -1,22 +1,23 @@
 package com.dominion.game.actions;
 
-import com.dominion.game.Player;
+import com.dominion.game.GameState;
 import com.dominion.game.cards.ActionCard;
+import com.dominion.game.cards.Card;
 
 public class ThroneRoomAction implements CardAction {
 	@Override
-	public void execute(Player player) {
-		ActionCard actionCard = player.getActionCardToPlay();
+	public void execute(GameState state) {
+		ActionCard actionCard = state.getCurrentPlayer().getActionCardToPlay();
 		
 		if (actionCard != null) {
-			player.playCard(actionCard);
+			state.getCurrentPlayer().moveCardFromHandToPlayArea((Card)actionCard);
 			
 			for (CardAction action : actionCard.buildActionList()) {
-				action.execute(player);
+				action.execute(state);
 			}			
 
 			for (CardAction action : actionCard.buildActionList()) {
-				action.execute(player);
+				action.execute(state);
 			}
 		}
 	}	

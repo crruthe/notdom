@@ -1,136 +1,143 @@
 package com.dominion.game;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
+import java.util.List;
 
-import com.dominion.game.cards.basic.CopperCard;
-import com.dominion.game.cards.basic.EstateCard;
-import com.dominion.game.cards.basic.ProvinceCard;
+import com.dominion.game.actions.CardAction;
+import com.dominion.game.cards.ActionCard;
+import com.dominion.game.cards.Card;
+import com.dominion.game.cards.TreasureCard;
+import com.dominion.game.interfaces.messages.EndGameCardsMessage;
 import com.dominion.game.interfaces.messages.EndGameScoreMessage;
 
 
 public class GameMaster {
-	private final static int NUM_ESTATE_SETUP = 3;
-	private final static int NUM_COPPER_SETUP = 7;
 	
-	private final LinkedList<Player> players = new LinkedList<Player>();
-	private final GameBoard gameBoard = new GameBoard();
-	
-	public void addPlayer(Player player) {
-		players.add(player);
-	}
+	// TODO: Make this threadable
+	private GameState state = new GameState();
 	
 	/**
 	 * Performs all the actions to start the game.
 	 * Provides the main game loop.  
 	 */
 	public void startGame() {
-		if (players.size() < 2) {
+		if (state.getPlayers().size() < 2) {
 			throw new RuntimeException("not enough players to start");
-		} else if (players.size() > 4) {
+		} else if (state.getPlayers().size() > 4) {
 			throw new RuntimeException("too many players");
 		}
-
-		setupGameBoard();
 		
-		setupAllPlayers();
-		randomisePlayers();
-		
-		boolean gameEnded = false;
-		Player currentPlayer = null;
+		state.initialise();
 		
 		// Main game loop
-		while (!gameEnded) {			
-			// Determine the next player in the queue to and remove from the list
-			// i.e. players = players - currentPlayers = otherPlayers
-			currentPlayer = players.remove();
+		while (true) {			
+			playTurn();			
 			
-			currentPlayer.setOtherPlayers(players);
-			currentPlayer.playTurn();			
-			
-			gameEnded = hasGameEnded();
-
-			// Add current player to the end of the queue
-			players.add(currentPlayer);			
+			if (state.hasGameEnded()) {
+				break;
+			}
 		}
 		
 		// Tally the victory points
-		for (Player player : players) {
+		for (Player player : state.getPlayers()) {
 			
-			// Move all the cards into the card deck for tally
-			player.discardHand();
-			player.moveDiscardPileToCardDeck();
-			
-			int count = player.countVictoryPointsInCardDeck() - player.countCurseCardsInDeck();
-			player.invokeMessageAll(new EndGameScoreMessage(player, count));
-			player.broadcastCardDeck();
-			System.out.println("Score: " + count);			
+			int score = player.getCurrentScore();
+			state.broadcastToAllPlayers(new EndGameScoreMessage(player, score));
+			state.broadcastToAllPlayers(new EndGameCardsMessage(player, player.getCardDeck()));
+			System.out.println("Score: " + score);			
 		}
 	}
-		
-	private void setupGameBoard() {
-		gameBoard.setup(players.size());
+	
+	private void playTurn() {	
+		actionPhase();
+		buyPhase();
+		state.getCurrentPlayer().cleanUpPhase();
+		state.getCurrentPlayer().drawNewHand();
+		state.getTurnState().reset();
+	}
+	
+	private void actionPhase() {
+		// Continue while the player has actions left
+		while(state.getTurnState().getNumberOfActions() > 0) {
+			state.getCurrentPlayer().notifyOfTurnState(state.getTurnState());
+			
+			ActionCard actionCard = state.getCurrentPlayer().getActionCardToPlay();
+
+			// If null, player didn't select a card and wants to end the action phase
+			if (actionCard == null) {
+				break;
+			}
+			
+			// Play the selected action card
+			playActionCard(actionCard);
+			
+			// Consume on action for this turn
+			state.getTurnState().decrementActions();
+		}
 	}
 
-	/**
-	 * The game ends at the end of any player�s turn when either:
-	 * 1) the Supply pile of Province cards is empty or
-	 * 2) any 3 Supply piles are empty.
-	 * 
-	 * @return whether the game should end
-	 */
-	private boolean hasGameEnded() {
-		if (gameBoard.isStackEmpty(ProvinceCard.NAME)) {
-			return true;
-		}
+	public void playActionCard(ActionCard actionCard) {
 
-		if (gameBoard.countNumberOfEmptyStacks() >= 3) {
-			return true;
-		}
+		// Play the card into their play area
+		state.getCurrentPlayer().moveCardFromHandToPlayArea((Card)actionCard);
 		
-		return false;
+		// Iterate through actions for action card
+		for (CardAction action : actionCard.buildActionList()) {
+			action.execute(state);
+		}
 	}
-
-	private void setupAllPlayers() {
-		for (Player player : players) {
-			player.setGameBoard(gameBoard);
+	
+	private void buyPhase() {
+		
+		while(true) {
 			
-			buildDeckForPlayer(player);
-			player.drawNewHand();
-		}
-	}
-	
-	/**
-	 * Each player starts the game with the same cards:
-	 * 7 coppers
-	 * 3 estates
-	 * 
-	 * Each player shuffles these cards and places them (their Deck)
-	 * face-down in their play area (the area near them on the table).
-	 */
-	private void buildDeckForPlayer(Player player) {
-		for (int i = 0; i < NUM_ESTATE_SETUP; i++) {
-			player.gainCardFromSupply(EstateCard.NAME);
+			TreasureCard treasureCard = state.getCurrentPlayer().getTreasureCardToPlay();
+			System.out.println(treasureCard);
+			
+			// If null, player didn't select any cards and wants to end phase
+			if (treasureCard == null) {
+				break;
+			}
+
+			System.out.println(((Card)treasureCard).getName());
+			
+			playTreasureCard(treasureCard);
 		}
 		
-		for (int i = 0; i < NUM_COPPER_SETUP; i++) {
-			player.gainCardFromSupply(CopperCard.NAME);
-		}
+		while(state.getTurnState().getNumberOfBuys() > 0) {
+			
+			state.getCurrentPlayer().notifyOfTurnState(state.getTurnState());
+			
+			List<Card> cards = state.getGameBoard().listCardsFilterByCost(state.getTurnState().getTotalCoins());
+			
+			Card card = state.getCurrentPlayer().getCardToBuy(cards);
+			
+			// If null, player didn't select any cards and wants to end phase
+			if (card == null) {
+				break;
+			} else {
+				// Gain a card
+				playerGainsCardFromSupply(state.getCurrentPlayer(), card.getClass());
+				
+				state.getTurnState().decrementCoins(card.getCost());
+				state.getTurnState().decrementBuys();				
+			}
+		}		
+	}
+	
+	public void playerGainsCardFromSupply(Player player, Class<? extends Card> cardClass) {
+		Card card = state.getGameBoard().removeCardFromSupply(cardClass);
+		player.addCardToDiscardPile(card);		
 	}
 	
 	/**
-	 * Randomises the turn order, which also provides the starting player 
+	 * During buy phase you can play treasure cards
+	 * @param card
 	 */
-	private void randomisePlayers() {
-		Collections.shuffle(players);
-	}
-	
-	public Collection<Player> getPlayers() {
-		return players;
-	}
-	
-	public GameBoard getGameBoard() {
-		return gameBoard;
+	private void playTreasureCard(TreasureCard card) {
+		state.getCurrentPlayer().moveCardFromHandToPlayArea((Card)card);
+		
+		state.getTurnState().incrementCoins(card.getCoinAmount());
+
+		state.getCurrentPlayer().notifyOfTurnState(state.getTurnState());
 	}
 }

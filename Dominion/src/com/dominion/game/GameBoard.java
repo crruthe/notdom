@@ -35,10 +35,6 @@ public class GameBoard {
 		return numOfEmptyStacks;
 	}
 	
-	public HashMap<Class<? extends Card>, Integer> getSupplyStacks() {
-		return supplyStacks;
-	}
-
 	public CardCollection getTrashPile() {
 		return trashPile;
 	}
@@ -50,7 +46,7 @@ public class GameBoard {
 		return supplyStacks.get(cardName) == 0;
 	}
 
-	/**
+	/** 
 	 * Build up a list of cards that the player can buy
 	 * 
 	 * @param amount of coins to buy with
@@ -74,6 +70,35 @@ public class GameBoard {
 		return cards;
 	}
 	
+	/**
+	 * Build up a list of cards that the player can buy
+	 * 
+	 * @param amount of coins to buy with
+	 * @return collection of cards
+	 */
+	public List<Card> listCardsFilterByClassAndCost(Class<?> cardClass, int amount) {
+		List<Card> cards = new LinkedList<Card>();
+		
+		for (Class<? extends Card> checkCardClass : supplyStacks.keySet()) {	
+			// Check if any cards are left in stack
+			if (supplyStacks.get(checkCardClass) > 0) {
+				Card card = getCard(checkCardClass);
+				
+				// Check if player can afford this card
+				if (cardClass.isInstance(card) && card.getCost() <= amount) {
+					cards.add(card);
+				}
+			}
+		}
+		
+		return cards;
+	}
+	
+	/**
+	 * Return an instantiation of the card for the given class type
+	 * @param cardClass
+	 * @return
+	 */
 	private Card getCard(Class<? extends Card> cardClass) {
 		try {
 			return cardClass.newInstance();
@@ -88,36 +113,12 @@ public class GameBoard {
 	}
 
 	/**
-	 * Build up a list of treasure cards that the player can buy
-	 * 
-	 * @param amount of coins to buy with
-	 * @return collection of treasure cards
-	 */
-	public List<TreasureCard> listTreasureCardsFilterByCost(int amount) {
-		List<TreasureCard> cards = new LinkedList<TreasureCard>();
-
-		for (Class<? extends Card> cardClass : supplyStacks.keySet()) {	
-			// Check if any cards are left in stack
-			if (supplyStacks.get(cardClass) > 0) {
-				Card card = getCard(cardClass);
-				
-				// Check if player can afford this card
-				if (card.getCost() <= amount && card instanceof TreasureCard) {
-					cards.add((TreasureCard)card);
-				}
-			}
-		}
-		
-		return cards;
-	}
-
-	/**
 	 * Remove the top card from the stack and return it
 	 * 
 	 * @param stack
 	 * @return Card from top of stack
 	 */
-	public Card removeCard(Class<? extends Card> cardClass) {
+	public Card removeCardFromSupply(Class<? extends Card> cardClass) {
 		if (supplyStacks.get(cardClass) == 0) {			
 			return null;
 		}
@@ -128,42 +129,11 @@ public class GameBoard {
 		return getCard(cardClass);
 	}
 
-	public void setup(int numberOfPlayers) {
-		setupKingdomCards(numberOfPlayers);
-		setupVictoryCards(numberOfPlayers);
-		setupCurseCards(numberOfPlayers);
-		setupTreasureCards();
-	}
-	
 	/**
-	 * Place 10 Curse cards in the Supply for a 2
-	 * player game, 20 Curse cards for 3 players,
-	 * and 30 Curse cards for 4 players.
+	 * Generate a random set of kingdom cards
+	 * @param numberOfPlayers
 	 */
-	private void setupCurseCards(int numberOfPlayers) {		
-		int numOfCards = 10;
-		
-		if (numberOfPlayers == 3) {
-			numOfCards = 20;
-		} else if (numberOfPlayers == 4) {
-			numOfCards = 30;
-		}
-		
-		supplyStacks.put(CurseCard.class, numOfCards);
-	}
-	
-	/** 
-	 * The players select 10 Kingdom
-	 * cards and place 10 of each in face-up piles
-	 * on the table.
-	 * Exception: Kingdom Victory card piles
-	 * (e.g. Gardens) have the same number as
-	 * the Victory card piles (12 for a 3 or 4
-	 * player game and 8 for a 2 player game)
-	 */	
-	private void setupKingdomCards(int numberOfPlayers) {
-		int numOfCards;		
-		
+	private List<Class<? extends Card>> randomKingdoms() {
 		LinkedList<Class<? extends Card>> cardList = new LinkedList<Class<? extends Card>>();
 		
 		cardList.add(WoodcutterCard.class);
@@ -198,7 +168,51 @@ public class GameBoard {
 		
 		Collections.shuffle(cardList);
 		
-		for (Class<? extends Card> cardClass: cardList) {
+		return cardList.subList(0, 10);
+	}
+	
+	public void setupRandom(int numberOfPlayers) {
+		List<Class<? extends Card>> kingdomCards = randomKingdoms();
+		setup(kingdomCards, numberOfPlayers);
+	}
+	
+	public void setup(List<Class<? extends Card>> kingdomCards, int numberOfPlayers) {
+		setupKingdomCards(kingdomCards, numberOfPlayers);
+		setupVictoryCards(numberOfPlayers);
+		setupCurseCards(numberOfPlayers);
+		setupTreasureCards();
+	}
+	
+	/**
+	 * Place 10 Curse cards in the Supply for a 2
+	 * player game, 20 Curse cards for 3 players,
+	 * and 30 Curse cards for 4 players.
+	 */
+	private void setupCurseCards(int numberOfPlayers) {		
+		int numOfCards = 10;
+		
+		if (numberOfPlayers == 3) {
+			numOfCards = 20;
+		} else if (numberOfPlayers == 4) {
+			numOfCards = 30;
+		}
+		
+		supplyStacks.put(CurseCard.class, numOfCards);
+	}
+	
+	/** 
+	 * The players select 10 Kingdom
+	 * cards and place 10 of each in face-up piles
+	 * on the table.
+	 * Exception: Kingdom Victory card piles
+	 * (e.g. Gardens) have the same number as
+	 * the Victory card piles (12 for a 3 or 4
+	 * player game and 8 for a 2 player game)
+	 */	
+	private void setupKingdomCards(List<Class<? extends Card>> kingdomCards, int numberOfPlayers) {
+		int numOfCards;		
+		
+		for (Class<? extends Card> cardClass: kingdomCards) {
 			
 			// If kingdom card is a victory cards, we only have 10
 			if (!VictoryCard.class.isAssignableFrom(cardClass)) {

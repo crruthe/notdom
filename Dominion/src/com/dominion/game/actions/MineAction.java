@@ -1,6 +1,8 @@
 package com.dominion.game.actions;
 
-import com.dominion.game.Player;
+import java.util.List;
+
+import com.dominion.game.GameState;
 import com.dominion.game.cards.Card;
 import com.dominion.game.cards.TreasureCard;
 
@@ -12,19 +14,19 @@ import com.dominion.game.cards.TreasureCard;
  */
 public class MineAction implements CardAction {
 	@Override
-	public void execute(Player player) {
-		Card trashCard = player.getTreasureCardToTrash();
+	public void execute(GameState state) {
+		Card trashCard = (Card)state.getCurrentPlayer().getTreasureCardToTrash();
 		if (trashCard == null) {
 			return;
 		}
+				
+		state.getCurrentPlayer().removeFromHand(trashCard);
+		state.getGameBoard().addToTrashPile(trashCard);
 		
-		if (!(trashCard instanceof TreasureCard)) {
-			throw new RuntimeException("trash card not a treasure card");
-		}
+		// Find a treasure card to replace the trashed card
+		List<Card> cards = state.getGameBoard().listCardsFilterByClassAndCost(TreasureCard.class, trashCard.getCost() + 3);
+		Card card = state.getCurrentPlayer().getTreasureCardToGain(cards);
 		
-		player.trashCardFromHand(trashCard);
-		
-		Card card = player.getTreasureCardToGain(trashCard.getCost() + 3);
-		player.addCardToHand(card);
+		state.getCurrentPlayer().addCardToHand(card);
 	}
 }

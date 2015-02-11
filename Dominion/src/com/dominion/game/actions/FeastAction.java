@@ -1,6 +1,6 @@
 package com.dominion.game.actions;
 
-import com.dominion.game.Player;
+import com.dominion.game.GameState;
 import com.dominion.game.cards.Card;
 
 public class FeastAction implements CardAction {
@@ -11,10 +11,10 @@ public class FeastAction implements CardAction {
 	}
 
 	@Override
-	public void execute(Player player) {
-		player.trashCardFromPlayArea(trashCard);
+	public void execute(GameState state) {
+		state.getCurrentPlayer().removeFromPlayArea(trashCard);
 		
 		CardAction gainCardAction = new GainCardAction(5);
-		gainCardAction.execute(player);
+		gainCardAction.execute(state);
 	}	
 }

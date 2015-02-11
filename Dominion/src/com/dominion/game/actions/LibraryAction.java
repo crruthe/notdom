@@ -2,33 +2,33 @@ package com.dominion.game.actions;
 
 import java.util.LinkedList;
 
-import com.dominion.game.Player;
+import com.dominion.game.GameState;
 import com.dominion.game.cards.ActionCard;
 import com.dominion.game.cards.Card;
 
 public class LibraryAction implements CardAction {
 	@Override
-	public void execute(Player player) {
+	public void execute(GameState state) {
 		LinkedList<Card> setAside = new LinkedList<Card>();
 		
-		while (player.getHandSize() < 7) {
-			Card card = player.drawCard();
+		while (state.getCurrentPlayer().getHandSize() < 7) {
+			Card card = state.getCurrentPlayer().drawCard();
 			
 			if (card == null) {
 				break;
 			}
 			
 			if (card instanceof ActionCard) {
-				if (player.wantsToSetAsideCard(card)) {
+				if (state.getCurrentPlayer().wantsToSetAsideCard(card)) {
 					setAside.add(card);
 				} else {
-					player.addCardToHand(card);
+					state.getCurrentPlayer().addCardToHand(card);
 				}				
 			} else {
-				player.addCardToHand(card);
+				state.getCurrentPlayer().addCardToHand(card);
 			}			
 		}
 		
-		player.addCardsToDiscardPile(setAside);
+		state.getCurrentPlayer().addCardsToDiscardPile(setAside);
 	}	
 }

@@ -20,8 +20,11 @@ public abstract class Card implements Comparable<Card> {
 	}
 	
 	@Override
-	public int compareTo(Card o) {
-		return getName().compareTo(o.getName());
+	public int compareTo(Card o) {		
+		if (getCost() == o.getCost())
+			return getName().compareTo(o.getName());
+		else
+			return new Integer(getCost()).compareTo(o.getCost());
 	}
 
 	public abstract void accept(CardVisitor visitor);

@@ -9,6 +9,7 @@ import redis.clients.jedis.Jedis;
 
 import com.dominion.game.GameMaster;
 import com.dominion.game.Player;
+import com.dominion.game.actions.CardAction;
 import com.dominion.game.cards.ActionCard;
 import com.dominion.game.cards.Card;
 import com.dominion.game.cards.ReactionCard;
@@ -392,5 +393,17 @@ public class NetworkPlayer implements PlayerInterface {
 		sendMessage(json);
 		String result = waitForMessage();
 		return result.equals("Y");
+	}
+
+	@Override
+	public CardAction selectCardActionToPlay(List<CardAction> actions) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Card selectCardToPutOnDeck(List<Card> cards) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

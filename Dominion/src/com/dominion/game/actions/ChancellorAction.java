@@ -1,13 +1,13 @@
 package com.dominion.game.actions;
 
-import com.dominion.game.Player;
+import com.dominion.game.GameState;
 
 
 public class ChancellorAction implements CardAction {
 	@Override
-	public void execute(Player player) {
-		if (player.wantsToPutDeckInDiscard()) {
-			player.moveCardDeckToDiscardPile();
+	public void execute(GameState state) {
+		if (state.getCurrentPlayer().wantsToPutDeckInDiscard()) {
+			state.getCurrentPlayer().discardEntireCardDeck();
 		}
 	}	
 }

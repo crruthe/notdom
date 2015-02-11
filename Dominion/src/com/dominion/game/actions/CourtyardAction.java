@@ -1,23 +1,22 @@
 package com.dominion.game.actions;
 
-import com.dominion.game.Player;
-import com.dominion.game.interfaces.messages.SelectCardToPutOnDeckMessage;
+import com.dominion.game.GameState;
+import com.dominion.game.cards.Card;
 
 public class CourtyardAction implements CardAction {
 	@Override
-	public void execute(Player player) {
+	public void execute(GameState state) {
 		// No cards in the hand to return to the deck
-		if (player.getHandSize() == 0) {
+		if (state.getCurrentPlayer().getHandSize() == 0) {
 			return;
 		}
 		
-		SelectCardToPutOnDeckMessage message = new SelectCardToPutOnDeckMessage(player.getCardHand());
-		
 		// The player must return a card
-		do {
-			player.invokeMessage(message);			
-		} while (message.getCard() == null);
+		Card card = null;
+		while (card == null) {
+			card = state.getCurrentPlayer().getCardToPutOnDeck();
+		}
 		
-		player.moveCardFromHandToDeck(message.getCard());
+		state.getCurrentPlayer().moveCardFromHandToDeck(card);
 	}	
 }

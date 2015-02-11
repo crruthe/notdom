@@ -1,6 +1,6 @@
 package com.dominion.game.actions;
 
-import com.dominion.game.Player;
+import com.dominion.game.GameState;
 
 
 public class PlusActionAction implements CardAction {
@@ -11,8 +11,8 @@ public class PlusActionAction implements CardAction {
 	}
 	
 	@Override
-	public void execute(Player player) {
-		player.incrementActions(numActions);
+	public void execute(GameState state) {
+		state.getTurnState().incrementActions(numActions);
 	}
 
 	public int getNumActions() {

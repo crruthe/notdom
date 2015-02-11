@@ -4,9 +4,11 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.dominion.game.cards.Card;
 import com.dominion.game.cards.basic.CopperCard;
 import com.dominion.game.cards.basic.EstateCard;
 import com.dominion.game.cards.basic.ProvinceCard;
+import com.dominion.game.interfaces.messages.PlayerInterfaceMessage;
 
 /**
  * GameState is a container for everything that makes up a current state.
@@ -17,7 +19,6 @@ public class GameState {
 	private final static int NUM_COPPER_SETUP = 7;
 	private final static int NUM_ESTATE_SETUP = 3;		
 
-	private Player currentPlayer;
 	private final GameBoard gameBoard = new GameBoard();
 	private final LinkedList<Player> players = new LinkedList<Player>();	
 	private TurnState turnState = new TurnState();
@@ -26,14 +27,32 @@ public class GameState {
 		players.add(player);
 	}
 
+	/**
+	 * Return current player i.e. player who's turn it is
+	 * @return
+	 */
 	public Player getCurrentPlayer() {
-		return currentPlayer;
+		return players.get(0);
 	}
 
 	public GameBoard getGameBoard() {
 		return gameBoard;
 	}	
 
+	/**
+	 * Returns a list of players that are not the current player (usually for attacks)
+	 * @return
+	 */
+	public List<Player> getOtherPlayers() {
+		LinkedList<Player> otherPlayers = new LinkedList<Player>(players);
+		otherPlayers.removeFirst();
+		return otherPlayers;
+	}
+	
+	/**
+	 * Get all players
+	 * @return
+	 */
 	public List<Player> getPlayers() {
 		return players;
 	}
@@ -50,7 +69,7 @@ public class GameState {
 	 * @return whether the game should end
 	 */
 	public boolean hasGameEnded() {
-		if (gameBoard.isStackEmpty(ProvinceCard.NAME)) {
+		if (gameBoard.isStackEmpty(ProvinceCard.class)) {
 			return true;
 		}
 
@@ -65,16 +84,11 @@ public class GameState {
 		setupGameBoard();
 		setupAllPlayers();
 		randomisePlayers();
-		
-		// This will setup the current player
-		rotatePlayers();
 	}
 	
 	public void rotatePlayers() {
-		if (currentPlayer != null) {
-			players.addLast(currentPlayer);
-		}
-		currentPlayer = players.removeFirst();
+		Player currentPlayer = players.removeFirst();
+		players.addLast(currentPlayer);
 	}
 	
 	/**
@@ -86,13 +100,18 @@ public class GameState {
 	 * face-down in their play area (the area near them on the table).
 	 */
 	private void buildDeckForPlayer(Player player) {
+		LinkedList<Card> cards = new LinkedList<Card>();
+		
 		for (int i = 0; i < NUM_ESTATE_SETUP; i++) {
-			player.addCardToCardDeck(new EstateCard());
+			cards.add(new EstateCard());
 		}
 		
 		for (int i = 0; i < NUM_COPPER_SETUP; i++) {
-			player.addCardToCardDeck(new CopperCard());
+			cards.add(new CopperCard());
 		}
+		
+		Collections.shuffle(cards);
+		player.addCardsToDeck(cards);
 	}
 	
 	/**
@@ -117,6 +136,12 @@ public class GameState {
 	 * Number of players will affect the supply sizes.
 	 */
 	private void setupGameBoard() {
-		gameBoard.setup(players.size());
+		gameBoard.setupRandom(players.size());
+	}	
+	
+	public void broadcastToAllPlayers(PlayerInterfaceMessage message) {
+		for (Player player: players) {
+			player.invokeMessage(message);
+		}
 	}	
 }

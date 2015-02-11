@@ -1,8 +1,9 @@
 package com.dominion.game.actions;
 
-import com.dominion.game.Player;
+import java.util.List;
+
+import com.dominion.game.GameState;
 import com.dominion.game.cards.Card;
-import com.dominion.game.interfaces.messages.SelectCardToTrashFromHandMessage;
 
 /**
  * 
@@ -12,28 +13,28 @@ import com.dominion.game.interfaces.messages.SelectCardToTrashFromHandMessage;
  */
 public class RemodelAction implements CardAction {
 	@Override
-	public void execute(Player player) {
+	public void execute(GameState state) {
 		// No cards to trash
-		if (player.getHandSize() == 0) {
+		if (state.getCurrentPlayer().getHandSize() == 0) {
 			return;
 		}
 				
-		SelectCardToTrashFromHandMessage message = new SelectCardToTrashFromHandMessage(player.getCardHand());			
-		player.invokeMessage(message);
-		
 		// Player must select a card to trash, if possible
-		while (message.getCard() == null) {
-			player.invokeMessage(message);
+		Card trashCard = null;
+		while (trashCard == null) {
+			state.getCurrentPlayer().getCardToTrashFromHand();
 		}
 		
-		Card trashCard = message.getCard();
+		state.getGameBoard().addToTrashPile(trashCard);
+		state.getCurrentPlayer().removeFromHand(trashCard);
 		
-		player.trashCardFromHand(trashCard);
+		List<Card> cards = state.getGameBoard().listCardsFilterByCost(trashCard.getCost() + 2);
 		
-		Card card = player.getCardToGain(trashCard.getCost() + 2);
+		Card card = state.getCurrentPlayer().getCardToBuy(cards);
 		
 		if (card != null) {
-			player.gainCardFromSupply(card.getName());
+			state.getCurrentPlayer().addCardToDiscardPile(card);
+			state.getGameBoard().removeCardFromSupply(card.getClass());
 		}
 	}
 }

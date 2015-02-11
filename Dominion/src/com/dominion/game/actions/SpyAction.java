@@ -1,34 +1,31 @@
 package com.dominion.game.actions;
 
+import com.dominion.game.GameState;
 import com.dominion.game.Player;
 import com.dominion.game.cards.Card;
 import com.dominion.game.interfaces.messages.CardRevealedMessage;
-import com.dominion.game.interfaces.messages.ChooseIfDiscardCardMessage;
 
 public class SpyAction extends AttackAction {
 	@Override
-	public void execute(Player player) {
-		// Applies to attacking player as well
-		action(player, player);
+	public void execute(GameState state) {
+		// Applies to current player as well
+		action(state, state.getCurrentPlayer());
 		
-		super.execute(player);
+		super.execute(state);
 	}
 
 	@Override
-	public void executeAttackOnPlayer(Player attacker, Player victim) {
-		action(attacker, victim);
+	public void executeAttackOnPlayer(GameState state, Player victim) {
+		action(state, victim);
 	}	
 	
-	private void action(Player attacker, Player victim) {
+	private void action(GameState state, Player victim) {
 		// Reveal the top card
 		Card card = victim.drawCard();
-		attacker.invokeMessageAll(new CardRevealedMessage(victim, card));
-	
-		ChooseIfDiscardCardMessage message = new ChooseIfDiscardCardMessage(card);
-		attacker.invokeMessage(message);
+		state.broadcastToAllPlayers(new CardRevealedMessage(victim, card));
 		
 		// You may discard this card or leave it on the deck
-		if (message.isYes()) {
+		if (state.getCurrentPlayer().wantsToDiscardCard(card)) {
 			victim.addCardToDiscardPile(card);
 		} else {
 			victim.addCardToCardDeck(card);

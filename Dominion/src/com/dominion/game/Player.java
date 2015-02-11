@@ -1,11 +1,9 @@
 package com.dominion.game;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.dominion.game.actions.CardAction;
 import com.dominion.game.cards.ActionCard;
 import com.dominion.game.cards.Card;
 import com.dominion.game.cards.ReactionCard;
@@ -14,11 +12,7 @@ import com.dominion.game.cards.VictoryCard;
 import com.dominion.game.cards.basic.CopperCard;
 import com.dominion.game.cards.basic.CurseCard;
 import com.dominion.game.interfaces.PlayerInterface;
-import com.dominion.game.interfaces.messages.CardGainedMessage;
-import com.dominion.game.interfaces.messages.CardPlayedMessage;
-import com.dominion.game.interfaces.messages.EndGameCardsMessage;
 import com.dominion.game.interfaces.messages.PlayerInterfaceMessage;
-import com.dominion.game.interfaces.messages.UpdateSupplyMessage;
 import com.dominion.game.visitors.VictoryPointCounterCardVisitor;
 
 public class Player {	
@@ -45,19 +39,26 @@ public class Player {
 	 * Add multiple cards to the discard pile
 	 * @param cards
 	 */
-	public void addCardsToDiscardPile(Collection<Card> cards) {
+	public void addCardsToDiscardPile(LinkedList<Card> cards) {
 		discardPile.addCards(cards);
 		
 		notifyOfDiscard();
 	}
 
 	public void addCardToDiscardPile(Card card) {
-		discardPile.addCard(card);
+		discardPile.addCardToTop(card);
 		
 		notifyOfDiscard();
 	}
 
-	public void addCardToCardDeck(Card card) {
+
+	public void addCardsToDeck(LinkedList<Card> cards) {
+		cardDeck.addCards(cards);
+		
+		notifyOfDiscard();
+	}
+
+public void addCardToCardDeck(Card card) {
 		cardDeck.addCardToTop(card);
 		
 		notifyOfCardDeck();
@@ -68,7 +69,7 @@ public class Player {
 	 * @param card
 	 */
 	public void addCardToHand(Card card) {
-		cardHand.addCard(card);
+		cardHand.addCardToTop(card);
 		
 		notifyOfHand();
 	}
@@ -111,7 +112,7 @@ public class Player {
 	 */
 	public void discardCardFromHand(Card card) {
 		cardHand.removeCard(card);
-		discardPile.addCard(card);
+		discardPile.addCardToTop(card);
 		
 		notifyOfHand();
 		notifyOfDiscard();
@@ -121,7 +122,7 @@ public class Player {
 	 * Discard current hand into the discard pile
 	 */
 	public void discardHand() {
-		discardPile.addCards(cardHand.clearHand());
+		discardPile.addCards(cardHand.clearCards());
 
 		notifyOfHand();
 		notifyOfDiscard();
@@ -131,7 +132,7 @@ public class Player {
 	 * Move all cards from the play area into the discard deck
 	 */
 	public void discardPlayArea() {
-		discardPile.addCards(playArea.clearPlayArea());
+		discardPile.addCards(playArea.clearCards());
 		
 		notifyOfDiscard();
 		notifyOfPlayArea();
@@ -165,7 +166,7 @@ public class Player {
 		if (cardDeck.isEmpty()) {
 			moveDiscardPileToCardDeck(); 
 			
-			// No more cards to draw
+			// Still no cards to draw
 			if (cardDeck.isEmpty()) {
 				return null;
 			}
@@ -173,7 +174,7 @@ public class Player {
 			cardDeck.shuffle();
 		}
 		
-		Card card = cardDeck.drawCard();
+		Card card = cardDeck.removeTopCard();
 
 		notifyOfCardDeck();
 		
@@ -183,7 +184,7 @@ public class Player {
 	public void drawCardToHand() {
 		Card card = drawCard();
 		if (card != null) {
-			cardHand.addCard(card);
+			cardHand.addCardToTop(card);
 			notifyOfHand();
 		}		
 	}
@@ -198,7 +199,7 @@ public class Player {
 	}	
 		
 	public ActionCard getActionCardToPlay() {
-		List<Card> cards = getActionCardsFromHand();
+		List<Card> cards = cardHand.getCardsFilterByClass(ActionCard.class);
 		
 		// If the player has no action cards, we can end this phase
 		if (cards.isEmpty()) {
@@ -242,17 +243,11 @@ public class Player {
 	 * @return
 	 */
 	public int getHandSize() {
-		return cardHand.getSize();
+		return cardHand.count();
 	}
 
 	public TreasureCard getTreasureCardToPlay() {
-		List<Card> cards = new LinkedList<Card>();
-		
-		for (Card card : cardHand.getCards()) {
-			if (card instanceof TreasureCard) {
-				cards.add(card);
-			}
-		}
+		List<Card> cards = cardHand.getCardsFilterByClass(TreasureCard.class);
 		
 		if (!cards.isEmpty()) {
 			return playerInterface.selectTreasureCardToPlay(cards);
@@ -262,13 +257,7 @@ public class Player {
 	}
 
 	public ReactionCard getReactionCardToPlay() {
-		List<Card> cards = new LinkedList<Card>();
-		
-		for (Card card : cardHand.getCards()) {
-			if (card instanceof ReactionCard) {
-				cards.add(card);
-			}
-		}
+		List<Card> cards = cardHand.getCardsFilterByClass(ReactionCard.class);
 		
 		if (!cards.isEmpty()) {
 			return playerInterface.selectReactionCard(cards);
@@ -282,46 +271,22 @@ public class Player {
 		return card;
 	}
 	
-	public Card getTreasureCardToTrash() {
-		List<Card> cards = getTreasureCardsFromHand();
+	public TreasureCard getTreasureCardToTrash() {
+		List<Card> cards = cardHand.getCardsFilterByClass(TreasureCard.class);
 		if (cards.isEmpty()) {
 			return null;
 		}
-		return playerInterface.selectCardToTrashFromHand(cards);
+		return (TreasureCard)playerInterface.selectCardToTrashFromHand(cards);
 	}
 		
 	public Card getVictoryCardToReveal() {
-		List<Card> cards = new LinkedList<Card>();
-		
-		for (Card card : cardHand.getCards()) {
-			if (card instanceof VictoryCard) {
-				cards.add(card);
-			}
-		}
+		List<Card> cards = cardHand.getCardsFilterByClass(VictoryCard.class);
 		
 		if (!cards.isEmpty()) {
 			return playerInterface.selectVictoryCardToReveal(cards);
 		}
 		
 		return null;
-	}
-	
-	public void incrementActions(int amount) {
-		turnState.incrementActions(amount);
-		
-		notifyOfTurnState();
-	}		
-	
-	public void incrementBuys(int amount) {
-		turnState.incrementBuys(amount);
-		
-		notifyOfTurnState();
-	}
-	
-	public void incrementCoins(int amount) {
-		turnState.incrementCoins(amount);
-		
-		notifyOfTurnState();
 	}
 	
 	public boolean isImmune() {
@@ -331,7 +296,7 @@ public class Player {
 	/**
 	 * Move the card deck to the discard pile
 	 */
-	public void moveCardDeckToDiscardPile() {
+	public void discardEntireCardDeck() {
 		discardPile.addCards(cardDeck.getCards());
 		
 		notifyOfDiscard();
@@ -354,7 +319,7 @@ public class Player {
 	 * Move the discard pile back into the card deck
 	 */
 	public void moveDiscardPileToCardDeck() { 
-		cardDeck.addCards(discardPile.clearDiscardPile());
+		cardDeck.addCards(discardPile.clearCards());
 		
 		notifyOfCardDeck();
 		notifyOfDiscard();
@@ -378,10 +343,6 @@ public class Player {
 		playerInterface.updatePlayArea(playArea.getCards());	
 	}
 
-	public void notifyOfTrash() {
-		playerInterface.updateTrashPile(gameBoard.getTrashPile());
-	}
-
 	public void notifyOfTurnState(TurnState turnState) {
 		playerInterface.updateTurnState(
 				turnState.getNumberOfActions(), 
@@ -395,76 +356,22 @@ public class Player {
 	 */	
 	public void moveCardFromHandToPlayArea(Card card) {
 		cardHand.removeCard(card);
-		playArea.addCard(card);
+		playArea.addCardToTop(card);
 		
-		invokeMessageAll(new CardPlayedMessage(this, card));
 		notifyOfHand();
 		notifyOfPlayArea();
-	}
-	
-	public void setGameBoard(GameBoard gameBoard) {
-		this.gameBoard = gameBoard;
 	}
 	
 	public void setImmune(boolean immune) {
 		this.immune = immune;
 	}
 	
-	public void setOtherPlayers(Collection<Player> otherPlayers) {
-		this.otherPlayers = otherPlayers;
-	}
-
-	public void trashCardFromHand(Card card) {
-		cardHand.removeCard(card);
-		gameBoard.addToTrashPile(card);
-		
-		notifyOfHand();
-		notifyOfTrash();
-	}
-
-	public void trashCard(Card card) {
-		gameBoard.addToTrashPile(card);
-		
-		notifyOfTrash();
-	}
-
-	public void trashCardFromPlayArea(Card card) {
-		playArea.removeCard(card);
-		gameBoard.addToTrashPile(card);
-		
-		notifyOfPlayArea();
-		notifyOfTrash();
-	}
-
 	public boolean wantsToPutDeckInDiscard() {
 		return playerInterface.chooseIfPutDeckInDiscard();
 	}
 
 	public boolean wantsToSetAsideCard(Card card) {
 		return playerInterface.chooseIfSetAsideCard(card);
-	}
-
-
-	private List<Card> getActionCardsFromHand() {
-		// Build a collection of action cards the player can play
-		List<Card> cards = new LinkedList<Card>();
-		for (Card card : cardHand.getCards()) {
-			if (card instanceof ActionCard) {
-				cards.add(card);
-			}
-		}
-		return cards;
-	}
-
-	public List<Card> getTreasureCardsFromHand() {
-		// Build a collection of cards the player can play
-		List<Card> cards = new LinkedList<Card>();
-		for (Card card : cardHand.getCards()) {
-			if (card instanceof TreasureCard) {
-				cards.add(card);
-			}
-		}
-		return cards;
 	}
 
 	public String getPlayerName() {
@@ -479,24 +386,41 @@ public class Player {
 		return playerInterface.chooseIfTrashCard(card);
 	}
 
-	public List<Card> getCardHand() {
-		return cardHand.getCards();
-	}
-	
-	public List<Card> getDiscardPile() {
-		return discardPile.getCards();
-	}
-	
 	public void invokeMessage(PlayerInterfaceMessage message) {
 		message.invoke(playerInterface);		
 	}
 
 	public int getCurrentScore() {
 		LinkedList<Card> cards = new LinkedList<Card>();
-		cards.addAll(getCardHand());
-		cards.addAll(getDiscardPile());
-		cards.allAll(getPlayArea());
+		cards.addAll(cardHand.getCards());
+		cards.addAll(discardPile.getCards());
+		cards.addAll(playArea.getCards());
+		cards.addAll(cardDeck.getCards());
 		
 		return countVictoryPointsInCardDeck() - countCurseCardsInDeck();
+	}
+
+	public boolean wantsToDiscardCard(Card card) {
+		return playerInterface.chooseIfDiscardCard(card);		
+	}
+
+	public Card getCardToTrashFromHand() {		
+		return playerInterface.selectCardToTrashFromHand(cardHand.getCards());
+	}
+
+	public void removeFromHand(Card card) {
+		cardHand.removeCard(card);		
+	}
+
+	public Card getCardToPutOnDeck() {		
+		return playerInterface.selectCardToPutOnDeck(cardHand.getCards());
+	}
+
+	public void removeFromPlayArea(Card card) {
+		playArea.removeCard(card);
+	}
+
+	public boolean wantsToGainCard(Card card) {
+		return playerInterface.chooseIfGainCard(card);
 	}
 }

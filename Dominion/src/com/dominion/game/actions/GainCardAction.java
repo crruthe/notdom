@@ -1,6 +1,8 @@
 package com.dominion.game.actions;
 
-import com.dominion.game.Player;
+import java.util.List;
+
+import com.dominion.game.GameState;
 import com.dominion.game.cards.Card;
 
 public class GainCardAction implements CardAction {
@@ -11,11 +13,13 @@ public class GainCardAction implements CardAction {
 	}
 	
 	@Override
-	public void execute(Player player) {
-		Card card = player.getCardToGain(gainCost);
+	public void execute(GameState state) {
+		List<Card> cards = state.getGameBoard().listCardsFilterByCost(gainCost);
+		Card card = state.getCurrentPlayer().getCardToBuy(cards);
 		
 		if (card != null) {
-			player.gainCardFromSupply(card.getName());
+			state.getGameBoard().removeCardFromSupply(card.getClass());
+			state.getCurrentPlayer().addCardToDiscardPile(card);
 		}
 	}
 }
