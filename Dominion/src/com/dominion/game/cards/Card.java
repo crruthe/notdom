@@ -16,25 +16,15 @@ public abstract class Card implements Comparable<Card> {
 			return false;
 		
 		Card other = (Card) obj;
-		return name.equals(other.getName());
+		return getName().equals(other.getName());
 	}
 	
 	@Override
 	public int compareTo(Card o) {
-		return name.compareTo(o.getName());
+		return getName().compareTo(o.getName());
 	}
 
-	private int cost;
-	private String name;
-	
 	public abstract void accept(CardVisitor visitor);
-
-	public String getName() {
-		return name;
-	}
-	
-	public int getCost() {
-		return cost;
-	}
-	
+	public abstract String getName();
+	public abstract int getCost();	
 }

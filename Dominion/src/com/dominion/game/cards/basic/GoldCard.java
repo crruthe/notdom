@@ -15,12 +15,6 @@ public class GoldCard extends Card implements TreasureCard {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		// Cards are the same if names match (even if different instances)
-		return NAME.equals(((Card)obj).getName());
-	}
-
-	@Override
 	public int getCoinAmount() {
 		return COINS;
 	}

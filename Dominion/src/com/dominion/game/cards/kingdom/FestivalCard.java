@@ -35,12 +35,6 @@ public class FestivalCard extends Card implements ActionCard {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		// Cards are the same if names match (even if different instances)
-		return NAME.equals(((Card)obj).getName());
-	}
-	
-	@Override
 	public int getCost() {
 		return COST;
 	}
