@@ -7,11 +7,12 @@ import com.dominion.game.actions.CardAction;
 import com.dominion.game.actions.MoatReaction;
 import com.dominion.game.actions.NoAction;
 import com.dominion.game.actions.PlusCardAction;
+import com.dominion.game.cards.ActionCard;
 import com.dominion.game.cards.Card;
 import com.dominion.game.cards.ReactionCard;
 import com.dominion.game.visitors.CardVisitor;
 
-public class MoatCard implements ReactionCard {
+public class MoatCard extends Card implements ReactionCard, ActionCard {
 	public static final int COST = 2;
 	public static final String NAME = "Moat";	
 	private final int PLUS_CARDS = 2;

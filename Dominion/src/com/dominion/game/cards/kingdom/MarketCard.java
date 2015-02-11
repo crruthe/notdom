@@ -12,7 +12,7 @@ import com.dominion.game.cards.ActionCard;
 import com.dominion.game.cards.Card;
 import com.dominion.game.visitors.CardVisitor;
 
-public class MarketCard implements Card, ActionCard {
+public class MarketCard extends Card implements ActionCard {
 	public static final int COST = 5;
 	public static final String NAME = "Market";
 	private final int PLUS_ACTIONS = 1;

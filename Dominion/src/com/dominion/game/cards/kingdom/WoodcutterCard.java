@@ -10,7 +10,7 @@ import com.dominion.game.cards.ActionCard;
 import com.dominion.game.cards.Card;
 import com.dominion.game.visitors.CardVisitor;
 
-public class WoodcutterCard implements ActionCard {
+public class WoodcutterCard extends Card implements ActionCard {
 	public static final int COST = 3;
 	public static final String NAME = "Woodcutter";
 	private final int PLUS_BUYS = 1;

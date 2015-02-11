@@ -10,7 +10,7 @@ import com.dominion.game.cards.AttackCard;
 import com.dominion.game.cards.Card;
 import com.dominion.game.visitors.CardVisitor;
 
-public class ThiefCard implements ActionCard, AttackCard {
+public class ThiefCard extends Card implements ActionCard, AttackCard {
 	public static final int COST = 4;	
 	public static final String NAME = "Thief";
 

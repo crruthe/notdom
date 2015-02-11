@@ -9,7 +9,7 @@ import com.dominion.game.cards.ActionCard;
 import com.dominion.game.cards.Card;
 import com.dominion.game.visitors.CardVisitor;
 
-public class ThroneRoomCard implements ActionCard {
+public class ThroneRoomCard extends Card implements ActionCard {
 	public static final int COST = 4;
 	public static final String NAME = "ThroneRoom";
 	

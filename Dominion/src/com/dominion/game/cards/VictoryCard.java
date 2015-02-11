@@ -1,5 +1,5 @@
 package com.dominion.game.cards;
 
-public interface VictoryCard extends Card {
+public interface VictoryCard {
 	int getVictoryPoints();
 }

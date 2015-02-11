@@ -9,7 +9,7 @@ import com.dominion.game.cards.ActionCard;
 import com.dominion.game.cards.Card;
 import com.dominion.game.visitors.CardVisitor;
 
-public class FeastCard implements ActionCard {
+public class FeastCard extends Card implements ActionCard {
 	public static final int COST = 4;
 	public static final String NAME = "Feast";
 	

@@ -11,7 +11,7 @@ import com.dominion.game.cards.ActionCard;
 import com.dominion.game.cards.Card;
 import com.dominion.game.visitors.CardVisitor;
 
-public class CouncilRoomCard implements ActionCard {
+public class CouncilRoomCard extends Card implements ActionCard {
 	public static final int COST = 5;
 	public static final String NAME = "CouncilRoom";
 	private final int PLUS_BUYS = 1;

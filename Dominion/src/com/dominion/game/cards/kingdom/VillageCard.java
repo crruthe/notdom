@@ -10,7 +10,7 @@ import com.dominion.game.cards.ActionCard;
 import com.dominion.game.cards.Card;
 import com.dominion.game.visitors.CardVisitor;
 
-public class VillageCard implements Card, ActionCard {
+public class VillageCard extends Card implements ActionCard {
 	public static final int COST = 3;
 	public static final String NAME = "Village";
 	private final int PLUS_ACTIONS = 2;

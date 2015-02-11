@@ -10,7 +10,7 @@ import com.dominion.game.cards.ActionCard;
 import com.dominion.game.cards.Card;
 import com.dominion.game.visitors.CardVisitor;
 
-public class LaboratoryCard implements Card, ActionCard {
+public class LaboratoryCard extends Card implements ActionCard {
 	public static final int COST = 5;
 	public static final String NAME = "Laboratory";
 	private final int PLUS_ACTIONS = 1;
