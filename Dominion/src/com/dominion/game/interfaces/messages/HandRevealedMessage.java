@@ -6,18 +6,18 @@ import com.dominion.game.Player;
 import com.dominion.game.cards.Card;
 import com.dominion.game.interfaces.PlayerInterface;
 
-public class EndGameCardsMessage implements PlayerInterfaceMessage {
+public class HandRevealedMessage implements PlayerInterfaceMessage {
 
 	private Player player;
 	private List<Card> cards;
 	
-	public EndGameCardsMessage(Player player, List<Card> cards) {
+	public HandRevealedMessage(Player player, List<Card> cards) {
 		this.player = player;
 		this.cards = cards;
 	}
 	
 	@Override
 	public void invoke(PlayerInterface playerInterface) {		
-		playerInterface.notifyEndGameCards(player, cards);
+		playerInterface.notifyHandRevealed(player, cards);
 	}
 }

@@ -18,10 +18,14 @@ import com.dominion.game.cards.TreasureCard;
 import com.dominion.game.cards.VictoryCard;
 import com.dominion.game.cards.basic.CopperCard;
 import com.dominion.game.cards.basic.CurseCard;
+import com.dominion.game.cards.basic.DuchyCard;
 import com.dominion.game.cards.basic.EstateCard;
+import com.dominion.game.cards.basic.GoldCard;
+import com.dominion.game.cards.basic.ProvinceCard;
+import com.dominion.game.cards.basic.SilverCard;
 import com.dominion.game.cards.kingdom.ThroneRoomCard;
 
-public class BasicRulesAIPlayer implements PlayerInterface {
+public class BigMoneyAIPlayer implements PlayerInterface {
 
 	@Override
 	public ReactionCard selectReactionCard(List<Card> cards) {
@@ -167,19 +171,23 @@ public class BasicRulesAIPlayer implements PlayerInterface {
 
 	@Override
 	public Card selectCardToBuy(List<Card> cards) {
-		Collections.shuffle(cards);
-
-		int maxCost = 0;
-		Card myCard = null;
-		for (Card c: cards) {
-			if (c.getCost() > maxCost) {
-				myCard = c;
-				maxCost = c.getCost();
-			}
+		
+		if (cards.contains(new ProvinceCard())) {
+			return new ProvinceCard();
 		}
-		if (maxCost > 0) {
-			return myCard;
+		
+		if (cards.contains(new GoldCard())) {
+			return new GoldCard();
 		}
+		
+		if (cards.contains(new DuchyCard())) {
+			return new DuchyCard();
+		}
+		
+		if (cards.contains(new SilverCard())) {
+			return new SilverCard();
+		}
+		
 		return null;
 	}
 
@@ -233,6 +241,7 @@ public class BasicRulesAIPlayer implements PlayerInterface {
 
 	@Override
 	public void notifyEndGameScore(Player player, int score) {
+		System.out.println(player.getPlayerName() + ": " + score);
 	}
 
 	@Override
@@ -278,8 +287,15 @@ public class BasicRulesAIPlayer implements PlayerInterface {
 
 	@Override
 	public void notifyEndGameCards(Player player, List<Card> cards) {
-		// TODO Auto-generated method stub
-		
+		HashMap<String, Integer> cardMap = new HashMap<String, Integer>();	
+		for (Card card : cards) {			
+			if (!cardMap.containsKey(card.getName())) {
+				cardMap.put(card.getName(), 1);
+			} else {
+				cardMap.put(card.getName(), cardMap.get(card.getName()) + 1);
+			}
+		}
+		System.out.println(player.getPlayerName() + ": " + cardMap);
 	}
 
 	@Override

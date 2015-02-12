@@ -1,5 +1,6 @@
 package com.dominion.game;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -124,7 +125,11 @@ public class CardCollectionTest extends TestCase {
 		actionCards.add(new SpyCard());
 		actionCards.add(new MilitiaCard());
 		
-		assertEquals(actionCards, collection.getCardsFilterByClass(ActionCard.class));
+		List<Card> actualCards1 = collection.getCardsFilterByClass(ActionCard.class);
+		Collections.sort(actionCards);
+		Collections.sort(actualCards1);
+		
+		assertEquals(actionCards, actualCards1);
 		
 		LinkedList<Card> victoryCards = new LinkedList<Card>();
 
@@ -132,21 +137,33 @@ public class CardCollectionTest extends TestCase {
 		victoryCards.add(new ProvinceCard());
 		victoryCards.add(new GardensCard());
 		
-		assertEquals(victoryCards, collection.getCardsFilterByClass(VictoryCard.class));
+		List<Card> actualCards2 = collection.getCardsFilterByClass(VictoryCard.class);
+		Collections.sort(victoryCards);
+		Collections.sort(actualCards2);
+		
+		assertEquals(victoryCards, actualCards2);
 	
 		LinkedList<Card> attackCards = new LinkedList<Card>();
 
 		attackCards.add(new SpyCard());
 		attackCards.add(new MilitiaCard());
 		
-		assertEquals(attackCards, collection.getCardsFilterByClass(AttackCard.class));
+		List<Card> actualCards3 = collection.getCardsFilterByClass(AttackCard.class);
+		Collections.sort(attackCards);
+		Collections.sort(actualCards3);
+		
+		assertEquals(attackCards, actualCards3);
 
 		LinkedList<Card> reactionCards = new LinkedList<Card>();
 
 		reactionCards.add(new MoatCard());
 		reactionCards.add(new MoatCard());
 		
-		assertEquals(reactionCards, collection.getCardsFilterByClass(ReactionCard.class));
+		List<Card> actualCards4 = collection.getCardsFilterByClass(ReactionCard.class);
+		Collections.sort(reactionCards);
+		Collections.sort(actualCards4);
+		
+		assertEquals(reactionCards, actualCards4);
 
 	
 		LinkedList<Card> treasureCards = new LinkedList<Card>();
@@ -156,7 +173,11 @@ public class CardCollectionTest extends TestCase {
 		treasureCards.add(new GoldCard());
 		treasureCards.add(new GoldCard());
 		
-		assertEquals(treasureCards, collection.getCardsFilterByClass(TreasureCard.class));
+		List<Card> actualCards5 = collection.getCardsFilterByClass(TreasureCard.class);
+		Collections.sort(reactionCards);
+		Collections.sort(actualCards5);
+		
+		assertEquals(treasureCards, actualCards5);
 	}
 
 	public void testRemoveCard() {

@@ -43,7 +43,6 @@ public class PawnCardTest extends TestCase {
 		player.addCardToCardDeck(new CopperCard());
 		player.addCardToCardDeck(new SilverCard());
 		player.addCardToCardDeck(new ProvinceCard());
-		player.playActionCard(new PawnCard());
 		
 		assertTrue(mockPlayerInterface.getCardHand().contains(new ProvinceCard()));
 		assertEquals(1, mockPlayerInterface.getNumOfActions());		
@@ -69,7 +68,6 @@ public class PawnCardTest extends TestCase {
 		player.addCardToCardDeck(new CopperCard());
 		player.addCardToCardDeck(new SilverCard());
 		player.addCardToCardDeck(new ProvinceCard());
-		player.playActionCard(new PawnCard());
 		
 		assertTrue(mockPlayerInterface.getCardHand().isEmpty());
 		assertEquals(0, mockPlayerInterface.getNumOfActions());		

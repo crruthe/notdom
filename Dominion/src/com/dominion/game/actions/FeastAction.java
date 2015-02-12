@@ -13,6 +13,7 @@ public class FeastAction implements CardAction {
 	@Override
 	public void execute(GameState state) {
 		state.getCurrentPlayer().removeFromPlayArea(trashCard);
+		state.getGameBoard().addToTrashPile(trashCard);
 		
 		CardAction gainCardAction = new GainCardAction(5);
 		gainCardAction.execute(state);

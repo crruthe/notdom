@@ -14,6 +14,10 @@ public class GameMaster {
 	
 	// TODO: Make this threadable
 	private GameState state = new GameState();
+
+	public void addPlayerToState(Player player) {
+		state.addPlayer(player);
+	}
 	
 	/**
 	 * Performs all the actions to start the game.
@@ -42,7 +46,7 @@ public class GameMaster {
 			
 			int score = player.getCurrentScore();
 			state.broadcastToAllPlayers(new EndGameScoreMessage(player, score));
-			state.broadcastToAllPlayers(new EndGameCardsMessage(player, player.getCardDeck()));
+			state.broadcastToAllPlayers(new EndGameCardsMessage(player, player.getAllCards()));
 			System.out.println("Score: " + score);			
 		}
 	}
@@ -53,6 +57,7 @@ public class GameMaster {
 		state.getCurrentPlayer().cleanUpPhase();
 		state.getCurrentPlayer().drawNewHand();
 		state.getTurnState().reset();
+		state.rotatePlayers();
 	}
 	
 	private void actionPhase() {

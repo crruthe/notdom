@@ -11,53 +11,48 @@ import com.dominion.game.interfaces.messages.CardRevealedMessage;
 public class ThiefAction extends AttackAction {
 	@Override
 	public void executeAttackOnPlayer(GameState state, Player victim) {
-		LinkedList<Card> discard = new LinkedList<Card>();
+		LinkedList<Card> cards = new LinkedList<Card>();
 		
 		// Reveal the top two cards of their deck
-		Card first = victim.drawCard();
-		Card second = victim.drawCard();		
-		state.broadcastToAllPlayers(new CardRevealedMessage(victim, first));
-		state.broadcastToAllPlayers(new CardRevealedMessage(victim, second));
-		
-
-		// If the any of the cards are treasure, you must trash one, discard the others
-		
-		Card trash = null;
-		if (first instanceof TreasureCard && second instanceof TreasureCard) {
-			if (state.getCurrentPlayer().wantsToTrashCard(first)) {
-				victim.removeFromHand(first);
-				trash = first;
-				discard.add(second);
-			} else {
-				victim.removeFromHand(second);
-				trash = second;
-				discard.add(first);
+		for (int i = 0; i < 2; i++) {
+			Card card = victim.drawCard();
+			
+			// User doesn't have anymore cards
+			if (card == null) {
+				break;
 			}
-		} else if (first instanceof TreasureCard) {
-			victim.removeFromHand(first);
-			trash = first;
-			discard.add(second);
-		} else if (second instanceof TreasureCard) {
-			victim.removeFromHand(second);
-			trash = second;
-			discard.add(first);
+			
+			state.broadcastToAllPlayers(new CardRevealedMessage(victim, card));
+			
+			if (card instanceof TreasureCard) {
+				cards.add(card);
+			} else {
+				victim.addCardToDiscardPile(card);
+			}
+		}
+		
+		// If no treasure cards were drawn, nothing else to do
+		if (cards.isEmpty()) {
+			return;
+		}
+		
+		Card trashCard = null;
+		while (trashCard == null) {
+			trashCard = state.getCurrentPlayer().getCardToTrashThief(cards);
+		}
+		cards.remove(trashCard);
+		
+		// Trash the card from the victims hand
+		victim.removeFromHand(trashCard);
+		
+		// Add the remaining to the players discard
+		victim.addCardsToDiscardPile(cards);
+		
+		// Allow the player to keep the card
+		if (state.getCurrentPlayer().wantsToGainCardThief(trashCard)) {
+			state.getCurrentPlayer().addCardToDiscardPile(trashCard);
 		} else {
-			discard.add(first);
-			discard.add(second);
-		}
-		
-		// You may gain this trashed card
-		if (trash != null) {
-			if (state.getCurrentPlayer().wantsToGainCard(trash)) {
-				state.getCurrentPlayer().addCardToDiscardPile(trash);
-			} else {
-				state.getGameBoard().addToTrashPile(trash);
-			}
-		}
-		
-		// Discard the rest of the cards
-		for (Card card: discard) {
-			victim.addCardToDiscardPile(card);
-		}
+			state.getGameBoard().addToTrashPile(trashCard);
+		}		
 	}	
 }

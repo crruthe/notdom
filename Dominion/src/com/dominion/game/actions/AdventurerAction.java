@@ -15,10 +15,12 @@ public class AdventurerAction implements CardAction {
 		while (numberOfTreasureCards < 2) {
 			Card card = state.getCurrentPlayer().drawCard();
 			
-			if (card == null) {
-				// Player selected to skip
+			// No cards left to draw
+			if (card == null) {	
 				break;
-			} else if (card instanceof TreasureCard) {
+			}
+			
+			if (card instanceof TreasureCard) {
 				state.getCurrentPlayer().addCardToHand(card);
 				numberOfTreasureCards++;
 			} else {

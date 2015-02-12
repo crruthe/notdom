@@ -22,7 +22,7 @@ public class RemodelAction implements CardAction {
 		// Player must select a card to trash, if possible
 		Card trashCard = null;
 		while (trashCard == null) {
-			state.getCurrentPlayer().getCardToTrashFromHand();
+			trashCard = state.getCurrentPlayer().getCardToTrashFromHand();
 		}
 		
 		state.getGameBoard().addToTrashPile(trashCard);

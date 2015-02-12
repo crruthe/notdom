@@ -13,7 +13,7 @@ import com.dominion.game.interfaces.PlayerInterface;
 
 public class MockPlayerInterface implements PlayerInterface {
 
-	private List<Card> cardHand;
+	private List<Card> cardHand = new LinkedList<Card>();
 	private int numOfActions;
 	private int numOfBuys;
 	private int numOfCoins;
@@ -154,13 +154,7 @@ public class MockPlayerInterface implements PlayerInterface {
 	}
 
 	@Override
-	public void notifyEndGameCards(Player player, String cards) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void updateSupply(HashMap<String, List<Card>> supplyStack) {
+	public void notifyEndGameCards(Player player, List<Card> cards) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -194,6 +188,30 @@ public class MockPlayerInterface implements PlayerInterface {
 	public CardAction selectCardActionToPlay(List<CardAction> actions) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void updateSupply(HashMap<Class<? extends Card>, Integer> supplyStack) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean chooseIfGainCardThief(Card card) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public Card selectCardToTrashThief(List<Card> cards) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void notifyHandRevealed(Player player, List<Card> cards) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

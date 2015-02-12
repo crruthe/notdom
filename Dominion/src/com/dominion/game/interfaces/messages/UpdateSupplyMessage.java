@@ -9,9 +9,9 @@ import com.dominion.game.interfaces.PlayerInterface;
 
 public class UpdateSupplyMessage implements PlayerInterfaceMessage {
 
-	private HashMap<String, List<Card>> supplyStack;
+	private HashMap<Class<? extends Card>, Integer> supplyStack;
 	
-	public UpdateSupplyMessage(HashMap<String, List<Card>> supplyStack) {
+	public UpdateSupplyMessage(HashMap<Class<? extends Card>, Integer> supplyStack) {		
 		this.supplyStack = supplyStack;
 	}
 	

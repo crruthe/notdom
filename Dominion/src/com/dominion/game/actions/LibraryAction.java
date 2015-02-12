@@ -14,6 +14,7 @@ public class LibraryAction implements CardAction {
 		while (state.getCurrentPlayer().getHandSize() < 7) {
 			Card card = state.getCurrentPlayer().drawCard();
 			
+			// User has no more cards
 			if (card == null) {
 				break;
 			}

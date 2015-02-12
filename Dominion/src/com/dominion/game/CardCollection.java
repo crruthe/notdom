@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Observable;
 
 import com.dominion.game.cards.Card;
 
@@ -11,15 +12,17 @@ import com.dominion.game.cards.Card;
  * Generic container for anything that holds cards.
  * 
  */
-public class CardCollection {
+public class CardCollection extends Observable {
 	private LinkedList<Card> cards = new LinkedList<Card>();
 	
 	/**
 	 * Add a collection of cards to the deck
 	 * @param cards
 	 */
-	public void addCards(Collection<Card> cards) {
-		this.cards.addAll(cards);
+	public void addCards(Collection<Card> newCards) {
+		cards.addAll(newCards);
+		setChanged();
+		notifyObservers();		
 	}	
 	
 	/**
@@ -27,7 +30,12 @@ public class CardCollection {
 	 * @param card
 	 */
 	public void addCardToTop(Card card) {
-		cards.add(card);		
+		if (card == null) {
+			throw new NullPointerException();
+		}
+		cards.add(card);
+		setChanged();
+		notifyObservers();
 	}
 	
 	/** 
@@ -46,6 +54,8 @@ public class CardCollection {
 		List<Card> resultList = cards;
 		
 		cards = new LinkedList<Card>();
+		setChanged();
+		notifyObservers();
 		
 		return resultList;
 	}
@@ -65,7 +75,8 @@ public class CardCollection {
 		if (cards.isEmpty()) { 
 			return null;
 		}
-		
+		setChanged();
+		notifyObservers();
 		return cards.removeLast();
 	}
 
@@ -87,6 +98,7 @@ public class CardCollection {
 				resultCards.add((Card)card);
 			}
 		}
+		Collections.sort(resultCards);
 		return resultCards;
 	}
 	
@@ -95,7 +107,9 @@ public class CardCollection {
 	 * @param card
 	 */
 	public void removeCard(Card card) {
-		cards.remove(card);		
+		cards.remove(card);
+		setChanged();
+		notifyObservers();
 	}
 	
 	/**
@@ -110,5 +124,7 @@ public class CardCollection {
 	 */
 	public void shuffle() {
 		Collections.shuffle(cards);
+		setChanged();
+		notifyObservers();
 	}
 }

@@ -4,6 +4,7 @@ import com.dominion.game.GameState;
 import com.dominion.game.Player;
 import com.dominion.game.cards.Card;
 import com.dominion.game.cards.basic.SilverCard;
+import com.dominion.game.interfaces.messages.HandRevealedMessage;
 
 public class BureaucratAction extends AttackAction {
 	@Override
@@ -21,6 +22,8 @@ public class BureaucratAction extends AttackAction {
 		Card card = victim.getVictoryCardToReveal();
 		if (card != null) {
 			victim.moveCardFromHandToDeck(card);
-		}		
+		} else {
+			state.broadcastToAllPlayers(new HandRevealedMessage(victim, victim.getHand()));
+		}
 	}	
 }

@@ -22,6 +22,12 @@ public class SpyAction extends AttackAction {
 	private void action(GameState state, Player victim) {
 		// Reveal the top card
 		Card card = victim.drawCard();
+		
+		// User has no more cards
+		if (card == null) {
+			return;
+		}
+		
 		state.broadcastToAllPlayers(new CardRevealedMessage(victim, card));
 		
 		// You may discard this card or leave it on the deck

@@ -9,6 +9,8 @@ import com.dominion.game.cards.basic.CopperCard;
 import com.dominion.game.cards.basic.EstateCard;
 import com.dominion.game.cards.basic.ProvinceCard;
 import com.dominion.game.interfaces.messages.PlayerInterfaceMessage;
+import com.dominion.game.interfaces.messages.UpdateSupplyMessage;
+import com.dominion.game.observers.TrashPileObserver;
 
 /**
  * GameState is a container for everything that makes up a current state.
@@ -21,7 +23,11 @@ public class GameState {
 
 	private final GameBoard gameBoard = new GameBoard();
 	private final LinkedList<Player> players = new LinkedList<Player>();	
-	private TurnState turnState = new TurnState();
+	private TurnState turnState = new TurnState();	
+	
+	public GameState() {
+		gameBoard.addObserverToTrashPile(new TrashPileObserver(this));
+	}
 	
 	public void addPlayer(Player player) {
 		players.add(player);
@@ -70,10 +76,13 @@ public class GameState {
 	 */
 	public boolean hasGameEnded() {
 		if (gameBoard.isStackEmpty(ProvinceCard.class)) {
+			System.out.println(gameBoard.getSupplyStacks());
+			System.out.println("No provinces!");
 			return true;
 		}
 
 		if (gameBoard.countNumberOfEmptyStacks() >= 3) {
+			System.out.println("Stacks are empty.");
 			return true;
 		}
 		
@@ -137,6 +146,7 @@ public class GameState {
 	 */
 	private void setupGameBoard() {
 		gameBoard.setupRandom(players.size());
+		broadcastToAllPlayers(new UpdateSupplyMessage(gameBoard.getSupplyStacks()));
 	}	
 	
 	public void broadcastToAllPlayers(PlayerInterfaceMessage message) {

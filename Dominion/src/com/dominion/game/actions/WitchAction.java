@@ -9,6 +9,10 @@ public class WitchAction extends AttackAction {
 	@Override
 	public void executeAttackOnPlayer(GameState state, Player victim) {
 		Card curse = state.getGameBoard().removeCardFromSupply(CurseCard.class);
-		victim.addCardToDiscardPile(curse);
+		
+		// Check if any curses are left
+		if (curse != null) {
+			victim.addCardToDiscardPile(curse);
+		}
 	}
 }

@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 import com.dominion.game.cards.*;
 import com.dominion.game.cards.basic.*;
@@ -12,13 +14,17 @@ import com.dominion.game.cards.kingdom.*;
 public class GameBoard {
 
 	private final HashMap<Class<? extends Card>, Integer> supplyStacks = new HashMap<Class<? extends Card>, Integer>();
-	
-	private CardCollection trashPile = new CardCollection();
 
+	private CardCollection trashPile = new CardCollection();	
+	
+	public void addObserverToTrashPile(Observer o) {
+		trashPile.addObserver(o);
+	}
+	
 	public void addToTrashPile(Card card) {
 		trashPile.addCardToTop(card);
 	}
-	
+
 	/**
 	 * Count the number of stacks that are empty.
 	 * Used for determining if the game is finished.
@@ -35,6 +41,10 @@ public class GameBoard {
 		return numOfEmptyStacks;
 	}
 	
+	public HashMap<Class<? extends Card>, Integer> getSupplyStacks() {
+		return supplyStacks;
+	}
+	
 	public CardCollection getTrashPile() {
 		return trashPile;
 	}
@@ -46,30 +56,6 @@ public class GameBoard {
 		return supplyStacks.get(cardName) == 0;
 	}
 
-	/** 
-	 * Build up a list of cards that the player can buy
-	 * 
-	 * @param amount of coins to buy with
-	 * @return collection of cards
-	 */
-	public List<Card> listCardsFilterByCost(int amount) {
-		List<Card> cards = new LinkedList<Card>();
-		
-		for (Class<? extends Card> cardClass : supplyStacks.keySet()) {	
-			// Check if any cards are left in stack
-			if (supplyStacks.get(cardClass) > 0) {
-				Card card = getCard(cardClass);
-				
-				// Check if player can afford this card
-				if (card.getCost() <= amount) {
-					cards.add(card);
-				}
-			}
-		}
-		
-		return cards;
-	}
-	
 	/**
 	 * Build up a list of cards that the player can buy
 	 * 
@@ -90,8 +76,59 @@ public class GameBoard {
 				}
 			}
 		}
-		
 		return cards;
+	}
+	
+	/** 
+	 * Build up a list of cards that the player can buy
+	 * 
+	 * @param amount of coins to buy with
+	 * @return collection of cards
+	 */
+	public List<Card> listCardsFilterByCost(int amount) {
+		List<Card> cards = new LinkedList<Card>();
+		
+		for (Class<? extends Card> cardClass : supplyStacks.keySet()) {	
+			// Check if any cards are left in stack
+			if (supplyStacks.get(cardClass) > 0) {
+				Card card = getCard(cardClass);
+				
+				// Check if player can afford this card
+				if (card.getCost() <= amount) {
+					cards.add(card);
+				}
+			}
+		}
+		return cards;
+	}
+	
+	/**
+	 * Remove the top card from the stack and return it
+	 * 
+	 * @param stack
+	 * @return Card from top of stack
+	 */
+	public Card removeCardFromSupply(Class<? extends Card> cardClass) {
+		if (supplyStacks.get(cardClass) == 0) {			
+			return null;
+		}
+
+		// Decrement the stack size by 1
+		supplyStacks.put(cardClass, supplyStacks.get(cardClass)-1);
+		
+		return getCard(cardClass);
+	}
+
+	public void setup(List<Class<? extends Card>> kingdomCards, int numberOfPlayers) {
+		setupKingdomCards(kingdomCards, numberOfPlayers);
+		setupVictoryCards(numberOfPlayers);
+		setupCurseCards(numberOfPlayers);
+		setupTreasureCards();
+	}
+
+	public void setupRandom(int numberOfPlayers) {
+		List<Class<? extends Card>> kingdomCards = randomKingdoms();
+		setup(kingdomCards, numberOfPlayers);
 	}
 	
 	/**
@@ -111,24 +148,7 @@ public class GameBoard {
 		}
 		return null;
 	}
-
-	/**
-	 * Remove the top card from the stack and return it
-	 * 
-	 * @param stack
-	 * @return Card from top of stack
-	 */
-	public Card removeCardFromSupply(Class<? extends Card> cardClass) {
-		if (supplyStacks.get(cardClass) == 0) {			
-			return null;
-		}
-
-		// Decrement the stack size by 1
-		supplyStacks.put(cardClass, supplyStacks.get(cardClass)-1);
-		
-		return getCard(cardClass);
-	}
-
+	
 	/**
 	 * Generate a random set of kingdom cards
 	 * @param numberOfPlayers
@@ -169,18 +189,6 @@ public class GameBoard {
 		Collections.shuffle(cardList);
 		
 		return cardList.subList(0, 10);
-	}
-	
-	public void setupRandom(int numberOfPlayers) {
-		List<Class<? extends Card>> kingdomCards = randomKingdoms();
-		setup(kingdomCards, numberOfPlayers);
-	}
-	
-	public void setup(List<Class<? extends Card>> kingdomCards, int numberOfPlayers) {
-		setupKingdomCards(kingdomCards, numberOfPlayers);
-		setupVictoryCards(numberOfPlayers);
-		setupCurseCards(numberOfPlayers);
-		setupTreasureCards();
 	}
 	
 	/**
@@ -228,6 +236,16 @@ public class GameBoard {
 	}
 	
 	/**
+	 * Game supply has "unlimited" cards. 50 should be enough.
+	 * @param numberOfPlayers
+	 */
+	private void setupTreasureCards() {
+		supplyStacks.put(CopperCard.class, 50);
+		supplyStacks.put(SilverCard.class, 50);
+		supplyStacks.put(GoldCard.class, 50);
+	}
+	
+	/**
 	 * Place 12 each of the Estate,
 	 * Duchy, and Province cards in face-up piles
 	 * in the Supply in a 3 or 4 player game.
@@ -244,15 +262,5 @@ public class GameBoard {
 		supplyStacks.put(EstateCard.class, numOfCards);
 		supplyStacks.put(DuchyCard.class, numOfCards);
 		supplyStacks.put(ProvinceCard.class, numOfCards);
-	}
-	
-	/**
-	 * Game supply has "unlimited" cards. 50 should be enough.
-	 * @param numberOfPlayers
-	 */
-	private void setupTreasureCards() {
-		supplyStacks.put(CopperCard.class, 50);
-		supplyStacks.put(SilverCard.class, 50);
-		supplyStacks.put(GoldCard.class, 50);
 	}	
 }

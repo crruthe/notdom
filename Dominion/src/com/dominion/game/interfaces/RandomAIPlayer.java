@@ -7,6 +7,7 @@ import java.lang.Math;
 
 import com.dominion.game.GameMaster;
 import com.dominion.game.Player;
+import com.dominion.game.actions.CardAction;
 import com.dominion.game.cards.ActionCard;
 import com.dominion.game.cards.Card;
 import com.dominion.game.cards.ReactionCard;
@@ -16,8 +17,12 @@ public class RandomAIPlayer implements PlayerInterface {
 
 	public static void main(String[] args) {
 		GameMaster gm = new GameMaster();
-		gm.addPlayer(new Player(new BasicRulesAIPlayer()));		
-		gm.addPlayer(new Player(new RandomAIPlayer()));
+		Player p1 = new Player(new BigMoneyAIPlayer());
+		p1.setPlayerName("BigMoney");
+		Player p2 = new Player(new RandomAIPlayer());
+		p2.setPlayerName("Random");
+		gm.addPlayerToState(p1);		
+		gm.addPlayerToState(p2);
 		gm.startGame();
 	}
 	
@@ -34,12 +39,6 @@ public class RandomAIPlayer implements PlayerInterface {
 	public Card selectVictoryCardToReveal(List<Card> cards) {
 		Collections.shuffle(cards);
 		return cards.get(0);
-	}
-
-	@Override
-	public void updateSupply(HashMap<String, List<Card>> supplyStack) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -148,7 +147,7 @@ public class RandomAIPlayer implements PlayerInterface {
 	}
 
 	@Override
-	public void notifyEndGameCards(Player player, String cards) {
+	public void notifyEndGameCards(Player player, List<Card> cards) {
 		// TODO Auto-generated method stub
 	}
 
@@ -190,6 +189,42 @@ public class RandomAIPlayer implements PlayerInterface {
 
 	@Override
 	public void notifyCardRevealed(Player player, Card card) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean chooseIfGainCardThief(Card card) {
+		if (Math.random() < 0.5) {
+			return true;
+		}		
+		return false;
+	}
+
+	@Override
+	public void notifyHandRevealed(Player player, List<Card> cards) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public CardAction selectCardActionToPlay(List<CardAction> actions) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Card selectCardToPutOnDeck(List<Card> cards) {
+		return cards.get(0);
+	}
+
+	@Override
+	public Card selectCardToTrashThief(List<Card> cards) {
+		return cards.get(0);
+	}
+
+	@Override
+	public void updateSupply(HashMap<Class<? extends Card>, Integer> supplyStack) {
 		// TODO Auto-generated method stub
 		
 	}
