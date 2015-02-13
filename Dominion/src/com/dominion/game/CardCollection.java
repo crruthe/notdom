@@ -13,6 +13,7 @@ import com.dominion.game.cards.Card;
  * 
  */
 public class CardCollection extends Observable {
+	
 	private LinkedList<Card> cards = new LinkedList<Card>();
 	
 	/**

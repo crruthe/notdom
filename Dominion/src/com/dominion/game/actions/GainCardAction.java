@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.dominion.game.GameState;
 import com.dominion.game.cards.Card;
+import com.dominion.game.interfaces.messages.CardGainedMessage;
 
 public class GainCardAction implements CardAction {
 	private final int gainCost;
@@ -20,6 +21,7 @@ public class GainCardAction implements CardAction {
 		if (card != null) {
 			state.getGameBoard().removeCardFromSupply(card.getClass());
 			state.getCurrentPlayer().addCardToDiscardPile(card);
+			state.broadcastToAllPlayers(new CardGainedMessage(state.getCurrentPlayer(), card));
 		}
 	}
 }

@@ -1,7 +1,7 @@
 package com.dominion.game.cards;
 
-import com.dominion.game.actions.CardAction;
+import com.dominion.game.actions.ReactionAction;
 
 public interface ReactionCard {
-	public CardAction getReaction();
+	public ReactionAction getReaction();
 }

@@ -17,6 +17,6 @@ public class DiscardPileObserver implements Observer {
 	@Override
 	public void update(Observable o, Object arg) {
 		CardCollection cards = (CardCollection)o;
-		playerInterface.updatePlayArea(cards.getCards());
+		playerInterface.updateDiscard(cards.getTopCard());
 	}
 }

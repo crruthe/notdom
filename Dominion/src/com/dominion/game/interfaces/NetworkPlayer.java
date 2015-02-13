@@ -144,9 +144,18 @@ public class NetworkPlayer implements PlayerInterface {
 
 	@Override
 	public void notifyEndGameCards(Player player, final List<Card> cards) {
+		HashMap<String, Integer> cardMap = new HashMap<String, Integer>();	
+		for (Card card : cards) {			
+			if (!cardMap.containsKey(card.getName())) {
+				cardMap.put(card.getName(), 1);
+			} else {
+				cardMap.put(card.getName(), cardMap.get(card.getName()) + 1);
+			}
+		}
+		
 		System.out.println("notifyLog");
 		Gson gson = new Gson();
-		String json = gson.toJson(new Message("notifyLog", player.getPlayerName() + " cards: " + cards + "."));
+		String json = gson.toJson(new Message("notifyLog", player.getPlayerName() + " cards: " + cardMap + "."));
 		sendMessage(json);
 	}
 
@@ -261,6 +270,17 @@ public class NetworkPlayer implements PlayerInterface {
 	@Override
 	public Card selectCardToTrashThief(List<Card> cards) {
 		// TODO Auto-generated method stub
+		System.out.println("selectCardToTrashThief");
+		String json = convertCardsToJson("selectCardToTrashThief", cards);
+		sendMessage(json);
+		String result = waitForMessage();
+		System.out.println(result);
+		
+		for(Card card : cards) {
+			if (card.getName().equals(result)) {
+				return card;
+			}
+		}
 		return null;
 	}
 

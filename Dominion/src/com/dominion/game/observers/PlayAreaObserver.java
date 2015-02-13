@@ -17,6 +17,6 @@ public class PlayAreaObserver implements Observer {
 	@Override
 	public void update(Observable o, Object arg) {
 		CardCollection cards = (CardCollection)o;
-		playerInterface.updateDiscard(cards.getTopCard());
+		playerInterface.updatePlayArea(cards.getCards());
 	}
 }

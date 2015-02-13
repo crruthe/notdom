@@ -1,11 +1,14 @@
 package com.dominion.game;
 
 import java.util.List;
+import java.util.concurrent.BrokenBarrierException;
 
 import com.dominion.game.actions.CardAction;
 import com.dominion.game.cards.ActionCard;
 import com.dominion.game.cards.Card;
 import com.dominion.game.cards.TreasureCard;
+import com.dominion.game.interfaces.messages.CardGainedMessage;
+import com.dominion.game.interfaces.messages.CardPlayedMessage;
 import com.dominion.game.interfaces.messages.EndGameCardsMessage;
 import com.dominion.game.interfaces.messages.EndGameScoreMessage;
 
@@ -105,7 +108,7 @@ public class GameMaster {
 
 			System.out.println(((Card)treasureCard).getName());
 			
-			playTreasureCard(treasureCard);
+			playTreasureCard(state.getCurrentPlayer(), treasureCard);
 		}
 		
 		while(state.getTurnState().getNumberOfBuys() > 0) {
@@ -131,18 +134,20 @@ public class GameMaster {
 	
 	public void playerGainsCardFromSupply(Player player, Class<? extends Card> cardClass) {
 		Card card = state.getGameBoard().removeCardFromSupply(cardClass);
-		player.addCardToDiscardPile(card);		
+		player.addCardToDiscardPile(card);	
+		state.broadcastToAllPlayers(new CardGainedMessage(player, card));
 	}
 	
 	/**
 	 * During buy phase you can play treasure cards
 	 * @param card
 	 */
-	private void playTreasureCard(TreasureCard card) {
-		state.getCurrentPlayer().moveCardFromHandToPlayArea((Card)card);
+	private void playTreasureCard(Player player, TreasureCard card) {
+		player.moveCardFromHandToPlayArea((Card)card);
 		
 		state.getTurnState().incrementCoins(card.getCoinAmount());
 
-		state.getCurrentPlayer().notifyOfTurnState(state.getTurnState());
+		player.notifyOfTurnState(state.getTurnState());
+		state.broadcastToAllPlayers(new CardPlayedMessage(player, (Card)card));
 	}
 }

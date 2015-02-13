@@ -10,15 +10,17 @@ import java.util.Observer;
 import com.dominion.game.cards.*;
 import com.dominion.game.cards.basic.*;
 import com.dominion.game.cards.kingdom.*;
+import com.dominion.game.observers.SupplyStackObserver;
+import com.dominion.game.observers.TrashPileObserver;
 
 public class GameBoard {
 
-	private final HashMap<Class<? extends Card>, Integer> supplyStacks = new HashMap<Class<? extends Card>, Integer>();
-
+	private SupplyStack supply = new SupplyStack();
 	private CardCollection trashPile = new CardCollection();	
 	
-	public void addObserverToTrashPile(Observer o) {
-		trashPile.addObserver(o);
+	public void registerObservers(GameState state) {
+		supply.addObserver(new SupplyStackObserver(state));
+		trashPile.addObserver(new TrashPileObserver(state));
 	}
 	
 	public void addToTrashPile(Card card) {
@@ -33,7 +35,7 @@ public class GameBoard {
 	 */
 	public int countNumberOfEmptyStacks() {
 		int numOfEmptyStacks = 0;
-		for (Integer numOfCards: supplyStacks.values()) {
+		for (Integer numOfCards: supply.getStacks().values()) {
 			if (numOfCards == 0) {
 				numOfEmptyStacks++;
 			}
@@ -42,18 +44,15 @@ public class GameBoard {
 	}
 	
 	public HashMap<Class<? extends Card>, Integer> getSupplyStacks() {
-		return supplyStacks;
+		return supply.getStacks();
 	}
 	
 	public CardCollection getTrashPile() {
 		return trashPile;
 	}
 	
-	/**
-	 * Check if a stack is empty (usually for end of game)
-	 */
 	public boolean isStackEmpty(Class<? extends Card> cardName) {
-		return supplyStacks.get(cardName) == 0;
+		return supply.isStackEmpty(cardName);
 	}
 
 	/**
@@ -65,9 +64,9 @@ public class GameBoard {
 	public List<Card> listCardsFilterByClassAndCost(Class<?> cardClass, int amount) {
 		List<Card> cards = new LinkedList<Card>();
 		
-		for (Class<? extends Card> checkCardClass : supplyStacks.keySet()) {	
+		for (Class<? extends Card> checkCardClass : supply.getStacks().keySet()) {	
 			// Check if any cards are left in stack
-			if (supplyStacks.get(checkCardClass) > 0) {
+			if (supply.getStacks().get(checkCardClass) > 0) {
 				Card card = getCard(checkCardClass);
 				
 				// Check if player can afford this card
@@ -88,9 +87,9 @@ public class GameBoard {
 	public List<Card> listCardsFilterByCost(int amount) {
 		List<Card> cards = new LinkedList<Card>();
 		
-		for (Class<? extends Card> cardClass : supplyStacks.keySet()) {	
+		for (Class<? extends Card> cardClass : supply.getStacks().keySet()) {	
 			// Check if any cards are left in stack
-			if (supplyStacks.get(cardClass) > 0) {
+			if (supply.getStacks().get(cardClass) > 0) {
 				Card card = getCard(cardClass);
 				
 				// Check if player can afford this card
@@ -102,23 +101,6 @@ public class GameBoard {
 		return cards;
 	}
 	
-	/**
-	 * Remove the top card from the stack and return it
-	 * 
-	 * @param stack
-	 * @return Card from top of stack
-	 */
-	public Card removeCardFromSupply(Class<? extends Card> cardClass) {
-		if (supplyStacks.get(cardClass) == 0) {			
-			return null;
-		}
-
-		// Decrement the stack size by 1
-		supplyStacks.put(cardClass, supplyStacks.get(cardClass)-1);
-		
-		return getCard(cardClass);
-	}
-
 	public void setup(List<Class<? extends Card>> kingdomCards, int numberOfPlayers) {
 		setupKingdomCards(kingdomCards, numberOfPlayers);
 		setupVictoryCards(numberOfPlayers);
@@ -149,6 +131,15 @@ public class GameBoard {
 		return null;
 	}
 	
+	public Card removeCardFromSupply(Class<? extends Card> cardClass) {
+		if (supply.removeCard(cardClass)) {
+			return getCard(cardClass);
+		} else {
+			return null;
+		}		
+	}
+
+	
 	/**
 	 * Generate a random set of kingdom cards
 	 * @param numberOfPlayers
@@ -165,7 +156,6 @@ public class GameBoard {
 		cardList.add(FestivalCard.class);		
 		cardList.add(MarketCard.class);		
 		cardList.add(WitchCard.class);		
-		cardList.add(MoatCard.class);		
 		cardList.add(GardensCard.class);		
 		cardList.add(CellarCard.class);		
 		cardList.add(ChapelCard.class);		
@@ -179,14 +169,14 @@ public class GameBoard {
 		cardList.add(BureaucratCard.class);		
 		cardList.add(ThroneRoomCard.class);						
 		cardList.add(ChapelCard.class);
-		cardList.add(MoatCard.class);
-		cardList.add(ChancellorCard.class);
 		cardList.add(MoneylenderCard.class);
-		cardList.add(ThiefCard.class);
 		cardList.add(SpyCard.class);
 		cardList.add(CourtyardCard.class);
 		
-		Collections.shuffle(cardList);
+		Collections.shuffle(cardList);		
+		cardList.addFirst(ThiefCard.class);
+		cardList.addFirst(MoatCard.class);		
+		cardList.addFirst(ChancellorCard.class);
 		
 		return cardList.subList(0, 10);
 	}
@@ -205,7 +195,7 @@ public class GameBoard {
 			numOfCards = 30;
 		}
 		
-		supplyStacks.put(CurseCard.class, numOfCards);
+		supply.addToStack(CurseCard.class, numOfCards);
 	}
 	
 	/** 
@@ -231,7 +221,7 @@ public class GameBoard {
 				numOfCards = 12;
 			}
 			
-			supplyStacks.put(cardClass, numOfCards);
+			supply.addToStack(cardClass, numOfCards);
 		}		
 	}
 	
@@ -240,9 +230,9 @@ public class GameBoard {
 	 * @param numberOfPlayers
 	 */
 	private void setupTreasureCards() {
-		supplyStacks.put(CopperCard.class, 50);
-		supplyStacks.put(SilverCard.class, 50);
-		supplyStacks.put(GoldCard.class, 50);
+		supply.addToStack(CopperCard.class, 50);
+		supply.addToStack(SilverCard.class, 50);
+		supply.addToStack(GoldCard.class, 50);
 	}
 	
 	/**
@@ -259,8 +249,8 @@ public class GameBoard {
 			numOfCards = 8;
 		}
 		
-		supplyStacks.put(EstateCard.class, numOfCards);
-		supplyStacks.put(DuchyCard.class, numOfCards);
-		supplyStacks.put(ProvinceCard.class, numOfCards);
+		supply.addToStack(EstateCard.class, numOfCards);
+		supply.addToStack(DuchyCard.class, numOfCards);
+		supply.addToStack(ProvinceCard.class, numOfCards);
 	}	
 }

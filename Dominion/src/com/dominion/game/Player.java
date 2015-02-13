@@ -121,7 +121,7 @@ public class Player {
 	 * Move the card deck to the discard pile
 	 */
 	public void discardEntireCardDeck() {
-		discardPile.addCards(cardDeck.getCards());
+		discardPile.addCards(cardDeck.clearCards());
 	}
 	
 	/**

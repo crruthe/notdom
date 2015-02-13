@@ -19,10 +19,10 @@ public abstract class AttackAction implements CardAction {
 				// Allow the player to reveal any reaction cards
 				card = victim.getReactionCardToPlay();
 				if (card != null) {
-					CardAction action = card.getReaction();
+					ReactionAction action = card.getReaction();
 					state.broadcastToAllPlayers(new CardRevealedMessage(victim, (Card)card));
 		
-					action.execute(state);
+					action.executeOnPlayer(state, victim);
 				}				
 			} while (card != null);
 

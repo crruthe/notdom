@@ -26,7 +26,7 @@ public class GameState {
 	private TurnState turnState = new TurnState();	
 	
 	public GameState() {
-		gameBoard.addObserverToTrashPile(new TrashPileObserver(this));
+		gameBoard.registerObservers(this);
 	}
 	
 	public void addPlayer(Player player) {
@@ -146,7 +146,6 @@ public class GameState {
 	 */
 	private void setupGameBoard() {
 		gameBoard.setupRandom(players.size());
-		broadcastToAllPlayers(new UpdateSupplyMessage(gameBoard.getSupplyStacks()));
 	}	
 	
 	public void broadcastToAllPlayers(PlayerInterfaceMessage message) {

@@ -42,9 +42,6 @@ public class ThiefAction extends AttackAction {
 		}
 		cards.remove(trashCard);
 		
-		// Trash the card from the victims hand
-		victim.removeFromHand(trashCard);
-		
 		// Add the remaining to the players discard
 		victim.addCardsToDiscardPile(cards);
 		
