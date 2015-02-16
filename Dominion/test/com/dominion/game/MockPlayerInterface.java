@@ -14,26 +14,13 @@ import com.dominion.game.interfaces.PlayerInterface;
 public class MockPlayerInterface implements PlayerInterface {
 
 	private List<Card> cardHand = new LinkedList<Card>();
+	private Card discardCard;
 	private int numOfActions;
 	private int numOfBuys;
 	private int numOfCoins;
-
-	public List<Card> getCardHand() {
-		return cardHand;
-	}
+	private List<Card> playArea = new LinkedList<Card>();
+	private int deckSize = 0;
 	
-	public int getNumOfActions() {
-		return numOfActions;
-	}
-
-	public int getNumOfBuys() {
-		return numOfBuys;
-	}
-
-	public int getNumOfCoins() {
-		return numOfCoins;
-	}
-
 	@Override
 	public void updateHand(List<Card> cards) {
 		cardHand = new LinkedList<Card>(cards);
@@ -125,14 +112,12 @@ public class MockPlayerInterface implements PlayerInterface {
 
 	@Override
 	public void updateDeck(int numOfCards) {
-		// TODO Auto-generated method stub
-		
+		deckSize = numOfCards;		
 	}
 
 	@Override
 	public void updateDiscard(Card card) {
-		// TODO Auto-generated method stub
-		
+		discardCard = card;		
 	}
 
 	@Override
@@ -143,8 +128,7 @@ public class MockPlayerInterface implements PlayerInterface {
 
 	@Override
 	public void updatePlayArea(List<Card> cards) {
-		// TODO Auto-generated method stub
-		
+		playArea = cards;
 	}
 
 	@Override
@@ -214,4 +198,31 @@ public class MockPlayerInterface implements PlayerInterface {
 		
 	}
 
+	public Card getDiscardCard() {
+		return discardCard;
+	}
+
+	public List<Card> getPlayArea() {
+		return playArea;
+	}	
+	
+	public List<Card> getCardHand() {
+		return cardHand;
+	}
+	
+	public int getNumOfActions() {
+		return numOfActions;
+	}
+
+	public int getNumOfBuys() {
+		return numOfBuys;
+	}
+
+	public int getNumOfCoins() {
+		return numOfCoins;
+	}
+
+	public int getDeckSize() {
+		return deckSize;
+	}	
 }

@@ -9,17 +9,13 @@ public class SpyAction extends AttackAction {
 	@Override
 	public void execute(GameState state) {
 		// Applies to current player as well
-		action(state, state.getCurrentPlayer());
+		executeAttackOnPlayer(state, state.getCurrentPlayer());
 		
 		super.execute(state);
 	}
 
 	@Override
 	public void executeAttackOnPlayer(GameState state, Player victim) {
-		action(state, victim);
-	}	
-	
-	private void action(GameState state, Player victim) {
 		// Reveal the top card
 		Card card = victim.drawCard();
 		
@@ -36,5 +32,5 @@ public class SpyAction extends AttackAction {
 		} else {
 			victim.addCardToCardDeck(card);
 		}
-	}
+	}	
 }

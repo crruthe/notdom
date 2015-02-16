@@ -52,7 +52,6 @@ public class BureaucratActionTest extends TestCase {
 			@Override
 			public Card selectVictoryCardToReveal(java.util.List<Card> cards) {
 				Card card = cards.get(cards.indexOf(new ProvinceCard()));
-				System.out.println(card);
 				return card;
 			}
 		};

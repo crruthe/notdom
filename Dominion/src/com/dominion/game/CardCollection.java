@@ -76,9 +76,10 @@ public class CardCollection extends Observable {
 		if (cards.isEmpty()) { 
 			return null;
 		}
+		Card topCard = cards.removeLast();
 		setChanged();
 		notifyObservers();
-		return cards.removeLast();
+		return topCard;
 	}
 
 	public List<Card> getCards() {

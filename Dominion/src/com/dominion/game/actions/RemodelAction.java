@@ -30,11 +30,12 @@ public class RemodelAction implements CardAction {
 		
 		List<Card> cards = state.getGameBoard().listCardsFilterByCost(trashCard.getCost() + 2);
 		
-		Card card = state.getCurrentPlayer().getCardToBuy(cards);
-		
-		if (card != null) {
-			state.getCurrentPlayer().addCardToDiscardPile(card);
-			state.getGameBoard().removeCardFromSupply(card.getClass());
+		// Player must gain a card
+		Card gainCard = null;
+		while (gainCard == null) {
+			gainCard = state.getCurrentPlayer().getCardToBuy(cards);
 		}
+		state.getCurrentPlayer().addCardToDiscardPile(gainCard);
+		state.getGameBoard().removeCardFromSupply(gainCard.getClass());
 	}
 }

@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.management.RuntimeErrorException;
+
 import com.dominion.game.cards.Card;
 import com.dominion.game.cards.basic.CopperCard;
 import com.dominion.game.cards.basic.EstateCard;
@@ -21,13 +23,9 @@ public class GameState {
 	private final static int NUM_COPPER_SETUP = 7;
 	private final static int NUM_ESTATE_SETUP = 3;		
 
-	private final GameBoard gameBoard = new GameBoard();
+	private GameBoard gameBoard;
 	private final LinkedList<Player> players = new LinkedList<Player>();	
 	private TurnState turnState = new TurnState();	
-	
-	public GameState() {
-		gameBoard.registerObservers(this);
-	}
 	
 	public void addPlayer(Player player) {
 		players.add(player);
@@ -90,9 +88,17 @@ public class GameState {
 	}
 	
 	public void initialise() {
-		setupGameBoard();
+		if (gameBoard == null) {
+			gameBoard = new GameBoard();
+			gameBoard.setupRandom(players.size());			
+		}
 		setupAllPlayers();
 		randomisePlayers();
+		gameBoard.registerObservers(this);
+	}
+	
+	public void setGameBoard(GameBoard gameBoard) {
+		this.gameBoard = gameBoard;
 	}
 	
 	public void rotatePlayers() {
@@ -139,14 +145,6 @@ public class GameState {
 			player.drawNewHand();
 		}
 	}
-	
-	/**
-	 * Set up the game board with all the supply stacks. 
-	 * Number of players will affect the supply sizes.
-	 */
-	private void setupGameBoard() {
-		gameBoard.setupRandom(players.size());
-	}	
 	
 	public void broadcastToAllPlayers(PlayerInterfaceMessage message) {
 		for (Player player: players) {
