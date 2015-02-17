@@ -26,7 +26,6 @@ public class Player {
 	private final CardCollection playArea = new CardCollection();	
 	
 	private final PlayerInterface playerInterface;
-	private String playerName;
 	
 	/**
 	 * Constructor
@@ -259,10 +258,6 @@ public class Player {
 		return cardHand.count();
 	}
 	
-	public String getPlayerName() {
-		return playerName;
-	}
-
 	public ReactionCard getReactionCardToPlay() {
 		List<Card> cards = cardHand.getCardsFilterByClass(ReactionCard.class);
 		
@@ -358,10 +353,6 @@ public class Player {
 		this.immune = immune;
 	}
 
-	public void setPlayerName(String playerName) {
-		this.playerName = playerName;
-	}
-
 	public boolean wantsToDiscardCard(Card card) {
 		return playerInterface.chooseIfDiscardCard(card);		
 	}
@@ -394,5 +385,9 @@ public class Player {
 		cards.addAll(cardDeck.getCards());
 		
 		return cards;
+	}
+	
+	public String getPlayerName() {
+		return playerInterface.getPlayerName();
 	}
 }

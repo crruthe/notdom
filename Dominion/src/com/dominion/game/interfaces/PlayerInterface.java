@@ -41,4 +41,5 @@ public interface PlayerInterface {
 	public void updateSupply(final HashMap<Class<? extends Card>, Integer> supplyStack);
 	public void updateTrashPile(final List<Card> cards);
 	public void updateTurnState(int numOfActions, int numOfBuys, int numOfCoins);
+	public String getPlayerName();
 }

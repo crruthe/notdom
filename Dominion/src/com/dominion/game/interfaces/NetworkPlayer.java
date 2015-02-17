@@ -1,9 +1,14 @@
 package com.dominion.game.interfaces;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.TreeMap;
 
 import redis.clients.jedis.Jedis;
 
@@ -26,49 +31,138 @@ public class NetworkPlayer implements PlayerInterface {
 			this.data = data;
 		}
 	}
-	public static void main(String[] args) {
-		GameMaster gm = new GameMaster();
+	
+	class Connection {
+		private String clientid;
+		private Jedis jedis;
 		
-		Jedis j = new Jedis("localhost");
-		while (true) {
-			break;
+		public Connection(String clientid) {
+			jedis = new Jedis("localhost");
+			this.clientid = clientid;
 		}
-		j.flushAll();
-		j.close();
-		
-		//gm.addPlayer(new Player(new SimpleConsolePlayer()));
-		Player player1 = new Player(new NetworkPlayer());
-		Player player2 = new Player(new NetworkPlayer());
-		Player player3 = new Player(new BasicRulesAIPlayer());
-		//Player player4 = new Player(new NetworkPlayer());
-		player1.setPlayerName("BobTheMagnificent");
-		player2.setPlayerName("Susan");
-		player3.setPlayerName("BasicAI");
-		//player4.setPlayerName("Jesus");
-		
-		gm.addPlayerToState(player1);
-		gm.addPlayerToState(player2);		
-		//gm.addPlayer(player3);
-		//gm.addPlayer(player4);
 
-		gm.startGame();
+		public void sendMessage(String json) {
+			jedis.rpush("client:"+clientid, json);
+		}		
+		
+		public String waitForMessage() {
+			return waitForMessage(0);
+		}
+		
+		public String waitForMessage(int timeout) {
+			List<String> result = jedis.blpop(timeout, "server:"+clientid);
+			if (result == null) {
+				return null;
+			}
+			return result.get(1);			
+		}		
 	}
 	
-	private String clientid;
-
-	private Jedis jedis;
-	
-	public NetworkPlayer() {
-		jedis = new Jedis("localhost");
-		setup();
+	public static void main(String[] args) {
+		while (true) {
+			GameMaster gm = new GameMaster();
+			List<NetworkPlayer> players = new LinkedList<NetworkPlayer>();
+			
+			Jedis j = new Jedis("localhost");
+			boolean startGame = false;
+			while (players.isEmpty() || !startGame) {			
+				System.out.println("Check for new players...");
+				String clientid = j.lpop("newclient");
+				
+				if (clientid != null) {
+					System.out.println("Client found: " + clientid);
+					
+					// Create a new player and add to player list
+					NetworkPlayer newPlayer = new NetworkPlayer(clientid);
+					players.add(newPlayer);				
+				}
+				
+				startGame = true;
+				
+				// Check if players are still there, remove them if not
+				Iterator<NetworkPlayer> iter = players.iterator();
+				while (iter.hasNext()) {
+					NetworkPlayer player = iter.next();
+					if (!player.heartbeat()) {					
+						iter.remove();
+					} else {
+						// If their name isn't set
+						if (player.getPlayerName().equals("")) {
+							// Setup their player name				
+							player.selectPlayerName();
+							// Wait for player to say their ready
+							player.waitReadyToStart();
+						}
+						if (!player.isReady()) {
+							startGame = false; 
+						}
+					}
+				}
+				try {
+					Thread.sleep(2000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			j.close();
+			
+			//gm.addPlayer(new Player(new SimpleConsolePlayer()));
+			
+			for (NetworkPlayer player : players) {
+				gm.addPlayerToState(new Player(player));
+			}			
+			gm.startGame();
+		}
 	}
 	
+	private Connection connection;
+	private String playerName = "";
+	private boolean isReady = false;
+
+	public NetworkPlayer(String clientid) {
+		this.connection = new Connection(clientid);
+	}
+	
+	public boolean heartbeat() {
+		Gson gson = new Gson();
+		String json = gson.toJson(new Message("heartbeat", null));
+		connection.sendMessage(json);
+		
+		// Wait 5 seconds for the player to respond
+		String result = connection.waitForMessage(2);
+		if (result.equals("ready")) {
+			isReady = true;		
+			result = connection.waitForMessage(2);
+		}
+
+		System.out.println(result);
+		return result.equals("heartbeat");
+	}
+	
+	public void selectPlayerName() {
+		Gson gson = new Gson();
+		String json = gson.toJson(new Message("selectPlayerName", null));
+		connection.sendMessage(json);
+		playerName = connection.waitForMessage();
+	}
+	
+	public void waitReadyToStart() {
+		Gson gson = new Gson();
+		String json = gson.toJson(new Message("waitReadyToStart", null));
+		connection.sendMessage(json);		
+	}
+	
+	public boolean isReady() {
+		return isReady;
+	}
+
 	@Override
 	public boolean chooseIfDiscardCard(Card card) {
 		System.out.println("chooseIfDiscardCard");
 		String json = convertCardToJson("chooseIfDiscardCard", card);
-		sendMessage(json);
-		String result = waitForMessage();
+		connection.sendMessage(json);
+		String result = connection.waitForMessage();
 		return result.equals("Y");
 	}
 	
@@ -76,8 +170,8 @@ public class NetworkPlayer implements PlayerInterface {
 	public boolean chooseIfGainCard(Card card) {
 		System.out.println("chooseIfGainCard");
 		String json = convertCardToJson("chooseIfGainCard", card);
-		sendMessage(json);
-		String result = waitForMessage();
+		connection.sendMessage(json);
+		String result = connection.waitForMessage();
 		return result.equals("Y");
 	}
 	
@@ -85,8 +179,8 @@ public class NetworkPlayer implements PlayerInterface {
 	public boolean chooseIfGainCardThief(Card card) {
 		System.out.println("chooseIfGainCardThief");
 		String json = convertCardToJson("chooseIfGainCardThief", card);
-		sendMessage(json);
-		String result = waitForMessage();
+		connection.sendMessage(json);
+		String result = connection.waitForMessage();
 		return result.equals("Y");
 	}
 		
@@ -95,8 +189,8 @@ public class NetworkPlayer implements PlayerInterface {
 		System.out.println("chooseIfPutDeckInDiscard");
 		Gson gson = new Gson();
 		String json = gson.toJson(new Message("chooseIfPutDeckInDiscard", null));
-		sendMessage(json);
-		String result = waitForMessage();
+		connection.sendMessage(json);
+		String result = connection.waitForMessage();
 		return result.equals("Y");
 	}
 	
@@ -104,8 +198,8 @@ public class NetworkPlayer implements PlayerInterface {
 	public boolean chooseIfSetAsideCard(Card card) {
 		System.out.println("chooseIfSetAsideCard");
 		String json = convertCardToJson("chooseIfSetAsideCard", card);
-		sendMessage(json);
-		String result = waitForMessage();
+		connection.sendMessage(json);
+		String result = connection.waitForMessage();
 		return result.equals("Y");
 	}	
 	
@@ -113,8 +207,8 @@ public class NetworkPlayer implements PlayerInterface {
 	public boolean chooseIfTrashCard(Card card) {
 		System.out.println("chooseIfTrashCard");
 		String json = convertCardToJson("chooseIfTrashCard", card);
-		sendMessage(json);
-		String result = waitForMessage();
+		connection.sendMessage(json);
+		String result = connection.waitForMessage();
 		return result.equals("Y");
 	}
 
@@ -123,7 +217,7 @@ public class NetworkPlayer implements PlayerInterface {
 		System.out.println("notifyLog");
 		Gson gson = new Gson();
 		String json = gson.toJson(new Message("notifyLog", player.getPlayerName() + " gained " + card.getName() + "."));
-		sendMessage(json);
+		connection.sendMessage(json);
 	}
 
 	@Override
@@ -131,7 +225,7 @@ public class NetworkPlayer implements PlayerInterface {
 		System.out.println("notifyLog");
 		Gson gson = new Gson();
 		String json = gson.toJson(new Message("notifyLog", player.getPlayerName() + " played " + card.getName() + "."));
-		sendMessage(json);
+		connection.sendMessage(json);
 	}
 
 	@Override
@@ -139,7 +233,7 @@ public class NetworkPlayer implements PlayerInterface {
 		System.out.println("notifyLog");
 		Gson gson = new Gson();
 		String json = gson.toJson(new Message("notifyLog", player.getPlayerName() + " revealed " + card.getName() + "."));
-		sendMessage(json);
+		connection.sendMessage(json);
 	}
 
 	@Override
@@ -156,7 +250,7 @@ public class NetworkPlayer implements PlayerInterface {
 		System.out.println("notifyLog");
 		Gson gson = new Gson();
 		String json = gson.toJson(new Message("notifyLog", player.getPlayerName() + " cards: " + cardMap + "."));
-		sendMessage(json);
+		connection.sendMessage(json);
 	}
 
 	@Override
@@ -164,7 +258,7 @@ public class NetworkPlayer implements PlayerInterface {
 		System.out.println("notifyLog");
 		Gson gson = new Gson();
 		String json = gson.toJson(new Message("notifyLog", player.getPlayerName() + " scored " + score + "."));
-		sendMessage(json);
+		connection.sendMessage(json);
 	}
 
 	@Override
@@ -172,7 +266,7 @@ public class NetworkPlayer implements PlayerInterface {
 		System.out.println("notifyLog");
 		Gson gson = new Gson();
 		String json = gson.toJson(new Message("notifyLog", player.getPlayerName() + " revealed hand: " + cards + "."));
-		sendMessage(json);
+		connection.sendMessage(json);
 	}
 
 	@Override
@@ -180,8 +274,8 @@ public class NetworkPlayer implements PlayerInterface {
 		// TODO Auto-generated method stub
 		System.out.println("selectActionCardToPlay");
 		String json = convertCardsToJson("selectActionCardToPlay", cards);
-		sendMessage(json);
-		String result = waitForMessage();
+		connection.sendMessage(json);
+		String result = connection.waitForMessage();
 		System.out.println(result);
 		
 		for(Card card : cards) {
@@ -204,8 +298,8 @@ public class NetworkPlayer implements PlayerInterface {
 		// TODO Auto-generated method stub
 		System.out.println("selectCardToBuy");
 		String json = convertCardsToJson("selectCardToBuy", cards);
-		sendMessage(json);
-		String result = waitForMessage();
+		connection.sendMessage(json);
+		String result = connection.waitForMessage();
 		System.out.println(result);
 		
 		for(Card card : cards) {
@@ -221,8 +315,8 @@ public class NetworkPlayer implements PlayerInterface {
 		// TODO Auto-generated method stub
 		System.out.println("selectCardToDiscard");
 		String json = convertCardsToJson("selectCardToDiscard", cards);
-		sendMessage(json);
-		String result = waitForMessage();
+		connection.sendMessage(json);
+		String result = connection.waitForMessage();
 		System.out.println(result);
 		
 		for(Card card : cards) {
@@ -238,8 +332,8 @@ public class NetworkPlayer implements PlayerInterface {
 		// TODO Auto-generated method stub
 		System.out.println("selectCardToPutOnDeck");
 		String json = convertCardsToJson("selectCardToPutOnDeck", cards);
-		sendMessage(json);
-		String result = waitForMessage();
+		connection.sendMessage(json);
+		String result = connection.waitForMessage();
 		System.out.println(result);
 		
 		for(Card card : cards) {
@@ -255,8 +349,8 @@ public class NetworkPlayer implements PlayerInterface {
 		// TODO Auto-generated method stub
 		System.out.println("selectCardToTrashFromHand");
 		String json = convertCardsToJson("selectCardToTrashFromHand", cards);
-		sendMessage(json);
-		String result = waitForMessage();
+		connection.sendMessage(json);
+		String result = connection.waitForMessage();
 		System.out.println(result);
 		
 		for(Card card : cards) {
@@ -272,8 +366,8 @@ public class NetworkPlayer implements PlayerInterface {
 		// TODO Auto-generated method stub
 		System.out.println("selectCardToTrashThief");
 		String json = convertCardsToJson("selectCardToTrashThief", cards);
-		sendMessage(json);
-		String result = waitForMessage();
+		connection.sendMessage(json);
+		String result = connection.waitForMessage();
 		System.out.println(result);
 		
 		for(Card card : cards) {
@@ -289,8 +383,8 @@ public class NetworkPlayer implements PlayerInterface {
 		// TODO Auto-generated method stub
 		System.out.println("selectReactionCard");
 		String json = convertCardsToJson("selectReactionCard", cards);
-		sendMessage(json);
-		String result = waitForMessage();
+		connection.sendMessage(json);
+		String result = connection.waitForMessage();
 		System.out.println(result);
 		
 		for(Card card : cards) {
@@ -306,8 +400,8 @@ public class NetworkPlayer implements PlayerInterface {
 		// TODO Auto-generated method stub
 		System.out.println("selectTreasureCardToPlay");
 		String json = convertCardsToJson("selectTreasureCardToPlay", cards);
-		sendMessage(json);
-		String result = waitForMessage();
+		connection.sendMessage(json);
+		String result = connection.waitForMessage();
 		System.out.println(result);
 		
 		for(Card card : cards) {
@@ -324,8 +418,8 @@ public class NetworkPlayer implements PlayerInterface {
 		// TODO Auto-generated method stub
 		System.out.println("selectVictoryCardToReveal");
 		String json = convertCardsToJson("selectVictoryCardToReveal", cards);
-		sendMessage(json);
-		String result = waitForMessage();
+		connection.sendMessage(json);
+		String result = connection.waitForMessage();
 		System.out.println(result);
 		
 		for(Card card : cards) {
@@ -342,7 +436,7 @@ public class NetworkPlayer implements PlayerInterface {
 		System.out.println("updateDeck");
 		Gson gson = new Gson();
 		String json = gson.toJson(new Message("updateDeck", numOfCards));		
-		sendMessage(json);
+		connection.sendMessage(json);
 	}
 
 	@Override
@@ -350,7 +444,7 @@ public class NetworkPlayer implements PlayerInterface {
 		// TODO Auto-generated method stub
 		System.out.println("updateDiscard");
 		String json = convertCardToJson("updateDiscard", card);
-		sendMessage(json);
+		connection.sendMessage(json);
 	}
 
 	@Override
@@ -358,7 +452,7 @@ public class NetworkPlayer implements PlayerInterface {
 		// TODO Auto-generated method stub
 		System.out.println("updateHand");
 		String json = convertCardsToJson("updateHand", cards);
-		sendMessage(json);
+		connection.sendMessage(json);
 	}
 
 	@Override
@@ -372,19 +466,50 @@ public class NetworkPlayer implements PlayerInterface {
 		// TODO Auto-generated method stub
 		System.out.println("updatePlayArea");
 		String json = convertCardsToJson("updatePlayArea", cards);
-		sendMessage(json);
+		connection.sendMessage(json);
 	}
 
 	@Override
 	public void updateSupply(HashMap<Class<? extends Card>, Integer> supplyStack) {
 		// TODO Auto-generated method stub
-		Gson gson = new Gson();
-		HashMap<String,Integer> supplyObject = new HashMap<String, Integer>();
+		List<Card> cards = new LinkedList<Card>();
+		
 		for(Class<? extends Card> cardClass : supplyStack.keySet()) {
-			supplyObject.put(cardClass.getSimpleName().replace("Card", ""), supplyStack.get(cardClass));
+			Card card = null;
+			try {
+				card = cardClass.newInstance();
+			} catch (InstantiationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			cards.add(card);
 		}
+
+		Collections.sort(cards, new Comparator<Card>() {
+			@Override
+			public int compare(Card o1, Card o2) {
+				// Sort by cost
+				int compare = new Integer(o1.getCost()).compareTo(o2.getCost());
+				
+				// Then sort by name
+				if (compare == 0) {
+					return o1.getName().compareTo(o2.getName());
+				}
+				return compare;
+			}
+		});
+		
+		LinkedHashMap<String, Integer> supplyObject = new LinkedHashMap<String, Integer>();		
+		for (Card card : cards) {
+			supplyObject.put(card.getName(), supplyStack.get(card.getClass()));
+		}
+		
+		Gson gson = new Gson();		
 		String json = gson.toJson(new Message("updateSupply", supplyObject));		
-		sendMessage(json);
+		connection.sendMessage(json);
 	}
 
 	@Override
@@ -392,7 +517,7 @@ public class NetworkPlayer implements PlayerInterface {
 		// TODO Auto-generated method stub
 		System.out.println("updateTrashPile");
 		String json = convertCardsToJson("updateTrashPile", cards);
-		sendMessage(json);
+		connection.sendMessage(json);
 	}
 
 	@Override
@@ -404,7 +529,7 @@ public class NetworkPlayer implements PlayerInterface {
 		turnState.put("numOfBuys", numOfBuys);
 		turnState.put("numOfCoins", numOfCoins);
 		String json = gson.toJson(new Message("updateTurnState", turnState));		
-		sendMessage(json);
+		connection.sendMessage(json);
 	}
 
 	/**
@@ -441,19 +566,8 @@ public class NetworkPlayer implements PlayerInterface {
 		return json;
 	}
 
-	private void sendMessage(String json) {
-		jedis.rpush("client:"+clientid, json);
-	}
-
-	private void setup() {		
-		System.out.println("Waiting for player to connect...");
-		List<String> result = jedis.blpop(0, "newclient");
-		clientid = result.get(1);
-		System.out.println("Client found: " + clientid);						
-	}
-
-	private String waitForMessage() {
-		List<String> result = jedis.blpop(0, "server:"+clientid);
-		return result.get(1);
+	@Override
+	public String getPlayerName() {
+		return playerName;
 	}
 }

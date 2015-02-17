@@ -316,4 +316,9 @@ public class BasicRulesAIPlayer implements PlayerInterface {
 	public void updateSupply(HashMap<Class<? extends Card>, Integer> supplyStack) {
 		// TODO Auto-generated method stub		
 	}
+
+	@Override
+	public String getPlayerName() {
+		return "BasicRulesAIPlayer";
+	}
 }

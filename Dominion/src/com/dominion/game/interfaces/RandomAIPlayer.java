@@ -18,11 +18,11 @@ public class RandomAIPlayer implements PlayerInterface {
 	public static void main(String[] args) {
 		GameMaster gm = new GameMaster();
 		Player p1 = new Player(new BigMoneyAIPlayer());
-		p1.setPlayerName("BigMoney");
 		Player p2 = new Player(new RandomAIPlayer());
-		p2.setPlayerName("Random");
+		Player p3 = new Player(new BasicRulesAIPlayer());
 		gm.addPlayerToState(p1);		
 		gm.addPlayerToState(p2);
+		gm.addPlayerToState(p3);
 		gm.startGame();
 	}
 	
@@ -227,5 +227,10 @@ public class RandomAIPlayer implements PlayerInterface {
 	public void updateSupply(HashMap<Class<? extends Card>, Integer> supplyStack) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public String getPlayerName() {
+		return "RandomAIPlayer";
 	}
 }

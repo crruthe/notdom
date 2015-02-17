@@ -25,7 +25,10 @@ public class MineAction implements CardAction {
 		
 		// Find a treasure card to replace the trashed card
 		List<Card> cards = state.getGameBoard().listCardsFilterByClassAndCost(TreasureCard.class, trashCard.getCost() + 3);
-		Card card = state.getCurrentPlayer().getTreasureCardToGain(cards);
+		Card card = null;
+		while (card == null) {
+			card = state.getCurrentPlayer().getTreasureCardToGain(cards);			
+		}	
 		
 		state.getCurrentPlayer().addCardToHand(card);
 	}

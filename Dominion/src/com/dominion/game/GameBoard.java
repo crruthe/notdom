@@ -172,11 +172,11 @@ public class GameBoard {
 		cardList.add(MoneylenderCard.class);
 		cardList.add(SpyCard.class);
 		cardList.add(CourtyardCard.class);
+		cardList.add(ThiefCard.class);
+		cardList.add(MoatCard.class);		
+		cardList.add(ChancellorCard.class);
 		
 		Collections.shuffle(cardList);		
-		cardList.addFirst(ThiefCard.class);
-		cardList.addFirst(MoatCard.class);		
-		cardList.addFirst(ChancellorCard.class);
 		
 		return cardList.subList(0, 10);
 	}

@@ -95,6 +95,9 @@ public class GameState {
 		setupAllPlayers();
 		randomisePlayers();
 		gameBoard.registerObservers(this);
+		
+		// Notify players of new supply
+		broadcastToAllPlayers(new UpdateSupplyMessage(gameBoard.getSupplyStacks()));
 	}
 	
 	public void setGameBoard(GameBoard gameBoard) {
