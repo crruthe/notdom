@@ -24,7 +24,7 @@ public interface PlayerInterface {
 	public void notifyEndGameCards(final Player player, List<Card> cards);
 	public void notifyEndGameScore(final Player player, int score);
 	public ActionCard selectActionCardToPlay(final List<Card> cards);
-	public CardAction selectCardActionToPlay(List<CardAction> actions);
+	public CardAction selectCardActionToPlay(final HashMap<String, CardAction> actions);
 	public Card selectCardToBuy(final List<Card> cards);
 	public Card selectCardToDiscard(final List<Card> cards);
 	public Card selectCardToPutOnDeck(final List<Card> cards);

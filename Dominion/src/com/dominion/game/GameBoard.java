@@ -85,6 +85,10 @@ public class GameBoard {
 	 * @return collection of cards
 	 */
 	public List<Card> listCardsFilterByCost(int amount) {
+		return listCardsFilterByCost(0, amount);
+	}
+	
+	public List<Card> listCardsFilterByCost(int min, int max) {
 		List<Card> cards = new LinkedList<Card>();
 		
 		for (Class<? extends Card> cardClass : supply.getStacks().keySet()) {	
@@ -93,12 +97,12 @@ public class GameBoard {
 				Card card = getCard(cardClass);
 				
 				// Check if player can afford this card
-				if (card.getCost() <= amount) {
+				if (card.getCost() >= min && card.getCost() <= max) {
 					cards.add(card);
 				}
 			}
 		}
-		return cards;
+		return cards;		
 	}
 	
 	public void setup(List<Class<? extends Card>> kingdomCards, int numberOfPlayers) {
@@ -147,36 +151,66 @@ public class GameBoard {
 	private List<Class<? extends Card>> randomKingdoms() {
 		LinkedList<Class<? extends Card>> cardList = new LinkedList<Class<? extends Card>>();
 		
-		cardList.add(WoodcutterCard.class);
-		cardList.add(VillageCard.class);
-		cardList.add(WorkshopCard.class);
-		cardList.add(SmithyCard.class);
-		cardList.add(CouncilRoomCard.class);		
-		cardList.add(LaboratoryCard.class);		
-		cardList.add(FestivalCard.class);		
-		cardList.add(MarketCard.class);		
-		cardList.add(WitchCard.class);		
-		cardList.add(GardensCard.class);		
+		/* 
+		 * Base  
+		 */
+		
+		// 2: Cellar, Chapel, Moat 
 		cardList.add(CellarCard.class);		
 		cardList.add(ChapelCard.class);		
-		cardList.add(FeastCard.class);		
-		cardList.add(LibraryCard.class);		
+		cardList.add(MoatCard.class);
+
+		// 3: Chancellor, Village, Woodcutter, Workshop
 		cardList.add(ChancellorCard.class);		
+		cardList.add(VillageCard.class);
+		cardList.add(WoodcutterCard.class);
+		cardList.add(WorkshopCard.class);
+
+		// 4: Bureaucrat, Feast, Gardens, Militia, Moneylender, Remodel, Smithy, Spy, Thief, Throne Room
+		cardList.add(BureaucratCard.class);	
+		cardList.add(FeastCard.class);		
+		cardList.add(GardensCard.class);
 		cardList.add(MilitiaCard.class);	
-		cardList.add(MineCard.class);		
-		cardList.add(AdventurerCard.class);
-		cardList.add(RemodelCard.class);		
-		cardList.add(BureaucratCard.class);		
-		cardList.add(ThroneRoomCard.class);						
-		cardList.add(ChapelCard.class);
 		cardList.add(MoneylenderCard.class);
-		cardList.add(SpyCard.class);
-		cardList.add(CourtyardCard.class);
+		cardList.add(RemodelCard.class);	
+		cardList.add(SmithyCard.class);
+		cardList.add(SpyCard.class);		
 		cardList.add(ThiefCard.class);
-		cardList.add(MoatCard.class);		
-		cardList.add(ChancellorCard.class);
+		cardList.add(ThroneRoomCard.class);						
+
+		// 5: Council Room, Festival, Laboratory, Library, Market, Mine, Witch
+		cardList.add(CouncilRoomCard.class);				
+		cardList.add(FestivalCard.class);
+		cardList.add(LaboratoryCard.class);		
+		cardList.add(LibraryCard.class);
+		cardList.add(MarketCard.class);		
+		cardList.add(MineCard.class);	
+		cardList.add(WitchCard.class);		
+
+		// 6: Adventurer
+		cardList.add(AdventurerCard.class);
+
+		/*
+		 * Intrigue
+		 */
+		
+		// 2: Courtyard, Pawn, Secret Chamber 
+		cardList.add(CourtyardCard.class);
+		cardList.add(PawnCard.class);
+		
+		// 3: Great Hall, Masquerade, Shanty Town, Steward, Swindler, Wishing Well 
+		// 4: Baron, Bridge, Conspirator, Coppersmith, Ironworks, Mining Village, Scout 
+
+		// 5: Duke, Minion, Saboteur, Torturer, Trading Post, Tribute, Upgrade 
+		cardList.add(TributeCard.class);
+		cardList.add(UpgradeCard.class);
+
+		// 6: Harem, Nobles
+
+		
 		
 		Collections.shuffle(cardList);		
+
 		
 		return cardList.subList(0, 10);
 	}

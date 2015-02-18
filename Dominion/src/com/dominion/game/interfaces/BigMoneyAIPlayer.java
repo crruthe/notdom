@@ -313,10 +313,11 @@ public class BigMoneyAIPlayer implements PlayerInterface {
 	}
 
 	@Override
-	public CardAction selectCardActionToPlay(List<CardAction> actions) {
+	public CardAction selectCardActionToPlay(HashMap<String, CardAction> actions) {
 		// TODO Auto-generated method stub
-		return null;
+		return actions.values().iterator().next();
 	}
+
 
 	@Override
 	public Card selectCardToPutOnDeck(List<Card> cards) {

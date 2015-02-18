@@ -169,7 +169,7 @@ public class MockPlayerInterface implements PlayerInterface {
 	}
 
 	@Override
-	public CardAction selectCardActionToPlay(List<CardAction> actions) {
+	public CardAction selectCardActionToPlay(HashMap<String, CardAction> actions) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -224,5 +224,11 @@ public class MockPlayerInterface implements PlayerInterface {
 
 	public int getDeckSize() {
 		return deckSize;
+	}
+
+	@Override
+	public String getPlayerName() {
+		// TODO Auto-generated method stub
+		return null;
 	}	
 }

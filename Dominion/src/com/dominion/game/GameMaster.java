@@ -75,6 +75,8 @@ public class GameMaster {
 				break;
 			}
 			
+			state.broadcastToAllPlayers(new CardPlayedMessage(state.getCurrentPlayer(), (Card)actionCard));
+			
 			// Play the selected action card
 			playActionCard(actionCard);
 			

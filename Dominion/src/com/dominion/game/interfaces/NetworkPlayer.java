@@ -131,13 +131,13 @@ public class NetworkPlayer implements PlayerInterface {
 		
 		// Wait 5 seconds for the player to respond
 		String result = connection.waitForMessage(2);
-		if (result.equals("ready")) {
+		if (result != null && result.equals("ready")) {
 			isReady = true;		
 			result = connection.waitForMessage(2);
 		}
 
 		System.out.println(result);
-		return result.equals("heartbeat");
+		return result != null && result.equals("heartbeat");
 	}
 	
 	public void selectPlayerName() {
@@ -263,9 +263,14 @@ public class NetworkPlayer implements PlayerInterface {
 
 	@Override
 	public void notifyHandRevealed(Player player, List<Card> cards) {
+		List<String> cardsString = new LinkedList<String>();
+		for (Card card : cards) {
+			cardsString.add(card.getName());
+		}
+		
 		System.out.println("notifyLog");
 		Gson gson = new Gson();
-		String json = gson.toJson(new Message("notifyLog", player.getPlayerName() + " revealed hand: " + cards + "."));
+		String json = gson.toJson(new Message("notifyLog", player.getPlayerName() + " revealed hand: " + cardsString + "."));
 		connection.sendMessage(json);
 	}
 
@@ -288,9 +293,16 @@ public class NetworkPlayer implements PlayerInterface {
 	}
 
 	@Override
-	public CardAction selectCardActionToPlay(List<CardAction> actions) {
-		// TODO Auto-generated method stub
-		return null;
+	public CardAction selectCardActionToPlay(HashMap<String, CardAction> actions) {
+		System.out.println("selectCardActionToPlay");
+		
+		Gson gson = new Gson();		
+		String json = gson.toJson(new Message("selectCardActionToPlay", actions.keySet()));
+		connection.sendMessage(json);
+		String result = connection.waitForMessage();
+		System.out.println(result);
+		
+		return actions.get(result);
 	}
 
 	@Override
@@ -516,7 +528,7 @@ public class NetworkPlayer implements PlayerInterface {
 	public void updateTrashPile(final List<Card> cards) {
 		// TODO Auto-generated method stub
 		System.out.println("updateTrashPile");
-		String json = convertCardsToJson("updateTrashPile", cards);
+		String json = convertCardToJson("updateTrashPile", cards.get(0));
 		connection.sendMessage(json);
 	}
 

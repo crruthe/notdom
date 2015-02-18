@@ -1,6 +1,7 @@
 package com.dominion.game.interfaces;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Collections;
 import java.lang.Math;
@@ -208,9 +209,10 @@ public class RandomAIPlayer implements PlayerInterface {
 	}
 
 	@Override
-	public CardAction selectCardActionToPlay(List<CardAction> actions) {
-		// TODO Auto-generated method stub
-		return null;
+	public CardAction selectCardActionToPlay(HashMap<String, CardAction> actions) {
+		List<CardAction> actionsList = new LinkedList<CardAction>(actions.values());
+		Collections.shuffle(actionsList);
+		return actionsList.get(0);
 	}
 
 	@Override

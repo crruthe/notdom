@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.dominion.game.actions.CardAction;
 import com.dominion.game.cards.ActionCard;
 import com.dominion.game.cards.Card;
 import com.dominion.game.cards.ReactionCard;
@@ -389,5 +390,10 @@ public class Player {
 	
 	public String getPlayerName() {
 		return playerInterface.getPlayerName();
+	}
+
+	public CardAction getCardActionToPlay(HashMap<String, CardAction> actions) {
+		return playerInterface.selectCardActionToPlay(actions);
+		
 	}
 }
