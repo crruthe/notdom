@@ -22,9 +22,12 @@ public class MineAction implements CardAction {
 				
 		state.getCurrentPlayer().removeFromHand(trashCard);
 		state.getGameBoard().addToTrashPile(trashCard);
-		
+
+		// Get actual cost after modifiers e.g. Bridge
+		int cost = trashCard.modifyCard(state.getTurnState().getModifiers()).getCost();
+
 		// Find a treasure card to replace the trashed card
-		List<Card> cards = state.getGameBoard().listCardsFilterByClassAndCost(TreasureCard.class, trashCard.getCost() + 3);
+		List<Card> cards = state.listCardsFilterByClassAndCost(TreasureCard.class, cost + 3);
 		Card card = null;
 		while (card == null) {
 			card = state.getCurrentPlayer().getTreasureCardToGain(cards);			

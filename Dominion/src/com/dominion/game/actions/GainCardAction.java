@@ -15,7 +15,7 @@ public class GainCardAction implements CardAction {
 	
 	@Override
 	public void execute(GameState state) {
-		List<Card> cards = state.getGameBoard().listCardsFilterByCost(gainCost);
+		List<Card> cards = state.listCardsFilterByCost(gainCost);
 		Card card = state.getCurrentPlayer().getCardToBuy(cards);
 		
 		if (card != null) {

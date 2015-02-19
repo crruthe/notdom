@@ -19,12 +19,14 @@ public class BureaucratAction extends AttackAction {
 	}
 
 	@Override
-	public void executeAttackOnPlayer(GameState state, Player victim) {
+	public void executeAttackOnPlayer(GameState state, Player victim) {		
 		Card card = victim.getVictoryCardToReveal();
 		if (card != null) {
+			// Reveal the victory card and place it on the top of their deck
 			state.broadcastToAllPlayers(new CardRevealedMessage(victim, card));
 			victim.moveCardFromHandToDeck(card);
 		} else {
+			// Player had no victory cards, so reveal their whole hand
 			state.broadcastToAllPlayers(new HandRevealedMessage(victim, victim.getHand()));
 		}
 	}	

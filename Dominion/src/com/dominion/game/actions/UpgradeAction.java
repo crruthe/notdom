@@ -28,9 +28,11 @@ public class UpgradeAction implements CardAction {
 		state.getGameBoard().addToTrashPile(trashCard);
 		state.getCurrentPlayer().removeFromHand(trashCard);
 		
-		// Gain a card that is exactly trashcost + 1
-		int amount = trashCard.getCost() + 1;
-		List<Card> cards = state.getGameBoard().listCardsFilterByCost(amount, amount);
+		// Get actual cost after modifiers e.g. Bridge
+		int cost = trashCard.modifyCard(state.getTurnState().getModifiers()).getCost();
+
+		// Gain a card that is exactly cost + 1
+		List<Card> cards = state.listCardsFilterByCost(cost + 1, cost + 1);
 		
 		// If there is no card of this amount, no need to gain
 		if (cards.isEmpty()) {

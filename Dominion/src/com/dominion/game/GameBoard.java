@@ -4,9 +4,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
-
 import com.dominion.game.cards.*;
 import com.dominion.game.cards.basic.*;
 import com.dominion.game.cards.kingdom.*;
@@ -55,56 +52,7 @@ public class GameBoard {
 		return supply.isStackEmpty(cardName);
 	}
 
-	/**
-	 * Build up a list of cards that the player can buy
-	 * 
-	 * @param amount of coins to buy with
-	 * @return collection of cards
-	 */
-	public List<Card> listCardsFilterByClassAndCost(Class<?> cardClass, int amount) {
-		List<Card> cards = new LinkedList<Card>();
-		
-		for (Class<? extends Card> checkCardClass : supply.getStacks().keySet()) {	
-			// Check if any cards are left in stack
-			if (supply.getStacks().get(checkCardClass) > 0) {
-				Card card = getCard(checkCardClass);
-				
-				// Check if player can afford this card
-				if (cardClass.isInstance(card) && card.getCost() <= amount) {
-					cards.add(card);
-				}
-			}
-		}
-		return cards;
-	}
-	
-	/** 
-	 * Build up a list of cards that the player can buy
-	 * 
-	 * @param amount of coins to buy with
-	 * @return collection of cards
-	 */
-	public List<Card> listCardsFilterByCost(int amount) {
-		return listCardsFilterByCost(0, amount);
-	}
-	
-	public List<Card> listCardsFilterByCost(int min, int max) {
-		List<Card> cards = new LinkedList<Card>();
-		
-		for (Class<? extends Card> cardClass : supply.getStacks().keySet()) {	
-			// Check if any cards are left in stack
-			if (supply.getStacks().get(cardClass) > 0) {
-				Card card = getCard(cardClass);
-				
-				// Check if player can afford this card
-				if (card.getCost() >= min && card.getCost() <= max) {
-					cards.add(card);
-				}
-			}
-		}
-		return cards;		
-	}
-	
+
 	public void setup(List<Class<? extends Card>> kingdomCards, int numberOfPlayers) {
 		setupKingdomCards(kingdomCards, numberOfPlayers);
 		setupVictoryCards(numberOfPlayers);
@@ -116,28 +64,10 @@ public class GameBoard {
 		List<Class<? extends Card>> kingdomCards = randomKingdoms();
 		setup(kingdomCards, numberOfPlayers);
 	}
-	
-	/**
-	 * Return an instantiation of the card for the given class type
-	 * @param cardClass
-	 * @return
-	 */
-	private Card getCard(Class<? extends Card> cardClass) {
-		try {
-			return cardClass.newInstance();
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
-	}
-	
+		
 	public Card removeCardFromSupply(Class<? extends Card> cardClass) {
 		if (supply.removeCard(cardClass)) {
-			return getCard(cardClass);
+			return Card.getCard(cardClass);
 		} else {
 			return null;
 		}		

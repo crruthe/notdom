@@ -1,5 +1,8 @@
 package com.dominion.game.cards;
 
+import java.util.List;
+
+import com.dominion.game.modifiers.CardModifier;
 import com.dominion.game.visitors.CardVisitor;
 
 public abstract class Card implements Comparable<Card> {
@@ -29,5 +32,37 @@ public abstract class Card implements Comparable<Card> {
 
 	public abstract void accept(CardVisitor visitor);
 	public abstract String getName();
-	public abstract int getCost();	
+	public abstract int getCost();
+	
+	/**
+	 * Return an instantiation of the card for the given class type
+	 * @param cardClass
+	 * @return
+	 */
+	static public Card getCard(Class<? extends Card> cardClass) {
+		try {
+			return cardClass.newInstance();
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	/**
+	 * Applies modifiers to the cards
+	 * 
+	 * @param card
+	 * @return
+	 */
+	public Card modifyCard(List<CardModifier> modifiers) {
+		Card mCard = this;
+		for (CardModifier modifier : modifiers) {
+			mCard = modifier.modify(mCard);
+		}
+		return mCard;
+	}	
 }

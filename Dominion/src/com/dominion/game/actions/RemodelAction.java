@@ -27,8 +27,11 @@ public class RemodelAction implements CardAction {
 		
 		state.getGameBoard().addToTrashPile(trashCard);
 		state.getCurrentPlayer().removeFromHand(trashCard);
+
+		// Get actual cost after modifiers e.g. Bridge
+		int cost = trashCard.modifyCard(state.getTurnState().getModifiers()).getCost();
 		
-		List<Card> cards = state.getGameBoard().listCardsFilterByCost(trashCard.getCost() + 2);
+		List<Card> cards = state.listCardsFilterByCost(cost + 2);
 		
 		// Player must gain a card
 		Card gainCard = null;

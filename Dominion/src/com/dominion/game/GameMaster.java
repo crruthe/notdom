@@ -1,8 +1,6 @@
 package com.dominion.game;
 
 import java.util.List;
-import java.util.concurrent.BrokenBarrierException;
-
 import com.dominion.game.actions.CardAction;
 import com.dominion.game.cards.ActionCard;
 import com.dominion.game.cards.Card;
@@ -117,7 +115,7 @@ public class GameMaster {
 			
 			state.getCurrentPlayer().notifyOfTurnState(state.getTurnState());
 			
-			List<Card> cards = state.getGameBoard().listCardsFilterByCost(state.getTurnState().getTotalCoins());
+			List<Card> cards = state.listCardsFilterByCost(state.getTurnState().getTotalCoins());
 			
 			Card card = state.getCurrentPlayer().getCardToBuy(cards);
 			
