@@ -18,12 +18,15 @@ public interface PlayerInterface {
 	public boolean chooseIfSetAsideCard(final Card card);
 	public boolean chooseIfTrashCard(final Card card);
 	public String getPlayerName();
+	public Card guessCard(final List<Card> cards);
+	public void notifyActionSelected(Player player, String action);
 	public void notifyCardGained(final Player player, final Card card);
 	public void notifyCardPlayed(final Player player, final Card card);
 	public void notifyCardRevealed(final Player player, final Card card);
 	public void notifyCardTrashed(Player player, Card card);
 	public void notifyEndGameCards(final Player player, List<Card> cards);
 	public void notifyEndGameScore(final Player player, int score);
+	public void notifyGuessCard(Player player, Card card);
 	public void notifyHandRevealed(final Player player, final List<Card> cards);
 	public ActionCard selectActionCardToPlay(final List<Card> cards);
 	public CardAction selectCardActionToPlay(final HashMap<String, CardAction> actions);

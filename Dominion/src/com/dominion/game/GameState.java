@@ -206,4 +206,19 @@ public class GameState {
 		}
 		return cards;		
 	}
+
+
+	/**
+	 * Returns a list of the all the cards in the game
+	 * @return
+	 */
+	public List<Card> listAllCards() {
+		List<Card> cards = new LinkedList<Card>();
+		
+		for (Class<? extends Card> cardClass : gameBoard.getSupplyStacks().keySet()) {
+			Card card = Card.getCard(cardClass);				
+			cards.add(card);
+		}
+		return cards;		
+	}
 }

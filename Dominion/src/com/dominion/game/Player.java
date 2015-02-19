@@ -400,4 +400,8 @@ public class Player {
 	public boolean wantsToTrashCard(Card card) {
 		return playerInterface.chooseIfTrashCard(card);
 	}
+
+	public Card getCardWishingWell(List<Card> cards) {
+		return playerInterface.guessCard(cards);
+	}
 }

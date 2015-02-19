@@ -83,6 +83,19 @@ public class RandomAIPlayer implements PlayerInterface {
 	}
 
 	@Override
+	public Card guessCard(List<Card> cards) {
+		Collections.shuffle(cards);
+		return cards.get(0);
+	}
+
+	@Override
+	public void notifyActionSelected(Player player, String action) {
+		if (!player.getPlayerName().equals("RandomAIPlayer"))
+			return;
+		System.out.println("ActionSelected - " + player.getPlayerName() + ": " + action);
+	}
+
+	@Override
 	public void notifyCardGained(Player player, Card card) {
 		if (!player.getPlayerName().equals("RandomAIPlayer"))
 			return;
@@ -129,6 +142,13 @@ public class RandomAIPlayer implements PlayerInterface {
 		if (!player.getPlayerName().equals("RandomAIPlayer"))
 			return;
 		System.out.println("EndGameScore - " + player.getPlayerName() + ": " + score);
+	}
+
+	@Override
+	public void notifyGuessCard(Player player, Card card) {
+		if (!player.getPlayerName().equals("RandomAIPlayer"))
+			return;
+		System.out.println("GuessCard - " + player.getPlayerName() + ": " + card);
 	}
 
 	@Override

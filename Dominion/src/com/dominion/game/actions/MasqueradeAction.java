@@ -1,9 +1,6 @@
 package com.dominion.game.actions;
 
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-
 import com.dominion.game.GameState;
 import com.dominion.game.Player;
 import com.dominion.game.cards.Card;
@@ -42,6 +39,11 @@ public class MasqueradeAction implements CardAction {
 		// Place all cards set aside into the player's to the left hand
 		for (Player player : cardsAside.keySet()) {
 			player.addCardToHand(cardsAside.get(player));
+		}
+		
+		// No cards to trash
+		if (state.getCurrentPlayer().getHandSize() == 0) {
+			return;
 		}
 		
 		// Now let the current player trash a card

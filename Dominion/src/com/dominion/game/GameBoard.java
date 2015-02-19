@@ -120,6 +120,7 @@ public class GameBoard {
 		// 6: Adventurer
 		cardList.add(AdventurerCard.class);
 
+		
 		/*
 		 * Intrigue
 		 */
@@ -132,6 +133,10 @@ public class GameBoard {
 		cardList.add(GreatHallCard.class);
 		cardList.add(MasqueradeCard.class);
 		cardList.add(ShantyTownCard.class);
+		cardList.add(StewardCard.class);
+		cardList.add(SwindlerCard.class);
+		cardList.add(WishingWellCard.class);
+		
 
 		// 4: Baron, Bridge, Conspirator, Coppersmith, Ironworks, Mining Village, Scout 
 		cardList.add(BridgeCard.class);
@@ -142,10 +147,9 @@ public class GameBoard {
 
 		// 6: Harem, Nobles
 
-		
-		
+			
 		Collections.shuffle(cardList);		
-
+		
 		return cardList.subList(0, 10);
 	}
 	

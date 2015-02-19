@@ -1,7 +1,5 @@
 package com.dominion.game.interfaces;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -9,11 +7,7 @@ import java.util.List;
 
 import com.dominion.game.Player;
 import com.dominion.game.actions.CardAction;
-import com.dominion.game.actions.PlusActionAction;
-import com.dominion.game.actions.PlusCardAction;
-import com.dominion.game.actions.PlusCoinAction;
 import com.dominion.game.cards.ActionCard;
-import com.dominion.game.cards.AttackCard;
 import com.dominion.game.cards.Card;
 import com.dominion.game.cards.ReactionCard;
 import com.dominion.game.cards.TreasureCard;
@@ -25,7 +19,6 @@ import com.dominion.game.cards.basic.EstateCard;
 import com.dominion.game.cards.basic.GoldCard;
 import com.dominion.game.cards.basic.ProvinceCard;
 import com.dominion.game.cards.basic.SilverCard;
-import com.dominion.game.cards.kingdom.ThroneRoomCard;
 
 public class BigMoneyAIPlayer implements PlayerInterface {
 
@@ -83,6 +76,19 @@ public class BigMoneyAIPlayer implements PlayerInterface {
 	}
 
 	@Override
+	public Card guessCard(List<Card> cards) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void notifyActionSelected(Player player, String action) {
+		if (!player.getPlayerName().equals("BigMoneyAIPlayer"))
+			return;
+		System.out.println("ActionSelected - " + player.getPlayerName() + ": " + action);
+	}
+
+	@Override
 	public void notifyCardGained(Player player, Card card) {
 		if (!player.getPlayerName().equals("BigMoneyAIPlayer"))
 			return;
@@ -129,6 +135,13 @@ public class BigMoneyAIPlayer implements PlayerInterface {
 		if (!player.getPlayerName().equals("BigMoneyAIPlayer"))
 			return;
 		System.out.println("EndGameScore - " + player.getPlayerName() + ": " + score);
+	}
+
+	@Override
+	public void notifyGuessCard(Player player, Card card) {
+		if (!player.getPlayerName().equals("BigMoneyAIPlayer"))
+			return;
+		System.out.println("GuessCard - " + player.getPlayerName() + ": " + card);
 	}
 
 	@Override
@@ -191,8 +204,7 @@ public class BigMoneyAIPlayer implements PlayerInterface {
 		List<Card> sCards = new LinkedList<Card>(cards);
 		Collections.sort(sCards);
 		return cards.get(0);
-	}
-
+	}	
 	@Override
 	public Card selectCardToPutOnDeck(List<Card> cards) {
 		return cards.get(0);
@@ -226,7 +238,8 @@ public class BigMoneyAIPlayer implements PlayerInterface {
 		Collections.sort(sCards);
 		Collections.reverse(sCards);
 		return cards.get(0);
-	}	
+	}
+
 	@Override
 	public ReactionCard selectReactionCard(List<Card> cards) {
 		if (Math.random() < 0.25) {
@@ -239,6 +252,7 @@ public class BigMoneyAIPlayer implements PlayerInterface {
 	public TreasureCard selectTreasureCardToPlay(List<Card> cards) {
 		return (TreasureCard) cards.get(0);
 	}
+
 
 	@Override
 	public Card selectVictoryCardToReveal(List<Card> cards) {
@@ -256,7 +270,6 @@ public class BigMoneyAIPlayer implements PlayerInterface {
 		// TODO Auto-generated method stub
 
 	}
-
 
 	@Override
 	public void updateHand(List<Card> cards) {

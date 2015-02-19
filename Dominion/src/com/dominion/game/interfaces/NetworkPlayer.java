@@ -184,6 +184,23 @@ public class NetworkPlayer implements PlayerInterface {
 		return playerName;
 	}
 		
+	@Override
+	public Card guessCard(List<Card> cards) {
+		// TODO Auto-generated method stub
+		System.out.println("guessCard");
+		String json = convertCardsToJson("guessCard", cards);
+		connection.sendMessage(json);
+		String result = connection.waitForMessage();
+		System.out.println(result);
+		
+		for(Card card : cards) {
+			if (card.getName().equals(result)) {
+				return card;
+			}
+		}
+		return null;
+	}
+	
 	public boolean heartbeat() {
 		Gson gson = new Gson();
 		String json = gson.toJson(new Message("heartbeat", null));
@@ -198,12 +215,20 @@ public class NetworkPlayer implements PlayerInterface {
 
 		System.out.println(result);
 		return result != null && result.equals("heartbeat");
-	}
+	}	
 	
 	public boolean isReady() {
 		return isReady;
-	}	
-	
+	}
+
+	@Override
+	public void notifyActionSelected(Player player, String action) {
+		System.out.println("notifyLog");
+		Gson gson = new Gson();
+		String json = gson.toJson(new Message("notifyLog", player.getPlayerName() + " selected " + action + "."));
+		connection.sendMessage(json);
+	}
+
 	@Override
 	public void notifyCardGained(Player player, Card card) {
 		System.out.println("notifyLog");
@@ -258,6 +283,14 @@ public class NetworkPlayer implements PlayerInterface {
 		System.out.println("notifyLog");
 		Gson gson = new Gson();
 		String json = gson.toJson(new Message("notifyLog", player.getPlayerName() + " scored " + score + "."));
+		connection.sendMessage(json);
+	}
+
+	@Override
+	public void notifyGuessCard(Player player, Card card) {
+		System.out.println("notifyLog");
+		Gson gson = new Gson();
+		String json = gson.toJson(new Message("notifyLog", player.getPlayerName() + " guessed " + card.getName() + "."));
 		connection.sendMessage(json);
 	}
 

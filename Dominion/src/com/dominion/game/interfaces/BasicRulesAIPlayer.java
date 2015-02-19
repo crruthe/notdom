@@ -78,6 +78,19 @@ public class BasicRulesAIPlayer implements PlayerInterface {
 	}
 
 	@Override
+	public Card guessCard(List<Card> cards) {
+		Collections.shuffle(cards);
+		return cards.get(0);
+	}
+
+	@Override
+	public void notifyActionSelected(Player player, String action) {
+		if (!player.getPlayerName().equals("BasicRulesAIPlayer"))
+			return;
+		System.out.println("ActionSelected - " + player.getPlayerName() + ": " + action);
+	}
+
+	@Override
 	public void notifyCardGained(Player player, Card card) {
 		if (!player.getPlayerName().equals("BasicRulesAIPlayer"))
 			return;
@@ -124,6 +137,13 @@ public class BasicRulesAIPlayer implements PlayerInterface {
 		if (!player.getPlayerName().equals("BasicRulesAIPlayer"))
 			return;
 		System.out.println("EndGameScore - " + player.getPlayerName() + ": " + score);
+	}
+
+	@Override
+	public void notifyGuessCard(Player player, Card card) {
+		if (!player.getPlayerName().equals("BasicRulesAIPlayer"))
+			return;
+		System.out.println("GuessCard - " + player.getPlayerName() + ": " + card);
 	}
 
 	@Override
@@ -228,7 +248,7 @@ public class BasicRulesAIPlayer implements PlayerInterface {
 		int maxCost = -1;
 		Card myCard = null;
 		for (Card c: cards) {
-			if (c.getCost() > maxCost) {
+			if (!(c instanceof CurseCard) && c.getCost() > maxCost) {
 				myCard = c;
 				maxCost = c.getCost();
 			}
@@ -258,8 +278,7 @@ public class BasicRulesAIPlayer implements PlayerInterface {
 			}			
 		}
 		return cards.get(0);
-	}
-
+	}	
 	@Override
 	public Card selectCardToPutOnDeck(List<Card> cards) {
 		return cards.get(0);
@@ -293,7 +312,8 @@ public class BasicRulesAIPlayer implements PlayerInterface {
 		Collections.sort(sCards);
 		Collections.reverse(sCards);
 		return cards.get(0);
-	}	
+	}
+
 	@Override
 	public ReactionCard selectReactionCard(List<Card> cards) {
 		if (Math.random() < 0.25) {
