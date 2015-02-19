@@ -128,6 +128,7 @@ public class GameBoard {
 		// 2: Courtyard, Pawn, Secret Chamber 
 		cardList.add(CourtyardCard.class);
 		cardList.add(PawnCard.class);
+		cardList.add(SecretChamberCard.class);
 		
 		// 3: Great Hall, Masquerade, Shanty Town, Steward, Swindler, Wishing Well 
 		cardList.add(GreatHallCard.class);
@@ -149,7 +150,7 @@ public class GameBoard {
 
 			
 		Collections.shuffle(cardList);		
-		
+
 		return cardList.subList(0, 10);
 	}
 	
