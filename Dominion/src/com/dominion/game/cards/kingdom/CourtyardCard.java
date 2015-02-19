@@ -3,7 +3,6 @@ package com.dominion.game.cards.kingdom;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import com.dominion.game.actions.AdventurerAction;
 import com.dominion.game.actions.CardAction;
 import com.dominion.game.actions.CourtyardAction;
 import com.dominion.game.actions.PlusCardAction;

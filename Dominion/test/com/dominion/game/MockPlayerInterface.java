@@ -110,6 +110,12 @@ public class MockPlayerInterface implements PlayerInterface {
 	}
 
 	@Override
+	public void notifyCardTrashed(Player player, Card card) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
 	public void notifyEndGameCards(Player player, List<Card> cards) {
 		// TODO Auto-generated method stub
 		
@@ -191,18 +197,18 @@ public class MockPlayerInterface implements PlayerInterface {
 	public Card selectVictoryCardToReveal(List<Card> cards) {
 		// TODO Auto-generated method stub
 		return null;
-	}
-
+	}	
+	
 	@Override
 	public void updateDeck(int numOfCards) {
 		deckSize = numOfCards;		
-	}	
+	}
 	
 	@Override
 	public void updateDiscard(Card card) {
 		discardCard = card;		
 	}
-	
+
 	@Override
 	public void updateHand(List<Card> cards) {
 		cardHand = new LinkedList<Card>(cards);
