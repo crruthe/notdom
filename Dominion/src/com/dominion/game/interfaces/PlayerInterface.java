@@ -17,16 +17,19 @@ public interface PlayerInterface {
 	public boolean chooseIfPutDeckInDiscard();
 	public boolean chooseIfSetAsideCard(final Card card);
 	public boolean chooseIfTrashCard(final Card card);
+	public String getPlayerName();
 	public void notifyCardGained(final Player player, final Card card);
 	public void notifyCardPlayed(final Player player, final Card card);
 	public void notifyCardRevealed(final Player player, final Card card);
-	public void notifyHandRevealed(final Player player, final List<Card> cards);
+	public void notifyCardTrashed(Player player, Card card);
 	public void notifyEndGameCards(final Player player, List<Card> cards);
 	public void notifyEndGameScore(final Player player, int score);
+	public void notifyHandRevealed(final Player player, final List<Card> cards);
 	public ActionCard selectActionCardToPlay(final List<Card> cards);
 	public CardAction selectCardActionToPlay(final HashMap<String, CardAction> actions);
 	public Card selectCardToBuy(final List<Card> cards);
 	public Card selectCardToDiscard(final List<Card> cards);
+	public Card selectCardToPassLeft(final List<Card> cards);
 	public Card selectCardToPutOnDeck(final List<Card> cards);
 	public Card selectCardToTrashFromHand(final List<Card> cards);
 	public Card selectCardToTrashThief(List<Card> cards);
@@ -41,5 +44,4 @@ public interface PlayerInterface {
 	public void updateSupply(final HashMap<Class<? extends Card>, Integer> supplyStack);
 	public void updateTrashPile(final List<Card> cards);
 	public void updateTurnState(int numOfActions, int numOfBuys, int numOfCoins);
-	public String getPlayerName();
 }

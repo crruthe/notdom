@@ -3,6 +3,7 @@ package com.dominion.game.interfaces;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 import com.dominion.game.Player;
@@ -80,21 +81,28 @@ public class BasicRulesAIPlayer implements PlayerInterface {
 	public void notifyCardGained(Player player, Card card) {
 		if (!player.getPlayerName().equals("BasicRulesAIPlayer"))
 			return;
-		System.out.println("notifyCardGained - " + player.getPlayerName() + ": " + card);
+		System.out.println("CardGained - " + player.getPlayerName() + ": " + card);
 	}
 
 	@Override
 	public void notifyCardPlayed(Player player, Card card) {
 		if (!player.getPlayerName().equals("BasicRulesAIPlayer"))
 			return;
-		System.out.println("notifyCardPlayed - " + player.getPlayerName() + ": " + card);
+		System.out.println("CardPlayed - " + player.getPlayerName() + ": " + card);
 	}
 
 	@Override
 	public void notifyCardRevealed(Player player, Card card) {
 		if (!player.getPlayerName().equals("BasicRulesAIPlayer"))
 			return;
-		System.out.println("notifyCardRevealed - " + player.getPlayerName() + ": " + card);
+		System.out.println("CardRevealed - " + player.getPlayerName() + ": " + card);
+	}
+
+	@Override
+	public void notifyCardTrashed(Player player, Card card) {
+		if (!player.getPlayerName().equals("BasicRulesAIPlayer"))
+			return;
+		System.out.println("CardTrashed - " + player.getPlayerName() + ": " + card);
 	}
 
 	@Override
@@ -108,21 +116,21 @@ public class BasicRulesAIPlayer implements PlayerInterface {
 			}
 			sCards.put(card.getName(), sCards.get(card.getName())+1);
 		}
-		System.out.println("notifyEndGameCards - " + player.getPlayerName() + ": " + sCards);
+		System.out.println("EndGameCards - " + player.getPlayerName() + ": " + sCards);
 	}
 
 	@Override
 	public void notifyEndGameScore(Player player, int score) {
 		if (!player.getPlayerName().equals("BasicRulesAIPlayer"))
 			return;
-		System.out.println("notifyEndGameScore - " + player.getPlayerName() + ": " + score);
+		System.out.println("EndGameScore - " + player.getPlayerName() + ": " + score);
 	}
 
 	@Override
 	public void notifyHandRevealed(Player player, List<Card> cards) {
 		if (!player.getPlayerName().equals("BasicRulesAIPlayer"))
 			return;
-		System.out.println("notifyHandRevealed - " + player.getPlayerName() + ": " + cards);
+		System.out.println("HandRevealed - " + player.getPlayerName() + ": " + cards);
 	}
 
 	@Override
@@ -217,7 +225,7 @@ public class BasicRulesAIPlayer implements PlayerInterface {
 	public Card selectCardToBuy(List<Card> cards) {
 		Collections.shuffle(cards);
 
-		int maxCost = 0;
+		int maxCost = -1;
 		Card myCard = null;
 		for (Card c: cards) {
 			if (c.getCost() > maxCost) {
@@ -225,10 +233,7 @@ public class BasicRulesAIPlayer implements PlayerInterface {
 				maxCost = c.getCost();
 			}
 		}
-		if (maxCost > 0) {
-			return myCard;
-		}
-		return null;
+		return myCard;
 	}
 
 	@Override
@@ -243,6 +248,16 @@ public class BasicRulesAIPlayer implements PlayerInterface {
 		}		
 		Collections.shuffle(cards);
 		return cards.get(0);		
+	}
+
+	@Override
+	public Card selectCardToPassLeft(List<Card> cards) {
+		for (Card card : cards) {
+			if (card instanceof CopperCard) {
+				return cards.get(cards.indexOf(new CopperCard()));
+			}			
+		}
+		return cards.get(0);
 	}
 
 	@Override
@@ -264,15 +279,21 @@ public class BasicRulesAIPlayer implements PlayerInterface {
 			if (c instanceof EstateCard || c instanceof CopperCard) {
 				return c;
 			}
-		}
-		return null;
+		}		
+		// Trash the cheapest card
+		List<Card> sCards = new LinkedList<Card>(cards);
+		Collections.sort(sCards);
+		return cards.get(0);
 	}
 
 	@Override
 	public Card selectCardToTrashThief(List<Card> cards) {
+		// Trash the most expensive card, so we can gain it
+		List<Card> sCards = new LinkedList<Card>(cards);
+		Collections.sort(sCards);
+		Collections.reverse(sCards);
 		return cards.get(0);
-	}
-
+	}	
 	@Override
 	public ReactionCard selectReactionCard(List<Card> cards) {
 		if (Math.random() < 0.25) {
@@ -284,7 +305,8 @@ public class BasicRulesAIPlayer implements PlayerInterface {
 	@Override
 	public TreasureCard selectTreasureCardToPlay(List<Card> cards) {
 		return (TreasureCard) cards.get(0);
-	}	
+	}
+
 	@Override
 	public Card selectVictoryCardToReveal(List<Card> cards) {
 		return cards.get(0);

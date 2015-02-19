@@ -5,6 +5,7 @@ import java.util.List;
 import com.dominion.game.GameState;
 import com.dominion.game.cards.Card;
 import com.dominion.game.cards.TreasureCard;
+import com.dominion.game.interfaces.messages.CardTrashedMessage;
 
 /**
  * 
@@ -20,6 +21,8 @@ public class MineAction implements CardAction {
 			return;
 		}
 				
+		state.broadcastToAllPlayers(new CardTrashedMessage(state.getCurrentPlayer(), trashCard));
+		
 		state.getCurrentPlayer().removeFromHand(trashCard);
 		state.getGameBoard().addToTrashPile(trashCard);
 

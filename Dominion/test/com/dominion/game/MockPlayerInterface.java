@@ -14,18 +14,31 @@ import com.dominion.game.interfaces.PlayerInterface;
 public class MockPlayerInterface implements PlayerInterface {
 
 	private List<Card> cardHand = new LinkedList<Card>();
+	private int deckSize = 0;
 	private Card discardCard;
 	private int numOfActions;
 	private int numOfBuys;
 	private int numOfCoins;
 	private List<Card> playArea = new LinkedList<Card>();
-	private int deckSize = 0;
 	
 	@Override
-	public void updateHand(List<Card> cards) {
-		cardHand = new LinkedList<Card>(cards);
+	public boolean chooseIfDiscardCard(Card card) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 	
+	@Override
+	public boolean chooseIfGainCard(Card card) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean chooseIfGainCardThief(Card card) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 	@Override
 	public boolean chooseIfPutDeckInDiscard() {
 		// TODO Auto-generated method stub
@@ -44,22 +57,38 @@ public class MockPlayerInterface implements PlayerInterface {
 		return false;
 	}
 
-	@Override
-	public boolean chooseIfGainCard(Card card) {
-		// TODO Auto-generated method stub
-		return false;
+	public List<Card> getCardHand() {
+		return cardHand;
+	}
+
+	public int getDeckSize() {
+		return deckSize;
+	}
+
+	public Card getDiscardCard() {
+		return discardCard;
+	}
+
+	public int getNumOfActions() {
+		return numOfActions;
+	}
+
+	public int getNumOfBuys() {
+		return numOfBuys;
+	}
+
+	public int getNumOfCoins() {
+		return numOfCoins;
+	}
+
+	public List<Card> getPlayArea() {
+		return playArea;
 	}
 
 	@Override
-	public boolean chooseIfDiscardCard(Card card) {
+	public String getPlayerName() {
 		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public void notifyCardPlayed(Player player, Card card) {
-		// TODO Auto-generated method stub
-		
+		return null;
 	}
 
 	@Override
@@ -69,7 +98,43 @@ public class MockPlayerInterface implements PlayerInterface {
 	}
 
 	@Override
+	public void notifyCardPlayed(Player player, Card card) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void notifyCardRevealed(Player player, Card card) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void notifyEndGameCards(Player player, List<Card> cards) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void notifyEndGameScore(Player player, int score) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void notifyHandRevealed(Player player, List<Card> cards) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
 	public ActionCard selectActionCardToPlay(List<Card> cards) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CardAction selectCardActionToPlay(HashMap<String, CardAction> actions) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -87,7 +152,25 @@ public class MockPlayerInterface implements PlayerInterface {
 	}
 
 	@Override
+	public Card selectCardToPassLeft(List<Card> cards) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Card selectCardToPutOnDeck(List<Card> cards) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
 	public Card selectCardToTrashFromHand(List<Card> cards) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Card selectCardToTrashThief(List<Card> cards) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -113,11 +196,16 @@ public class MockPlayerInterface implements PlayerInterface {
 	@Override
 	public void updateDeck(int numOfCards) {
 		deckSize = numOfCards;		
-	}
-
+	}	
+	
 	@Override
 	public void updateDiscard(Card card) {
 		discardCard = card;		
+	}
+	
+	@Override
+	public void updateHand(List<Card> cards) {
+		cardHand = new LinkedList<Card>(cards);
 	}
 
 	@Override
@@ -132,13 +220,7 @@ public class MockPlayerInterface implements PlayerInterface {
 	}
 
 	@Override
-	public void notifyEndGameScore(Player player, int score) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void notifyEndGameCards(Player player, List<Card> cards) {
+	public void updateSupply(HashMap<Class<? extends Card>, Integer> supplyStack) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -154,81 +236,5 @@ public class MockPlayerInterface implements PlayerInterface {
 		this.numOfActions = numOfActions;
 		this.numOfBuys = numOfBuys;
 		this.numOfCoins = numOfCoins;		
-	}
-
-	@Override
-	public void notifyCardRevealed(Player player, Card card) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public Card selectCardToPutOnDeck(List<Card> cards) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public CardAction selectCardActionToPlay(HashMap<String, CardAction> actions) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void updateSupply(HashMap<Class<? extends Card>, Integer> supplyStack) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public boolean chooseIfGainCardThief(Card card) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public Card selectCardToTrashThief(List<Card> cards) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void notifyHandRevealed(Player player, List<Card> cards) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public Card getDiscardCard() {
-		return discardCard;
-	}
-
-	public List<Card> getPlayArea() {
-		return playArea;
-	}	
-	
-	public List<Card> getCardHand() {
-		return cardHand;
-	}
-	
-	public int getNumOfActions() {
-		return numOfActions;
-	}
-
-	public int getNumOfBuys() {
-		return numOfBuys;
-	}
-
-	public int getNumOfCoins() {
-		return numOfCoins;
-	}
-
-	public int getDeckSize() {
-		return deckSize;
-	}
-
-	@Override
-	public String getPlayerName() {
-		// TODO Auto-generated method stub
-		return null;
 	}	
 }

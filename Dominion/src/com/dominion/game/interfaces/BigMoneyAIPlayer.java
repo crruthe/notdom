@@ -1,8 +1,10 @@
 package com.dominion.game.interfaces;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 import com.dominion.game.Player;
@@ -84,21 +86,28 @@ public class BigMoneyAIPlayer implements PlayerInterface {
 	public void notifyCardGained(Player player, Card card) {
 		if (!player.getPlayerName().equals("BigMoneyAIPlayer"))
 			return;
-		System.out.println("notifyCardGained - " + player.getPlayerName() + ": " + card);
+		System.out.println("CardGained - " + player.getPlayerName() + ": " + card);
 	}
 
 	@Override
 	public void notifyCardPlayed(Player player, Card card) {
 		if (!player.getPlayerName().equals("BigMoneyAIPlayer"))
 			return;
-		System.out.println("notifyCardPlayed - " + player.getPlayerName() + ": " + card);
+		System.out.println("CardPlayed - " + player.getPlayerName() + ": " + card);
 	}
 
 	@Override
 	public void notifyCardRevealed(Player player, Card card) {
 		if (!player.getPlayerName().equals("BigMoneyAIPlayer"))
 			return;
-		System.out.println("notifyCardRevealed - " + player.getPlayerName() + ": " + card);
+		System.out.println("CardRevealed - " + player.getPlayerName() + ": " + card);
+	}
+
+	@Override
+	public void notifyCardTrashed(Player player, Card card) {
+		if (!player.getPlayerName().equals("BigMoneyAIPlayer"))
+			return;
+		System.out.println("CardTrashed - " + player.getPlayerName() + ": " + card);
 	}
 
 	@Override
@@ -112,103 +121,26 @@ public class BigMoneyAIPlayer implements PlayerInterface {
 			}
 			sCards.put(card.getName(), sCards.get(card.getName())+1);
 		}
-		System.out.println("notifyEndGameCards - " + player.getPlayerName() + ": " + sCards);
+		System.out.println("EndGameCards - " + player.getPlayerName() + ": " + sCards);
 	}
 
 	@Override
 	public void notifyEndGameScore(Player player, int score) {
 		if (!player.getPlayerName().equals("BigMoneyAIPlayer"))
 			return;
-		System.out.println("notifyEndGameScore - " + player.getPlayerName() + ": " + score);
+		System.out.println("EndGameScore - " + player.getPlayerName() + ": " + score);
 	}
 
 	@Override
 	public void notifyHandRevealed(Player player, List<Card> cards) {
 		if (!player.getPlayerName().equals("BigMoneyAIPlayer"))
 			return;
-		System.out.println("notifyHandRevealed - " + player.getPlayerName() + ": " + cards);
+		System.out.println("HandRevealed - " + player.getPlayerName() + ": " + cards);
 	}
 
 	@Override
 	public ActionCard selectActionCardToPlay(List<Card> cards) {
-		
-		Card myCard = null;
-		
-		// Find throne room
-		if (cards.size() > 1) {
-			for (Card c: cards) {
-				if (c instanceof ThroneRoomCard) {
-					return (ActionCard) c;
-				}
-			}
-		}
-		
-		// Find increase actions
-		int maxActions = 0;
-		for (Card c: cards) {
-			Collection<CardAction> actions = ((ActionCard)c).buildActionList();
-			for (CardAction a: actions) {
-				if (a instanceof PlusActionAction) {
-					int numOfActions = ((PlusActionAction)a).getNumActions();
-					if (numOfActions > maxActions) {
-						myCard = c;
-						maxActions = numOfActions;
-					}
-				}
-			}
-		}		
-		if (maxActions > 0) {
-			return (ActionCard)myCard;
-		}
-		
-		
-		// Find increase cards
-		int maxCards = 0;
-		for (Card c: cards) {
-			Collection<CardAction> actions = ((ActionCard)c).buildActionList();
-			for (CardAction a: actions) {
-				if (a instanceof PlusCardAction) {
-					int numOfCards = ((PlusCardAction)a).getNumCards();
-					if (numOfCards > maxCards) {
-						myCard = c;
-						maxCards = numOfCards;
-					}
-				}
-			}
-		}		
-		if (maxCards > 0) {
-			return (ActionCard)myCard;
-		}
-		
-		
-		// Find attack cards
-		for (Card c: cards) {
-			if (c instanceof AttackCard) {
-				return (ActionCard) c;
-			}
-		}
-		
-		
-		// Find coins cards
-		int maxCoins = 0;
-		for (Card c: cards) {
-			Collection<CardAction> actions = ((ActionCard)c).buildActionList();
-			for (CardAction a: actions) {
-				if (a instanceof PlusCoinAction) {
-					int numOfCoins = ((PlusCoinAction)a).getCoins();
-					if (numOfCoins > maxCoins) {
-						myCard = c;
-						maxCoins = numOfCoins;
-					}
-				}
-			}
-		}		
-		if (maxCoins > 0) {
-			return (ActionCard)myCard;
-		}
-		
-		Collections.shuffle(cards);
-		return (ActionCard) cards.get(0);		
+		return null;	
 	}
 
 	@Override
@@ -254,6 +186,14 @@ public class BigMoneyAIPlayer implements PlayerInterface {
 	}
 
 	@Override
+	public Card selectCardToPassLeft(final List<Card> cards) {
+		// Send over the cheapest card
+		List<Card> sCards = new LinkedList<Card>(cards);
+		Collections.sort(sCards);
+		return cards.get(0);
+	}
+
+	@Override
 	public Card selectCardToPutOnDeck(List<Card> cards) {
 		return cards.get(0);
 	}
@@ -272,15 +212,21 @@ public class BigMoneyAIPlayer implements PlayerInterface {
 			if (c instanceof EstateCard || c instanceof CopperCard) {
 				return c;
 			}
-		}
-		return null;
+		}		
+		// Send over the cheapest card
+		List<Card> sCards = new LinkedList<Card>(cards);
+		Collections.sort(sCards);
+		return cards.get(0);
 	}
 
 	@Override
 	public Card selectCardToTrashThief(List<Card> cards) {
+		// Trash the most expensive card
+		List<Card> sCards = new LinkedList<Card>(cards);
+		Collections.sort(sCards);
+		Collections.reverse(sCards);
 		return cards.get(0);
-	}
-
+	}	
 	@Override
 	public ReactionCard selectReactionCard(List<Card> cards) {
 		if (Math.random() < 0.25) {
@@ -292,7 +238,8 @@ public class BigMoneyAIPlayer implements PlayerInterface {
 	@Override
 	public TreasureCard selectTreasureCardToPlay(List<Card> cards) {
 		return (TreasureCard) cards.get(0);
-	}	
+	}
+
 	@Override
 	public Card selectVictoryCardToReveal(List<Card> cards) {
 		return cards.get(0);
@@ -310,6 +257,7 @@ public class BigMoneyAIPlayer implements PlayerInterface {
 
 	}
 
+
 	@Override
 	public void updateHand(List<Card> cards) {
 		// TODO Auto-generated method stub
@@ -321,7 +269,6 @@ public class BigMoneyAIPlayer implements PlayerInterface {
 		// TODO Auto-generated method stub
 
 	}
-
 
 	@Override
 	public void updatePlayArea(List<Card> cards) {

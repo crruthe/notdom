@@ -17,14 +17,16 @@ import com.dominion.game.cards.TreasureCard;
 public class RandomAIPlayer implements PlayerInterface {
 
 	public static void main(String[] args) {
-		GameMaster gm = new GameMaster();
-		Player p1 = new Player(new BigMoneyAIPlayer());
-		Player p2 = new Player(new RandomAIPlayer());
-		Player p3 = new Player(new BasicRulesAIPlayer());
-		gm.addPlayerToState(p1);		
-		gm.addPlayerToState(p2);
-		gm.addPlayerToState(p3);
-		gm.startGame();
+		for (int i=0; i<100; i++) {
+			GameMaster gm = new GameMaster();
+			Player p1 = new Player(new BigMoneyAIPlayer());
+			Player p2 = new Player(new RandomAIPlayer());
+			Player p3 = new Player(new BasicRulesAIPlayer());
+			gm.addPlayerToState(p1);		
+			gm.addPlayerToState(p2);
+			gm.addPlayerToState(p3);
+			gm.startGame();
+		}
 	}
 	
 	@Override
@@ -84,21 +86,28 @@ public class RandomAIPlayer implements PlayerInterface {
 	public void notifyCardGained(Player player, Card card) {
 		if (!player.getPlayerName().equals("RandomAIPlayer"))
 			return;
-		System.out.println("notifyCardGained - " + player.getPlayerName() + ": " + card);
+		System.out.println("CardGained - " + player.getPlayerName() + ": " + card);
 	}
 
 	@Override
 	public void notifyCardPlayed(Player player, Card card) {
 		if (!player.getPlayerName().equals("RandomAIPlayer"))
 			return;
-		System.out.println("notifyCardPlayed - " + player.getPlayerName() + ": " + card);
+		System.out.println("CardPlayed - " + player.getPlayerName() + ": " + card);
 	}
 
 	@Override
 	public void notifyCardRevealed(Player player, Card card) {
 		if (!player.getPlayerName().equals("RandomAIPlayer"))
 			return;
-		System.out.println("notifyCardRevealed - " + player.getPlayerName() + ": " + card);
+		System.out.println("CardRevealed - " + player.getPlayerName() + ": " + card);
+	}
+
+	@Override
+	public void notifyCardTrashed(Player player, Card card) {
+		if (!player.getPlayerName().equals("RandomAIPlayer"))
+			return;
+		System.out.println("CardTrashed - " + player.getPlayerName() + ": " + card);
 	}
 
 	@Override
@@ -112,21 +121,21 @@ public class RandomAIPlayer implements PlayerInterface {
 			}
 			sCards.put(card.getName(), sCards.get(card.getName())+1);
 		}
-		System.out.println("notifyEndGameCards - " + player.getPlayerName() + ": " + sCards);
+		System.out.println("EndGameCards - " + player.getPlayerName() + ": " + sCards);
 	}
 
 	@Override
 	public void notifyEndGameScore(Player player, int score) {
 		if (!player.getPlayerName().equals("RandomAIPlayer"))
 			return;
-		System.out.println("notifyEndGameScore - " + player.getPlayerName() + ": " + score);
+		System.out.println("EndGameScore - " + player.getPlayerName() + ": " + score);
 	}
 
 	@Override
 	public void notifyHandRevealed(Player player, List<Card> cards) {
 		if (!player.getPlayerName().equals("RandomAIPlayer"))
 			return;
-		System.out.println("notifyHandRevealed - " + player.getPlayerName() + ": " + cards);
+		System.out.println("HandRevealed - " + player.getPlayerName() + ": " + cards);
 	}
 
 	@Override
@@ -155,7 +164,7 @@ public class RandomAIPlayer implements PlayerInterface {
 	@Override
 	public Card selectCardToDiscard(List<Card> cards) {
 		// Chance to skip
-		if (Math.random() < (1 / cards.size())) {
+		if (Math.random() < (1 / (cards.size()+1))) {
 			return null;
 		}
 		Collections.shuffle(cards);
@@ -163,14 +172,21 @@ public class RandomAIPlayer implements PlayerInterface {
 	}
 
 	@Override
+	public Card selectCardToPassLeft(List<Card> cards) {
+		Collections.shuffle(cards);
+		return cards.get(0);
+	}
+
+	@Override
 	public Card selectCardToPutOnDeck(List<Card> cards) {
+		Collections.shuffle(cards);
 		return cards.get(0);
 	}
 
 	@Override
 	public Card selectCardToTrashFromHand(List<Card> cards) {
 		// Chance to skip
-		if (Math.random() < (1 / cards.size())) {
+		if (Math.random() < (1 / (cards.size()+1))) {
 			return null;
 		}
 		Collections.shuffle(cards);

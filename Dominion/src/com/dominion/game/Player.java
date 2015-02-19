@@ -188,6 +188,21 @@ public class Player {
 		return playerInterface.selectActionCardToPlay(cards);
 	}	
 		
+	public List<Card> getAllCards() {
+		LinkedList<Card> cards = new LinkedList<Card>();
+		cards.addAll(cardHand.getCards());
+		cards.addAll(discardPile.getCards());
+		cards.addAll(playArea.getCards());
+		cards.addAll(cardDeck.getCards());
+		
+		return cards;
+	}
+
+	public CardAction getCardActionToPlay(HashMap<String, CardAction> actions) {
+		return playerInterface.selectCardActionToPlay(actions);
+		
+	}
+	
 	public String getCardDeck() {
 		HashMap<String, Integer> cardTally = new HashMap<String, Integer>();
 		
@@ -199,20 +214,24 @@ public class Player {
 		}
 		return "" + cardTally;
 	}
-
+	
 	public Card getCardToBuy(List<Card> cards) {
 		Card card = playerInterface.selectCardToBuy(cards);
 
 		return card;
 	}
-	
+
 	public Card getCardToDiscard() {
 		if (cardHand.getCards().isEmpty()) {
 			return null;
 		}
 		return playerInterface.selectCardToDiscard(cardHand.getCards());
 	}
-	
+
+	public Card getCardToPassLeft() {
+		return playerInterface.selectCardToPassLeft(cardHand.getCards());
+	}
+
 	public Card getCardToPutOnDeck() {		
 		return playerInterface.selectCardToPutOnDeck(cardHand.getCards());
 	}
@@ -220,11 +239,11 @@ public class Player {
 	public Card getCardToTrashFromHand() {		
 		return playerInterface.selectCardToTrashFromHand(cardHand.getCards());
 	}
-
+	
 	public Card getCardToTrashThief(List<Card> cards) {
 		return playerInterface.selectCardToTrashThief(cards);
 	}
-
+		
 	public Card getCopperCardToTrash() {
 		List<Card> cards = new LinkedList<Card>();
 		
@@ -240,17 +259,18 @@ public class Player {
 		
 		return null;
 	}
-
+	
 	public int getCurrentScore() {
 		List<Card> cards = getAllCards();
 		
 		return countVictoryPoints(cards) - countCurseCards(cards);
 	}
-	
+
+
 	public List<Card> getHand() {
 		return cardHand.getCards();
 	}
-		
+	
 	/**
 	 * Returns the current size of the hand
 	 * @return
@@ -258,6 +278,10 @@ public class Player {
 	public int getHandSize() {
 		return cardHand.count();
 	}
+
+	public String getPlayerName() {
+		return playerInterface.getPlayerName();
+	}	
 	
 	public ReactionCard getReactionCardToPlay() {
 		List<Card> cards = cardHand.getCardsFilterByClass(ReactionCard.class);
@@ -269,12 +293,11 @@ public class Player {
 		return null;
 	}
 
-
 	public Card getTreasureCardToGain(List<Card> cards) {
 		Card card = playerInterface.selectCardToBuy(cards);
 		return card;
 	}
-	
+
 	public TreasureCard getTreasureCardToPlay() {
 		List<Card> cards = cardHand.getCardsFilterByClass(TreasureCard.class);
 		
@@ -291,8 +314,8 @@ public class Player {
 			return null;
 		}
 		return (TreasureCard)playerInterface.selectCardToTrashFromHand(cards);
-	}	
-	
+	}
+
 	public Card getVictoryCardToReveal() {
 		List<Card> cards = cardHand.getCardsFilterByClass(VictoryCard.class);
 		
@@ -302,11 +325,11 @@ public class Player {
 		
 		return null;
 	}
-
+	
 	public void invokeMessage(PlayerInterfaceMessage message) {
 		message.invoke(playerInterface);		
 	}
-
+	
 	public boolean isImmune() {
 		return this.immune;
 	}
@@ -327,14 +350,14 @@ public class Player {
 		cardHand.removeCard(card);
 		playArea.addCardToTop(card);
 	}
-	
+
 	/**
 	 * Move the discard pile back into the card deck
 	 */
 	public void moveDiscardPileToCardDeck() { 
 		cardDeck.addCards(discardPile.clearCards());
 	}
-	
+
 	public void notifyOfTurnState(TurnState turnState) {
 		playerInterface.updateTurnState(
 				turnState.getNumberOfActions(), 
@@ -365,7 +388,7 @@ public class Player {
 	public boolean wantsToGainCardThief(Card trashCard) {
 		return playerInterface.chooseIfGainCardThief(trashCard);
 	}
-
+	
 	public boolean wantsToPutDeckInDiscard() {
 		return playerInterface.chooseIfPutDeckInDiscard();
 	}
@@ -376,24 +399,5 @@ public class Player {
 
 	public boolean wantsToTrashCard(Card card) {
 		return playerInterface.chooseIfTrashCard(card);
-	}
-
-	public List<Card> getAllCards() {
-		LinkedList<Card> cards = new LinkedList<Card>();
-		cards.addAll(cardHand.getCards());
-		cards.addAll(discardPile.getCards());
-		cards.addAll(playArea.getCards());
-		cards.addAll(cardDeck.getCards());
-		
-		return cards;
-	}
-	
-	public String getPlayerName() {
-		return playerInterface.getPlayerName();
-	}
-
-	public CardAction getCardActionToPlay(HashMap<String, CardAction> actions) {
-		return playerInterface.selectCardActionToPlay(actions);
-		
 	}
 }

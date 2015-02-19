@@ -2,6 +2,7 @@ package com.dominion.game.actions;
 
 import com.dominion.game.GameState;
 import com.dominion.game.cards.Card;
+import com.dominion.game.interfaces.messages.CardTrashedMessage;
 
 public class ChapelAction implements CardAction {
 	@Override
@@ -19,6 +20,8 @@ public class ChapelAction implements CardAction {
 			if (card == null) {
 				break;
 			} else {
+				state.broadcastToAllPlayers(new CardTrashedMessage(state.getCurrentPlayer(), card));
+
 				state.getCurrentPlayer().removeFromHand(card);
 				state.getGameBoard().addToTrashPile(card);
 				numberToTrash--;

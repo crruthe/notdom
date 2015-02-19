@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.dominion.game.GameState;
 import com.dominion.game.cards.Card;
+import com.dominion.game.interfaces.messages.CardTrashedMessage;
 
 /**
  * 
@@ -24,6 +25,8 @@ public class RemodelAction implements CardAction {
 		while (trashCard == null) {
 			trashCard = state.getCurrentPlayer().getCardToTrashFromHand();
 		}
+		
+		state.broadcastToAllPlayers(new CardTrashedMessage(state.getCurrentPlayer(), trashCard));
 		
 		state.getGameBoard().addToTrashPile(trashCard);
 		state.getCurrentPlayer().removeFromHand(trashCard);

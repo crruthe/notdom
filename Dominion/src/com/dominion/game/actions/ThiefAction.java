@@ -6,7 +6,9 @@ import com.dominion.game.GameState;
 import com.dominion.game.Player;
 import com.dominion.game.cards.Card;
 import com.dominion.game.cards.TreasureCard;
+import com.dominion.game.interfaces.messages.CardGainedMessage;
 import com.dominion.game.interfaces.messages.CardRevealedMessage;
+import com.dominion.game.interfaces.messages.CardTrashedMessage;
 
 public class ThiefAction extends AttackAction {
 	@Override
@@ -47,8 +49,12 @@ public class ThiefAction extends AttackAction {
 		
 		// Allow the player to keep the card
 		if (state.getCurrentPlayer().wantsToGainCardThief(trashCard)) {
+			state.broadcastToAllPlayers(new CardGainedMessage(state.getCurrentPlayer(), trashCard));
+
 			state.getCurrentPlayer().addCardToDiscardPile(trashCard);
 		} else {
+			state.broadcastToAllPlayers(new CardTrashedMessage(state.getCurrentPlayer(), trashCard));
+			
 			state.getGameBoard().addToTrashPile(trashCard);
 		}		
 	}	
