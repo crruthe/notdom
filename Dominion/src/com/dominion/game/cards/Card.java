@@ -53,7 +53,7 @@ public abstract class Card implements Comparable<Card> {
 	}
 	
 	/**
-	 * Applies modifiers to the cards
+	 * Applies modifiers to the card in a pipeline and returns the final modified card
 	 * 
 	 * @param card
 	 * @return
@@ -65,4 +65,9 @@ public abstract class Card implements Comparable<Card> {
 		}
 		return mCard;
 	}	
+	
+	@Override
+	public String toString() {
+		return getName();
+	}
 }

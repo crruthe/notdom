@@ -28,58 +28,105 @@ import com.dominion.game.cards.kingdom.ThroneRoomCard;
 public class BigMoneyAIPlayer implements PlayerInterface {
 
 	@Override
-	public ReactionCard selectReactionCard(List<Card> cards) {
-		if (Math.random() < 0.25) {
-			return null;
+	public boolean chooseIfDiscardCard(Card card) {
+		if (Math.random() < 0.5) {
+			return true;
 		}		
-		return (ReactionCard) cards.get(0);
+		return false;
 	}
 
 	@Override
-	public Card selectVictoryCardToReveal(List<Card> cards) {
-		return cards.get(0);
+	public boolean chooseIfGainCard(Card card) {
+		if (Math.random() < 0.5) {
+			return true;
+		}		
+		return false;
 	}
 
 	@Override
-	public void updateHand(List<Card> cards) {
-		// TODO Auto-generated method stub
-
+	public boolean chooseIfGainCardThief(Card card) {
+		if (Math.random() < 0.5) {
+			return true;
+		}		
+		return false;
 	}
 
 	@Override
-	public void updateOtherPlayer(Player player) {
-		// TODO Auto-generated method stub
-
+	public boolean chooseIfPutDeckInDiscard() {
+		if (Math.random() < 0.5) {
+			return true;
+		}		
+		return false;
 	}
 
 	@Override
-	public void updatePlayArea(List<Card> cards) {
-		// TODO Auto-generated method stub
-
+	public boolean chooseIfSetAsideCard(Card card) {
+		if (Math.random() < 0.5) {
+			return true;
+		}		
+		return false;
 	}
 
 	@Override
-	public void updateDeck(int numOfCards) {
-		// TODO Auto-generated method stub
-
+	public boolean chooseIfTrashCard(Card card) {
+		if (Math.random() < 0.5) {
+			return true;
+		}		
+		return false;
 	}
 
 	@Override
-	public void updateDiscard(Card card) {
-		// TODO Auto-generated method stub
-
+	public String getPlayerName() {
+		return "BigMoneyAIPlayer";
 	}
 
 	@Override
-	public void updateTrashPile(List<Card> cards) {
-		// TODO Auto-generated method stub
-
+	public void notifyCardGained(Player player, Card card) {
+		if (!player.getPlayerName().equals("BigMoneyAIPlayer"))
+			return;
+		System.out.println("notifyCardGained - " + player.getPlayerName() + ": " + card);
 	}
 
 	@Override
-	public void updateTurnState(int numOfActions, int numOfBuys, int numOfCoins) {
-		// TODO Auto-generated method stub
+	public void notifyCardPlayed(Player player, Card card) {
+		if (!player.getPlayerName().equals("BigMoneyAIPlayer"))
+			return;
+		System.out.println("notifyCardPlayed - " + player.getPlayerName() + ": " + card);
+	}
 
+	@Override
+	public void notifyCardRevealed(Player player, Card card) {
+		if (!player.getPlayerName().equals("BigMoneyAIPlayer"))
+			return;
+		System.out.println("notifyCardRevealed - " + player.getPlayerName() + ": " + card);
+	}
+
+	@Override
+	public void notifyEndGameCards(Player player, List<Card> cards) {
+		if (!player.getPlayerName().equals("BigMoneyAIPlayer"))
+			return;
+		HashMap<String, Integer> sCards = new HashMap<String, Integer>();
+		for (Card card : cards) {
+			if (!sCards.containsKey(card.getName())) {
+				sCards.put(card.getName(), 0);				
+			}
+			sCards.put(card.getName(), sCards.get(card.getName())+1);
+		}
+		System.out.println("notifyEndGameCards - " + player.getPlayerName() + ": " + sCards);
+	}
+
+	@Override
+	public void notifyEndGameScore(Player player, int score) {
+		if (!player.getPlayerName().equals("BigMoneyAIPlayer"))
+			return;
+		System.out.println("notifyEndGameScore - " + player.getPlayerName() + ": " + score);
+	}
+
+	@Override
+	public void notifyHandRevealed(Player player, List<Card> cards) {
+		if (!player.getPlayerName().equals("BigMoneyAIPlayer"))
+			return;
+		System.out.println("notifyHandRevealed - " + player.getPlayerName() + ": " + cards);
 	}
 
 	@Override
@@ -165,8 +212,9 @@ public class BigMoneyAIPlayer implements PlayerInterface {
 	}
 
 	@Override
-	public TreasureCard selectTreasureCardToPlay(List<Card> cards) {
-		return (TreasureCard) cards.get(0);
+	public CardAction selectCardActionToPlay(HashMap<String, CardAction> actions) {
+		// TODO Auto-generated method stub
+		return actions.values().iterator().next();
 	}
 
 	@Override
@@ -206,11 +254,8 @@ public class BigMoneyAIPlayer implements PlayerInterface {
 	}
 
 	@Override
-	public boolean chooseIfPutDeckInDiscard() {
-		if (Math.random() < 0.5) {
-			return true;
-		}		
-		return false;
+	public Card selectCardToPutOnDeck(List<Card> cards) {
+		return cards.get(0);
 	}
 
 	@Override
@@ -232,101 +277,56 @@ public class BigMoneyAIPlayer implements PlayerInterface {
 	}
 
 	@Override
-	public boolean chooseIfSetAsideCard(Card card) {
-		if (Math.random() < 0.5) {
-			return true;
-		}		
-		return false;
-	}
-
-	@Override
-	public void notifyEndGameScore(Player player, int score) {
-		System.out.println(player.getPlayerName() + ": " + score);
-	}
-
-	@Override
-	public void notifyCardPlayed(Player player, Card card) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void notifyCardGained(Player player, Card card) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public boolean chooseIfTrashCard(Card card) {
-		if (Math.random() < 0.5) {
-			return true;
-		}		
-		return false;
-	}
-
-	@Override
-	public boolean chooseIfGainCard(Card card) {
-		if (Math.random() < 0.5) {
-			return true;
-		}		
-		return false;
-	}
-
-	@Override
-	public boolean chooseIfDiscardCard(Card card) {
-		if (Math.random() < 0.5) {
-			return true;
-		}		
-		return false;
-	}	
-	@Override
-	public void notifyCardRevealed(Player player, Card card) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void notifyEndGameCards(Player player, List<Card> cards) {
-		HashMap<String, Integer> cardMap = new HashMap<String, Integer>();	
-		for (Card card : cards) {			
-			if (!cardMap.containsKey(card.getName())) {
-				cardMap.put(card.getName(), 1);
-			} else {
-				cardMap.put(card.getName(), cardMap.get(card.getName()) + 1);
-			}
-		}
-		System.out.println(player.getPlayerName() + ": " + cardMap);
-	}
-
-	@Override
-	public boolean chooseIfGainCardThief(Card card) {
-		if (Math.random() < 0.5) {
-			return true;
-		}		
-		return false;
-	}
-
-	@Override
-	public void notifyHandRevealed(Player player, List<Card> cards) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public CardAction selectCardActionToPlay(HashMap<String, CardAction> actions) {
-		// TODO Auto-generated method stub
-		return actions.values().iterator().next();
-	}
-
-
-	@Override
-	public Card selectCardToPutOnDeck(List<Card> cards) {
-		return cards.get(0);
-	}
-
-	@Override
 	public Card selectCardToTrashThief(List<Card> cards) {
 		return cards.get(0);
+	}
+
+	@Override
+	public ReactionCard selectReactionCard(List<Card> cards) {
+		if (Math.random() < 0.25) {
+			return null;
+		}		
+		return (ReactionCard) cards.get(0);
+	}
+
+	@Override
+	public TreasureCard selectTreasureCardToPlay(List<Card> cards) {
+		return (TreasureCard) cards.get(0);
+	}	
+	@Override
+	public Card selectVictoryCardToReveal(List<Card> cards) {
+		return cards.get(0);
+	}
+
+	@Override
+	public void updateDeck(int numOfCards) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void updateDiscard(Card card) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void updateHand(List<Card> cards) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void updateOtherPlayer(Player player) {
+		// TODO Auto-generated method stub
+
+	}
+
+
+	@Override
+	public void updatePlayArea(List<Card> cards) {
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
@@ -335,7 +335,14 @@ public class BigMoneyAIPlayer implements PlayerInterface {
 	}
 
 	@Override
-	public String getPlayerName() {
-		return "BigMoneyAIPlayer";
+	public void updateTrashPile(List<Card> cards) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void updateTurnState(int numOfActions, int numOfBuys, int numOfCoins) {
+		// TODO Auto-generated method stub
+
 	}
 }

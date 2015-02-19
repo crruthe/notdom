@@ -129,8 +129,11 @@ public class GameBoard {
 		cardList.add(PawnCard.class);
 		
 		// 3: Great Hall, Masquerade, Shanty Town, Steward, Swindler, Wishing Well 
-		// 4: Baron, Bridge, Conspirator, Coppersmith, Ironworks, Mining Village, Scout 
+		//cardList.add(GreatHallCard.class);
 
+		// 4: Baron, Bridge, Conspirator, Coppersmith, Ironworks, Mining Village, Scout 
+		cardList.add(BridgeCard.class);
+		
 		// 5: Duke, Minion, Saboteur, Torturer, Trading Post, Tribute, Upgrade 
 		cardList.add(TributeCard.class);
 		cardList.add(UpgradeCard.class);
@@ -140,6 +143,7 @@ public class GameBoard {
 		
 		
 		Collections.shuffle(cardList);		
+		cardList.addFirst(GreatHallCard.class);
 
 		
 		return cardList.subList(0, 10);

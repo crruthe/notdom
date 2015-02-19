@@ -70,8 +70,7 @@ public class GameState {
 	 * @return whether the game should end
 	 */
 	public boolean hasGameEnded() {
-		if (gameBoard.isStackEmpty(ProvinceCard.class)) {
-			System.out.println(gameBoard.getSupplyStacks());
+		if (gameBoard.isStackEmpty(ProvinceCard.class)) {			
 			System.out.println("No provinces!");
 			return true;
 		}

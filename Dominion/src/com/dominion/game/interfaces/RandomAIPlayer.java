@@ -28,6 +28,161 @@ public class RandomAIPlayer implements PlayerInterface {
 	}
 	
 	@Override
+	public boolean chooseIfDiscardCard(Card card) {
+		if (Math.random() < 0.5) {
+			return true;
+		}		
+		return false;
+	}
+
+	@Override
+	public boolean chooseIfGainCard(Card card) {
+		if (Math.random() < 0.5) {
+			return true;
+		}		
+		return false;
+	}
+
+	@Override
+	public boolean chooseIfGainCardThief(Card card) {
+		if (Math.random() < 0.5) {
+			return true;
+		}		
+		return false;
+	}
+
+	@Override
+	public boolean chooseIfPutDeckInDiscard() {
+		if (Math.random() < 0.5) {
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean chooseIfSetAsideCard(Card card) {
+		if (Math.random() < 0.5) {
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean chooseIfTrashCard(Card card) {
+		if (Math.random() < 0.5) {
+			return true;
+		}		
+		return false;
+	}
+
+	@Override
+	public String getPlayerName() {
+		return "RandomAIPlayer";
+	}
+
+	@Override
+	public void notifyCardGained(Player player, Card card) {
+		if (!player.getPlayerName().equals("RandomAIPlayer"))
+			return;
+		System.out.println("notifyCardGained - " + player.getPlayerName() + ": " + card);
+	}
+
+	@Override
+	public void notifyCardPlayed(Player player, Card card) {
+		if (!player.getPlayerName().equals("RandomAIPlayer"))
+			return;
+		System.out.println("notifyCardPlayed - " + player.getPlayerName() + ": " + card);
+	}
+
+	@Override
+	public void notifyCardRevealed(Player player, Card card) {
+		if (!player.getPlayerName().equals("RandomAIPlayer"))
+			return;
+		System.out.println("notifyCardRevealed - " + player.getPlayerName() + ": " + card);
+	}
+
+	@Override
+	public void notifyEndGameCards(Player player, List<Card> cards) {
+		if (!player.getPlayerName().equals("RandomAIPlayer"))
+			return;
+		HashMap<String, Integer> sCards = new HashMap<String, Integer>();
+		for (Card card : cards) {
+			if (!sCards.containsKey(card.getName())) {
+				sCards.put(card.getName(), 0);				
+			}
+			sCards.put(card.getName(), sCards.get(card.getName())+1);
+		}
+		System.out.println("notifyEndGameCards - " + player.getPlayerName() + ": " + sCards);
+	}
+
+	@Override
+	public void notifyEndGameScore(Player player, int score) {
+		if (!player.getPlayerName().equals("RandomAIPlayer"))
+			return;
+		System.out.println("notifyEndGameScore - " + player.getPlayerName() + ": " + score);
+	}
+
+	@Override
+	public void notifyHandRevealed(Player player, List<Card> cards) {
+		if (!player.getPlayerName().equals("RandomAIPlayer"))
+			return;
+		System.out.println("notifyHandRevealed - " + player.getPlayerName() + ": " + cards);
+	}
+
+	@Override
+	public ActionCard selectActionCardToPlay(List<Card> cards) {
+		Collections.shuffle(cards);
+		return (ActionCard) cards.get(0);
+	}
+
+	@Override
+	public CardAction selectCardActionToPlay(HashMap<String, CardAction> actions) {
+		List<CardAction> actionsList = new LinkedList<CardAction>(actions.values());
+		Collections.shuffle(actionsList);
+		return actionsList.get(0);
+	}
+
+	@Override
+	public Card selectCardToBuy(List<Card> cards) {
+		// Chance to skip
+		if (Math.random() < (1 / (cards.size()+1))) {
+			return null;
+		}
+		Collections.shuffle(cards);
+		return cards.get(0);
+	}
+
+	@Override
+	public Card selectCardToDiscard(List<Card> cards) {
+		// Chance to skip
+		if (Math.random() < (1 / cards.size())) {
+			return null;
+		}
+		Collections.shuffle(cards);
+		return cards.get(0);
+	}
+
+	@Override
+	public Card selectCardToPutOnDeck(List<Card> cards) {
+		return cards.get(0);
+	}
+
+	@Override
+	public Card selectCardToTrashFromHand(List<Card> cards) {
+		// Chance to skip
+		if (Math.random() < (1 / cards.size())) {
+			return null;
+		}
+		Collections.shuffle(cards);
+		return cards.get(0);
+	}
+
+	@Override
+	public Card selectCardToTrashThief(List<Card> cards) {
+		return cards.get(0);
+	}
+
+	@Override
 	public ReactionCard selectReactionCard(List<Card> cards) {
 		if (Math.random() < 0.25) {
 			return null;
@@ -37,9 +192,27 @@ public class RandomAIPlayer implements PlayerInterface {
 	}
 
 	@Override
+	public TreasureCard selectTreasureCardToPlay(List<Card> cards) {
+		Collections.shuffle(cards);
+		return (TreasureCard) cards.get(0);
+	}
+
+	@Override
 	public Card selectVictoryCardToReveal(List<Card> cards) {
 		Collections.shuffle(cards);
 		return cards.get(0);
+	}
+
+	@Override
+	public void updateDeck(int numOfCards) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void updateDiscard(Card card) {
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
@@ -61,15 +234,9 @@ public class RandomAIPlayer implements PlayerInterface {
 	}
 
 	@Override
-	public void updateDeck(int numOfCards) {
+	public void updateSupply(HashMap<Class<? extends Card>, Integer> supplyStack) {
 		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void updateDiscard(Card card) {
-		// TODO Auto-generated method stub
-
+		
 	}
 
 	@Override
@@ -82,157 +249,5 @@ public class RandomAIPlayer implements PlayerInterface {
 	public void updateTurnState(int numOfActions, int numOfBuys, int numOfCoins) {
 		// TODO Auto-generated method stub
 
-	}
-
-	@Override
-	public ActionCard selectActionCardToPlay(List<Card> cards) {
-		Collections.shuffle(cards);
-		return (ActionCard) cards.get(0);
-	}
-
-	@Override
-	public TreasureCard selectTreasureCardToPlay(List<Card> cards) {
-		Collections.shuffle(cards);
-		return (TreasureCard) cards.get(0);
-	}
-
-	@Override
-	public Card selectCardToBuy(List<Card> cards) {
-		// Chance to skip
-		if (Math.random() < (1 / cards.size())) {
-			return null;
-		}
-		Collections.shuffle(cards);
-		return cards.get(0);
-	}
-
-	@Override
-	public Card selectCardToDiscard(List<Card> cards) {
-		// Chance to skip
-		if (Math.random() < (1 / cards.size())) {
-			return null;
-		}
-		Collections.shuffle(cards);
-		return cards.get(0);
-	}
-
-	@Override
-	public boolean chooseIfPutDeckInDiscard() {
-		if (Math.random() < 0.5) {
-			return true;
-		}
-		return false;
-	}
-
-	@Override
-	public Card selectCardToTrashFromHand(List<Card> cards) {
-		// Chance to skip
-		if (Math.random() < (1 / cards.size())) {
-			return null;
-		}
-		Collections.shuffle(cards);
-		return cards.get(0);
-	}
-
-	@Override
-	public boolean chooseIfSetAsideCard(Card card) {
-		if (Math.random() < 0.5) {
-			return true;
-		}
-		return false;
-	}
-
-	@Override
-	public void notifyEndGameScore(Player player, int score) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void notifyEndGameCards(Player player, List<Card> cards) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void notifyCardPlayed(Player player, Card card) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void notifyCardGained(Player player, Card card) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public boolean chooseIfTrashCard(Card card) {
-		if (Math.random() < 0.5) {
-			return true;
-		}		
-		return false;
-	}
-
-	@Override
-	public boolean chooseIfGainCard(Card card) {
-		if (Math.random() < 0.5) {
-			return true;
-		}		
-		return false;
-	}
-
-	@Override
-	public boolean chooseIfDiscardCard(Card card) {
-		if (Math.random() < 0.5) {
-			return true;
-		}		
-		return false;
-	}
-
-	@Override
-	public void notifyCardRevealed(Player player, Card card) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public boolean chooseIfGainCardThief(Card card) {
-		if (Math.random() < 0.5) {
-			return true;
-		}		
-		return false;
-	}
-
-	@Override
-	public void notifyHandRevealed(Player player, List<Card> cards) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public CardAction selectCardActionToPlay(HashMap<String, CardAction> actions) {
-		List<CardAction> actionsList = new LinkedList<CardAction>(actions.values());
-		Collections.shuffle(actionsList);
-		return actionsList.get(0);
-	}
-
-	@Override
-	public Card selectCardToPutOnDeck(List<Card> cards) {
-		return cards.get(0);
-	}
-
-	@Override
-	public Card selectCardToTrashThief(List<Card> cards) {
-		return cards.get(0);
-	}
-
-	@Override
-	public void updateSupply(HashMap<Class<? extends Card>, Integer> supplyStack) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public String getPlayerName() {
-		return "RandomAIPlayer";
 	}
 }

@@ -1,6 +1,12 @@
 package com.dominion.game;
 
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
+
 import com.dominion.game.actions.CardAction;
 import com.dominion.game.cards.ActionCard;
 import com.dominion.game.cards.Card;
@@ -18,6 +24,25 @@ public class GameMaster {
 
 	public void addPlayerToState(Player player) {
 		state.addPlayer(player);
+	}
+	
+	public void playActionCard(ActionCard actionCard) {
+		
+		state.broadcastToAllPlayers(new CardPlayedMessage(state.getCurrentPlayer(), (Card)actionCard));		
+
+		// Play the card into their play area
+		state.getCurrentPlayer().moveCardFromHandToPlayArea((Card)actionCard);
+		
+		// Iterate through actions for action card
+		for (CardAction action : actionCard.buildActionList()) {
+			action.execute(state);
+		}
+	}
+	
+	public void playerGainsCardFromSupply(Player player, Class<? extends Card> cardClass) {
+		Card card = state.getGameBoard().removeCardFromSupply(cardClass);
+		player.addCardToDiscardPile(card);	
+		state.broadcastToAllPlayers(new CardGainedMessage(player, card));
 	}
 	
 	/**
@@ -38,6 +63,8 @@ public class GameMaster {
 			playTurn();			
 			
 			if (state.hasGameEnded()) {
+				
+				printSupplyStack();
 				break;
 			}
 		}
@@ -48,19 +75,47 @@ public class GameMaster {
 			int score = player.getCurrentScore();
 			state.broadcastToAllPlayers(new EndGameScoreMessage(player, score));
 			state.broadcastToAllPlayers(new EndGameCardsMessage(player, player.getAllCards()));
-			System.out.println("Score: " + score);			
 		}
 	}
 	
-	private void playTurn() {	
-		actionPhase();
-		buyPhase();
-		state.getCurrentPlayer().cleanUpPhase();
-		state.getCurrentPlayer().drawNewHand();
-		state.getTurnState().reset();
-		state.rotatePlayers();
+	private void printSupplyStack() {
+		List<Card> cards = new LinkedList<Card>();
+		
+		for(Class<? extends Card> cardClass : state.getGameBoard().getSupplyStacks().keySet()) {
+			Card card = null;
+			try {
+				card = cardClass.newInstance();
+			} catch (InstantiationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			cards.add(card);
+		}
+
+		Collections.sort(cards, new Comparator<Card>() {
+			@Override
+			public int compare(Card o1, Card o2) {
+				// Sort by cost
+				int compare = new Integer(o1.getCost()).compareTo(o2.getCost());
+				
+				// Then sort by name
+				if (compare == 0) {
+					return o1.getName().compareTo(o2.getName());
+				}
+				return compare;
+			}
+		});
+		
+		LinkedHashMap<String, Integer> supplyObject = new LinkedHashMap<String, Integer>();		
+		for (Card card : cards) {
+			supplyObject.put(card.getName(), state.getGameBoard().getSupplyStacks().get(card.getClass()));
+		}	
+		System.out.println(supplyObject);
 	}
-	
+
 	private void actionPhase() {
 		// Continue while the player has actions left
 		while(state.getTurnState().getNumberOfActions() > 0) {
@@ -73,24 +128,11 @@ public class GameMaster {
 				break;
 			}
 			
-			state.broadcastToAllPlayers(new CardPlayedMessage(state.getCurrentPlayer(), (Card)actionCard));
-			
 			// Play the selected action card
 			playActionCard(actionCard);
 			
 			// Consume on action for this turn
 			state.getTurnState().decrementActions();
-		}
-	}
-
-	public void playActionCard(ActionCard actionCard) {
-
-		// Play the card into their play area
-		state.getCurrentPlayer().moveCardFromHandToPlayArea((Card)actionCard);
-		
-		// Iterate through actions for action card
-		for (CardAction action : actionCard.buildActionList()) {
-			action.execute(state);
 		}
 	}
 	
@@ -99,15 +141,12 @@ public class GameMaster {
 		while(true) {
 			
 			TreasureCard treasureCard = state.getCurrentPlayer().getTreasureCardToPlay();
-			System.out.println(treasureCard);
 			
 			// If null, player didn't select any cards and wants to end phase
 			if (treasureCard == null) {
 				break;
 			}
 
-			System.out.println(((Card)treasureCard).getName());
-			
 			playTreasureCard(state.getCurrentPlayer(), treasureCard);
 		}
 		
@@ -126,16 +165,11 @@ public class GameMaster {
 				// Gain a card
 				playerGainsCardFromSupply(state.getCurrentPlayer(), card.getClass());
 				
-				state.getTurnState().decrementCoins(card.getCost());
+				Card mCard = card.modifyCard(state.getTurnState().getModifiers());
+				state.getTurnState().decrementCoins(mCard.getCost());
 				state.getTurnState().decrementBuys();				
 			}
 		}		
-	}
-	
-	public void playerGainsCardFromSupply(Player player, Class<? extends Card> cardClass) {
-		Card card = state.getGameBoard().removeCardFromSupply(cardClass);
-		player.addCardToDiscardPile(card);	
-		state.broadcastToAllPlayers(new CardGainedMessage(player, card));
 	}
 	
 	/**
@@ -149,5 +183,14 @@ public class GameMaster {
 
 		player.notifyOfTurnState(state.getTurnState());
 		state.broadcastToAllPlayers(new CardPlayedMessage(player, (Card)card));
+	}
+	
+	private void playTurn() {	
+		actionPhase();
+		buyPhase();
+		state.getCurrentPlayer().cleanUpPhase();
+		state.getCurrentPlayer().drawNewHand();
+		state.getTurnState().reset();
+		state.rotatePlayers();
 	}
 }
