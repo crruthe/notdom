@@ -106,7 +106,7 @@ public class GameBoard {
 		cardList.add(SmithyCard.class);
 		cardList.add(SpyCard.class);		
 		cardList.add(ThiefCard.class);
-		//cardList.add(ThroneRoomCard.class);						
+		cardList.add(ThroneRoomCard.class);						
 
 		// 5: Council Room, Festival, Laboratory, Library, Market, Mine, Witch
 		cardList.add(CouncilRoomCard.class);				
@@ -151,16 +151,15 @@ public class GameBoard {
 		cardList.add(DukeCard.class);
 		cardList.add(MinionCard.class);
 		cardList.add(SaboteurCard.class);
-		//cardList.add(TorturerCard.class);		
+		cardList.add(TorturerCard.class);		
 		cardList.add(TributeCard.class);
 		cardList.add(UpgradeCard.class);
 		
 		// 6: Harem, Nobles
+		cardList.add(HaremCard.class);
 
 			
 		Collections.shuffle(cardList);
-		cardList.addFirst(TorturerCard.class);		
-
 
 		return cardList.subList(0, 10);
 	}
