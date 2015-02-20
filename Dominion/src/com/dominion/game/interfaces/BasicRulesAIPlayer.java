@@ -275,6 +275,34 @@ public class BasicRulesAIPlayer implements PlayerInterface {
 		Collections.shuffle(cards);
 		return cards.get(0);		
 	}	
+	
+	@Override
+	public Card selectCardToGain(List<Card> cards, int cost) {
+		Collections.shuffle(cards);
+
+		int maxCost = -1;
+		Card myCard = null;
+		for (Card c: cards) {
+			if (!(c instanceof CurseCard) && c.getCost() > maxCost) {
+				myCard = c;
+				maxCost = c.getCost();
+			}
+		}
+		return myCard;
+	}
+
+	@Override
+	public Card selectCardToGainExact(List<Card> cards, int cost) {
+		Collections.shuffle(cards);
+
+		for (Card c: cards) {
+			if (!(c instanceof CurseCard)) {
+				return c;
+			}
+		}
+		return cards.get(0);
+	}
+
 	@Override
 	public Card selectCardToPassLeft(List<Card> cards) {
 		for (Card card : cards) {

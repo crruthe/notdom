@@ -12,6 +12,7 @@ import com.dominion.game.cards.TreasureCard;
 import com.dominion.game.cards.VictoryCard;
 import com.dominion.game.cards.basic.CopperCard;
 import com.dominion.game.cards.basic.CurseCard;
+import com.dominion.game.cards.basic.DuchyCard;
 import com.dominion.game.cards.basic.EstateCard;
 import com.dominion.game.interfaces.PlayerInterface;
 import com.dominion.game.interfaces.messages.PlayerInterfaceMessage;
@@ -98,10 +99,20 @@ public class Player {
 	public int countVictoryPoints(List<Card> cards) {
 		VictoryPointCounterCardVisitor victoryPointCounterCardVisitor = new VictoryPointCounterCardVisitor();
 		
+		// Count number of Duchies for Duke 
+		int numOfDuchies = 0;
+		for (Card card : cards) {
+			if (card instanceof DuchyCard) {
+				numOfDuchies++;
+			}
+		}
+		victoryPointCounterCardVisitor.setNumOfDuchies(numOfDuchies);
+		
 		// Necessary for gardens card
 		int cardDeckSize = cards.size();		
-		victoryPointCounterCardVisitor.setNumberOfCards(cardDeckSize);
+		victoryPointCounterCardVisitor.setNumOfCards(cardDeckSize);
 		
+		// Visit all cards and tally their points
 		for (Card card : cards) {
 			card.accept(victoryPointCounterCardVisitor);
 		}
@@ -216,12 +227,39 @@ public class Player {
 		return "" + cardTally;
 	}
 	
+	/**
+	 * Used during buy phase (using coins)
+	 * @param cards
+	 * @return
+	 */
 	public Card getCardToBuy(List<Card> cards) {
 		Card card = playerInterface.selectCardToBuy(cards);
 
 		return card;
 	}
 
+	/**
+	 * Used when an action allows a gain
+	 * @param cards
+	 * @return
+	 */
+	public Card getCardToGain(List<Card> cards, int maxcost) {
+		Card card = playerInterface.selectCardToGain(cards, maxcost);
+
+		return card;
+	}
+
+	/**
+	 * Used when an action allows a gain
+	 * @param cards
+	 * @return
+	 */
+	public Card getCardToGainExact(List<Card> cards, int cost) {
+		Card card = playerInterface.selectCardToGainExact(cards, cost);
+
+		return card;
+	}
+	
 	public Card getCardToDiscard() {
 		if (cardHand.getCards().isEmpty()) {
 			return null;
@@ -314,8 +352,8 @@ public class Player {
 		return null;
 	}
 
-	public Card getTreasureCardToGain(List<Card> cards) {
-		Card card = playerInterface.selectCardToBuy(cards);
+	public Card getTreasureCardToGain(List<Card> cards, int cost) {
+		Card card = playerInterface.selectCardToGain(cards, cost);
 		return card;
 	}
 

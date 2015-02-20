@@ -182,29 +182,41 @@ public class MockPlayerInterface implements PlayerInterface {
 	}
 
 	@Override
+	public Card selectCardToGain(List<Card> cards, int cost) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Card selectCardToGainExact(List<Card> cards, int cost) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
 	public Card selectCardToPassLeft(List<Card> cards) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Card selectCardToPutOnDeck(List<Card> cards) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Card selectCardToTrashFromHand(List<Card> cards) {
 		// TODO Auto-generated method stub
 		return null;
 	}	
 	
 	@Override
-	public Card selectCardToTrashThief(List<Card> cards) {
+	public Card selectCardToPutOnDeck(List<Card> cards) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	
+	@Override
+	public Card selectCardToTrashFromHand(List<Card> cards) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Card selectCardToTrashThief(List<Card> cards) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	@Override
 	public ReactionCard selectReactionCard(List<Card> cards) {
 		// TODO Auto-generated method stub

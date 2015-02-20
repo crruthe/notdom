@@ -198,6 +198,26 @@ public class RandomAIPlayer implements PlayerInterface {
 	}
 
 	@Override
+	public Card selectCardToGain(List<Card> cards, int cost) {
+		// Chance to skip
+		if (Math.random() < (1 / (cards.size()+1))) {
+			return null;
+		}
+		Collections.shuffle(cards);
+		return cards.get(0);
+	}
+
+	@Override
+	public Card selectCardToGainExact(List<Card> cards, int cost) {
+		// Chance to skip
+		if (Math.random() < (1 / (cards.size()+1))) {
+			return null;
+		}
+		Collections.shuffle(cards);
+		return cards.get(0);
+	}
+
+	@Override
 	public Card selectCardToPassLeft(List<Card> cards) {
 		Collections.shuffle(cards);
 		return cards.get(0);

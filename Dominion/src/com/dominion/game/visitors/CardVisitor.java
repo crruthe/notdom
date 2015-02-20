@@ -4,6 +4,7 @@ import com.dominion.game.cards.ActionCard;
 import com.dominion.game.cards.TreasureCard;
 import com.dominion.game.cards.VictoryCard;
 import com.dominion.game.cards.basic.CurseCard;
+import com.dominion.game.cards.kingdom.DukeCard;
 import com.dominion.game.cards.kingdom.GardensCard;
 
 /**
@@ -33,6 +34,10 @@ public abstract class CardVisitor {
 	}
 	
 	public void visit(GardensCard gardensCard) {
+		// do nothing by default		
+	}
+
+	public void visit(DukeCard dukeCard) {
 		// do nothing by default		
 	}
 }

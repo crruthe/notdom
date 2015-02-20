@@ -19,7 +19,6 @@ public class FeastAction implements CardAction {
 		state.getCurrentPlayer().removeFromPlayArea(trashCard);
 		state.getGameBoard().addToTrashPile(trashCard);
 		
-		CardAction gainCardAction = new GainCardAction(5);
-		gainCardAction.execute(state);
+		new GainCardAction(5).execute(state);
 	}	
 }

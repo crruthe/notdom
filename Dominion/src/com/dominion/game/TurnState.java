@@ -3,8 +3,6 @@ package com.dominion.game;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.dominion.game.cards.Card;
-import com.dominion.game.cards.TreasureCard;
 import com.dominion.game.modifiers.CardModifier;
 
 public class TurnState {

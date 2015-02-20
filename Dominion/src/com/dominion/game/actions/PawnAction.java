@@ -3,8 +3,10 @@ package com.dominion.game.actions;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import com.dominion.game.GameState;
+import com.dominion.game.interfaces.messages.ActionSelectedMessage;
 
 /**
  * 
@@ -30,7 +32,15 @@ public class PawnAction implements CardAction {
 			selectedActions.add(action);
 			
 			// Cannot repeat the action, so remove it
-			actions.values().remove(action);			
+			actions.values().remove(action);
+
+			// Broadcast this decision
+			// TODO: code smell... inefficient
+			for (Entry<String, CardAction> entry : actions.entrySet()) {
+		        if (action.equals(entry.getValue())) {
+		        	state.broadcastToAllPlayers(new ActionSelectedMessage(state.getCurrentPlayer(), entry.getKey()));
+		        }
+		    }		
 		}		
 		
 		// Then perform those actions

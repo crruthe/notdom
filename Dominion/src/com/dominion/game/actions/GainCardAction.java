@@ -27,11 +27,11 @@ public class GainCardAction implements CardAction {
 		}
 		
 		List<Card> cards = state.listCardsFilterByCost(gainCost);
-		Card card = player.getCardToBuy(cards);
+		Card card = player.getCardToGain(cards, gainCost);
 		
 		if (card != null) {
 			state.getGameBoard().removeCardFromSupply(card.getClass());
-			state.getCurrentPlayer().addCardToDiscardPile(card);
+			player.addCardToDiscardPile(card);
 			state.broadcastToAllPlayers(new CardGainedMessage(player, card));
 		}
 	}

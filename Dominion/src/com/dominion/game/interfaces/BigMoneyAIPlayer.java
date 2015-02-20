@@ -203,6 +203,53 @@ public class BigMoneyAIPlayer implements PlayerInterface {
 		Collections.shuffle(cards);
 		return cards.get(0);		
 	}	
+	
+	@Override
+	public Card selectCardToGain(List<Card> cards, int cost) {
+
+		if (cards.contains(new ProvinceCard())) {
+			return new ProvinceCard();
+		}
+		
+		if (cards.contains(new GoldCard())) {
+			return new GoldCard();
+		}
+		
+		if (cards.contains(new DuchyCard())) {
+			return new DuchyCard();
+		}
+		
+		if (cards.contains(new SilverCard())) {
+			return new SilverCard();
+		}
+		
+		Collections.shuffle(cards);
+		return cards.get(0);		
+	}
+
+	@Override
+	public Card selectCardToGainExact(List<Card> cards, int cost) {
+		
+		if (cards.contains(new ProvinceCard())) {
+			return new ProvinceCard();
+		}
+		
+		if (cards.contains(new GoldCard())) {
+			return new GoldCard();
+		}
+		
+		if (cards.contains(new DuchyCard())) {
+			return new DuchyCard();
+		}
+		
+		if (cards.contains(new SilverCard())) {
+			return new SilverCard();
+		}
+		
+		Collections.shuffle(cards);
+		return cards.get(0);		
+	}
+
 	@Override
 	public Card selectCardToPassLeft(final List<Card> cards) {
 		// Send over the cheapest card
@@ -237,6 +284,7 @@ public class BigMoneyAIPlayer implements PlayerInterface {
 		return cards.get(0);
 	}
 
+
 	@Override
 	public Card selectCardToTrashThief(List<Card> cards) {
 		// Trash the most expensive card
@@ -253,7 +301,6 @@ public class BigMoneyAIPlayer implements PlayerInterface {
 		}		
 		return (ReactionCard) cards.get(0);
 	}
-
 
 	@Override
 	public TreasureCard selectTreasureCardToPlay(List<Card> cards) {

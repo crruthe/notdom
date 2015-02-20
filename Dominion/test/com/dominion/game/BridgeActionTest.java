@@ -2,11 +2,7 @@ package com.dominion.game;
 
 import com.dominion.game.actions.BridgeAction;
 import com.dominion.game.actions.CardAction;
-import com.dominion.game.actions.CoppersmithAction;
 import com.dominion.game.cards.Card;
-import com.dominion.game.cards.TreasureCard;
-import com.dominion.game.cards.basic.CopperCard;
-import com.dominion.game.cards.basic.GoldCard;
 import com.dominion.game.cards.basic.ProvinceCard;
 import com.dominion.game.cards.basic.SilverCard;
 

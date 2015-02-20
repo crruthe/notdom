@@ -4,6 +4,7 @@ import com.dominion.game.GameState;
 import com.dominion.game.Player;
 import com.dominion.game.cards.Card;
 import com.dominion.game.cards.basic.CurseCard;
+import com.dominion.game.interfaces.messages.CardGainedMessage;
 
 public class WitchAction extends AttackAction {
 	@Override
@@ -14,5 +15,6 @@ public class WitchAction extends AttackAction {
 		if (curse != null) {
 			victim.addCardToDiscardPile(curse);
 		}
+		state.broadcastToAllPlayers(new CardGainedMessage(victim, curse));		
 	}
 }

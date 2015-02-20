@@ -33,6 +33,8 @@ public interface PlayerInterface {
 	public CardAction selectCardActionToPlay(final HashMap<String, CardAction> actions);
 	public Card selectCardToBuy(final List<Card> cards);
 	public Card selectCardToDiscard(final List<Card> cards);
+	public Card selectCardToGain(final List<Card> cards, int cost);
+	public Card selectCardToGainExact(final List<Card> cards, int cost);
 	public Card selectCardToPassLeft(final List<Card> cards);
 	public Card selectCardToPutOnDeck(final List<Card> cards);
 	public Card selectCardToTrashFromHand(final List<Card> cards);

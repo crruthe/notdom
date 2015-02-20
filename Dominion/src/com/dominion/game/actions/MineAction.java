@@ -33,7 +33,7 @@ public class MineAction implements CardAction {
 		List<Card> cards = state.listCardsFilterByClassAndCost(TreasureCard.class, cost + 3);
 		Card card = null;
 		while (card == null) {
-			card = state.getCurrentPlayer().getTreasureCardToGain(cards);			
+			card = state.getCurrentPlayer().getTreasureCardToGain(cards, cost+3);			
 		}	
 		
 		state.getCurrentPlayer().addCardToHand(card);

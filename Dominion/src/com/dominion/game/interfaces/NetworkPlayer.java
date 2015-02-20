@@ -381,6 +381,40 @@ public class NetworkPlayer implements PlayerInterface {
 	}
 
 	@Override
+	public Card selectCardToGain(List<Card> cards, int cost) {
+		// TODO Auto-generated method stub
+		System.out.println("selectCardToGain");
+		String json = convertCardsWithCostToJson("selectCardToGain", cards, cost);
+		connection.sendMessage(json);
+		String result = connection.waitForMessage();
+		System.out.println(result);
+		
+		for(Card card : cards) {
+			if (card.getName().equals(result)) {
+				return card;
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public Card selectCardToGainExact(List<Card> cards, int cost) {
+		// TODO Auto-generated method stub
+		System.out.println("selectCardToGainExact");
+		String json = convertCardsWithCostToJson("selectCardToGainExact", cards, cost);
+		connection.sendMessage(json);
+		String result = connection.waitForMessage();
+		System.out.println(result);
+		
+		for(Card card : cards) {
+			if (card.getName().equals(result)) {
+				return card;
+			}
+		}
+		return null;
+	}
+
+	@Override
 	public Card selectCardToPassLeft(List<Card> cards) {
 		// TODO Auto-generated method stub
 		System.out.println("selectCardToPassLeft");
@@ -593,7 +627,7 @@ public class NetworkPlayer implements PlayerInterface {
 	public void updateTrashPile(final List<Card> cards) {
 		// TODO Auto-generated method stub
 		System.out.println("updateTrashPile");
-		String json = convertCardToJson("updateTrashPile", cards.get(0));
+		String json = convertCardToJson("updateTrashPile", ((LinkedList<Card>)cards).peekLast());
 		connection.sendMessage(json);
 	}
 
@@ -622,7 +656,8 @@ public class NetworkPlayer implements PlayerInterface {
 	 * @return String json
 	 */
 	private String convertCardsToJson(final String message, List<Card> cards) {
-		Gson gson = new Gson();		
+		Gson gson = new Gson();
+		Collection<Object> object = new LinkedList<Object>();		
 		Collection<String> cardsString = new LinkedList<String>();
 		for(Card card : cards) {
 			cardsString.add(card.getName());
@@ -632,6 +667,27 @@ public class NetworkPlayer implements PlayerInterface {
 		return json;
 	}
 
+	/**
+	 * Converts all cards into a collection of strings to formats into json
+	 * 
+	 * @param cards
+	 * @return String json
+	 */
+	private String convertCardsWithCostToJson(final String message, List<Card> cards, int cost) {
+		Gson gson = new Gson();
+		Collection<Object> object = new LinkedList<Object>();		
+		Collection<String> cardsString = new LinkedList<String>();
+		for(Card card : cards) {
+			cardsString.add(card.getName());
+		}
+		object.add(cardsString);
+		object.add(new Integer(cost));
+		
+		String json = gson.toJson(new Message(message, object));
+		System.out.println(json);
+		return json;
+	}
+	
 	/**
 	 * Converts a card into a collection of strings to formats into json
 	 * 

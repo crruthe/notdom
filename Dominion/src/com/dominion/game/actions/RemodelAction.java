@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.dominion.game.GameState;
 import com.dominion.game.cards.Card;
+import com.dominion.game.interfaces.messages.CardGainedMessage;
 import com.dominion.game.interfaces.messages.CardTrashedMessage;
 
 /**
@@ -39,9 +40,11 @@ public class RemodelAction implements CardAction {
 		// Player must gain a card
 		Card gainCard = null;
 		while (gainCard == null) {
-			gainCard = state.getCurrentPlayer().getCardToBuy(cards);
+			gainCard = state.getCurrentPlayer().getCardToGain(cards, cost+2);
 		}
-		state.getCurrentPlayer().addCardToDiscardPile(gainCard);
+
 		state.getGameBoard().removeCardFromSupply(gainCard.getClass());
+		state.getCurrentPlayer().addCardToDiscardPile(gainCard);
+		state.broadcastToAllPlayers(new CardGainedMessage(state.getCurrentPlayer(), gainCard));		
 	}
 }

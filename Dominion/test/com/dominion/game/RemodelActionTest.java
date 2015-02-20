@@ -43,7 +43,7 @@ public class RemodelActionTest extends TestCase {
 			}
 			
 			@Override
-			public Card selectCardToBuy(List<Card> cards) {
+			public Card selectCardToGain(List<Card> cards, int cost) {
 				return cards.get(0);
 			}
 		};
@@ -84,8 +84,8 @@ public class RemodelActionTest extends TestCase {
 			}
 			
 			@Override
-			public Card selectCardToBuy(List<Card> cards) {
-				fail("Allowed to buy even though no trashed card");
+			public Card selectCardToGain(List<Card> cards, int cost) {
+				fail("Allowed to gain even though no trashed card");
 				return null;
 			}
 		};
@@ -113,7 +113,7 @@ public class RemodelActionTest extends TestCase {
 			}
 			
 			@Override
-			public Card selectCardToBuy(List<Card> cards) {
+			public Card selectCardToGain(List<Card> cards, int cost) {
 				if (attempts < 3) {
 					attempts += 1;
 					return null;
@@ -158,7 +158,7 @@ public class RemodelActionTest extends TestCase {
 			}
 			
 			@Override
-			public Card selectCardToBuy(List<Card> cards) {
+			public Card selectCardToGain(List<Card> cards, int cost) {
 				assertTrue(cards.contains(new RemodelCard()));
 				assertTrue(cards.contains(new WitchCard()));
 				assertFalse(cards.contains(new AdventurerCard()));

@@ -5,6 +5,7 @@ import java.util.List;
 import com.dominion.game.GameState;
 import com.dominion.game.cards.Card;
 import com.dominion.game.interfaces.messages.CardTrashedMessage;
+import com.dominion.game.interfaces.messages.CardGainedMessage;
 
 /**
  * 
@@ -35,7 +36,7 @@ public class UpgradeAction implements CardAction {
 		int cost = state.modifyCard(trashCard).getCost();
 
 		// Gain a card that is exactly cost + 1
-		List<Card> cards = state.listCardsFilterByCost(cost + 1, cost + 1);
+		List<Card> cards = state.listCardsFilterByCostExact(cost + 1);
 		
 		// If there is no card of this amount, no need to gain
 		if (cards.isEmpty()) {
@@ -45,9 +46,10 @@ public class UpgradeAction implements CardAction {
 		// Player must gain a card
 		Card gainCard = null;
 		while (gainCard == null) {
-			gainCard = state.getCurrentPlayer().getCardToBuy(cards);
+			gainCard = state.getCurrentPlayer().getCardToGainExact(cards, cost+1);
 		}
 		state.getCurrentPlayer().addCardToDiscardPile(gainCard);
 		state.getGameBoard().removeCardFromSupply(gainCard.getClass());
+		state.broadcastToAllPlayers(new CardGainedMessage(state.getCurrentPlayer(), gainCard));		
 	}
 }

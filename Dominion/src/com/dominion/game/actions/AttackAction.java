@@ -10,6 +10,11 @@ public abstract class AttackAction implements CardAction {
 
 	@Override
 	public void execute(GameState state) {
+		getReactionToAttack(state);
+		attackOtherPlayers(state);
+	}
+	
+	protected void getReactionToAttack(GameState state) {
 		// Allow the other players to reveal reaction cards
 		for (Player victim : state.getOtherPlayers()) {
 			
@@ -25,7 +30,11 @@ public abstract class AttackAction implements CardAction {
 					action.executeOnPlayer(state, victim);
 				}				
 			} while (card != null);
-
+		}		
+	}
+	
+	protected void attackOtherPlayers(GameState state) {		
+		for (Player victim : state.getOtherPlayers()) {
 			// If they played a moat, they are immune to attacks
 			if (!victim.isImmune()) {
 				executeAttackOnPlayer(state, victim);

@@ -157,7 +157,23 @@ public class GameState {
 		return listCardsFilterByCost(0, amount);
 	}
 	
-	public List<Card> listCardsFilterByCost(int min, int max) {
+	/** 
+	 * Build up a list of cards that the player can buy
+	 * 
+	 * @param amount of coins to buy with
+	 * @return collection of cards
+	 */
+	public List<Card> listCardsFilterByCostExact(int amount) {
+		return listCardsFilterByCost(amount, amount);
+	}
+	
+	/** 
+	 * Build up a list of cards that the player can buy
+	 * 
+	 * @param amount of coins to buy with
+	 * @return collection of cards
+	 */
+	private List<Card> listCardsFilterByCost(int min, int max) {
 		List<Card> cards = new LinkedList<Card>();
 		
 		for (Class<? extends Card> cardClass : gameBoard.getSupplyStacks().keySet()) {	
