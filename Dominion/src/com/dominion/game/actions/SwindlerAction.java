@@ -30,7 +30,7 @@ public class SwindlerAction extends AttackAction {
 		state.getGameBoard().addToTrashPile(trashCard);					
 
 		// The victim player gains a card of your choice for exactly the same cost
-		int cost = trashCard.modifyCard(state.getTurnState().getModifiers()).getCost();
+		int cost = state.modifyCard(trashCard).getCost();
 
 		List<Card> cards = state.listCardsFilterByCost(cost, cost);
 		Card card = state.getCurrentPlayer().getCardToBuy(cards);

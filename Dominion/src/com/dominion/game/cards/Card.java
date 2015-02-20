@@ -52,20 +52,6 @@ public abstract class Card implements Comparable<Card> {
 		return null;
 	}
 	
-	/**
-	 * Applies modifiers to the card in a pipeline and returns the final modified card
-	 * 
-	 * @param card
-	 * @return
-	 */
-	public Card modifyCard(List<CardModifier> modifiers) {
-		Card mCard = this;
-		for (CardModifier modifier : modifiers) {
-			mCard = modifier.modify(mCard);
-		}
-		return mCard;
-	}	
-	
 	@Override
 	public String toString() {
 		return getName();

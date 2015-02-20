@@ -32,7 +32,7 @@ public class RemodelAction implements CardAction {
 		state.getCurrentPlayer().removeFromHand(trashCard);
 
 		// Get actual cost after modifiers e.g. Bridge
-		int cost = trashCard.modifyCard(state.getTurnState().getModifiers()).getCost();
+		int cost = state.modifyCard(trashCard).getCost();
 		
 		List<Card> cards = state.listCardsFilterByCost(cost + 2);
 		

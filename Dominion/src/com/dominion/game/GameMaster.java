@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.dominion.game.actions.CardAction;
+import com.dominion.game.actions.GainCardAction;
 import com.dominion.game.cards.ActionCard;
 import com.dominion.game.cards.Card;
 import com.dominion.game.cards.TreasureCard;
@@ -24,22 +25,6 @@ public class GameMaster {
 
 	public void addPlayerToState(Player player) {
 		state.addPlayer(player);
-	}
-	
-	public void playActionCard(ActionCard actionCard) {
-		
-		state.broadcastToAllPlayers(new CardPlayedMessage(state.getCurrentPlayer(), (Card)actionCard));		
-
-		// Play the card into their play area
-		state.getCurrentPlayer().moveCardFromHandToPlayArea((Card)actionCard);
-		
-		// Track actions player for Conspirator
-		state.getTurnState().incrementActionsPlayed();
-		
-		// Iterate through actions for action card
-		for (CardAction action : actionCard.buildActionList()) {
-			action.execute(state);
-		}
 	}
 	
 	public void playerGainsCardFromSupply(Player player, Class<? extends Card> cardClass) {
@@ -142,7 +127,7 @@ public class GameMaster {
 			}
 			
 			// Play the selected action card
-			playActionCard(actionCard);
+			state.playActionCard(actionCard);
 			
 			// Consume on action for this turn
 			state.getTurnState().decrementActions();
@@ -160,7 +145,7 @@ public class GameMaster {
 				break;
 			}
 
-			playTreasureCard(state.getCurrentPlayer(), treasureCard);
+			state.playTreasureCard(treasureCard);
 		}
 		
 		while(state.getTurnState().getNumOfBuys() > 0) {
@@ -178,24 +163,11 @@ public class GameMaster {
 				// Gain a card
 				playerGainsCardFromSupply(state.getCurrentPlayer(), card.getClass());
 				
-				Card mCard = card.modifyCard(state.getTurnState().getModifiers());
+				Card mCard = state.modifyCard(card);
 				state.getTurnState().decrementCoins(mCard.getCost());
 				state.getTurnState().decrementBuys();				
 			}
 		}		
-	}
-	
-	/**
-	 * During buy phase you can play treasure cards
-	 * @param card
-	 */
-	private void playTreasureCard(Player player, TreasureCard card) {
-		player.moveCardFromHandToPlayArea((Card)card);
-		
-		state.getTurnState().incrementCoins(card.getCoinAmount());
-
-		player.notifyOfTurnState(state.getTurnState());
-		state.broadcastToAllPlayers(new CardPlayedMessage(player, (Card)card));
 	}
 	
 	private void playTurn() {	

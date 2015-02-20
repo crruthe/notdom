@@ -32,7 +32,7 @@ public class UpgradeAction implements CardAction {
 		state.getCurrentPlayer().removeFromHand(trashCard);
 		
 		// Get actual cost after modifiers e.g. Bridge
-		int cost = trashCard.modifyCard(state.getTurnState().getModifiers()).getCost();
+		int cost = state.modifyCard(trashCard).getCost();
 
 		// Gain a card that is exactly cost + 1
 		List<Card> cards = state.listCardsFilterByCost(cost + 1, cost + 1);

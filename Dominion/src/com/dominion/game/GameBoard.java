@@ -143,6 +143,7 @@ public class GameBoard {
 		cardList.add(BaronCard.class);		
 		cardList.add(BridgeCard.class);
 		cardList.add(ConspiratorCard.class);
+		cardList.add(CoppersmithCard.class);
 		
 		// 5: Duke, Minion, Saboteur, Torturer, Trading Post, Tribute, Upgrade 
 		cardList.add(TributeCard.class);

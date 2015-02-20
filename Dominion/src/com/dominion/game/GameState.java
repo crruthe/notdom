@@ -4,12 +4,17 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.dominion.game.actions.CardAction;
+import com.dominion.game.cards.ActionCard;
 import com.dominion.game.cards.Card;
+import com.dominion.game.cards.TreasureCard;
 import com.dominion.game.cards.basic.CopperCard;
 import com.dominion.game.cards.basic.EstateCard;
 import com.dominion.game.cards.basic.ProvinceCard;
+import com.dominion.game.interfaces.messages.CardPlayedMessage;
 import com.dominion.game.interfaces.messages.PlayerInterfaceMessage;
 import com.dominion.game.interfaces.messages.UpdateSupplyMessage;
+import com.dominion.game.modifiers.CardModifier;
 
 /**
  * GameState is a container for everything that makes up a current state.
@@ -28,18 +33,24 @@ public class GameState {
 		players.add(player);
 	}
 
+	public void broadcastToAllPlayers(PlayerInterfaceMessage message) {
+		for (Player player: players) {
+			player.invokeMessage(message);
+		}
+	}
+
 	/**
 	 * Return current player i.e. player who's turn it is
 	 * @return
 	 */
 	public Player getCurrentPlayer() {
 		return players.get(0);
-	}
+	}	
 
 	public GameBoard getGameBoard() {
 		return gameBoard;
-	}	
-
+	}
+	
 	/**
 	 * Returns a list of players that are not the current player (usually for attacks)
 	 * @return
@@ -49,7 +60,7 @@ public class GameState {
 		otherPlayers.removeFirst();
 		return otherPlayers;
 	}
-	
+		
 	/**
 	 * Get all players
 	 * @return
@@ -57,7 +68,7 @@ public class GameState {
 	public List<Player> getPlayers() {
 		return players;
 	}
-		
+	
 	public TurnState getTurnState() {
 		return turnState;
 	}
@@ -96,59 +107,18 @@ public class GameState {
 		broadcastToAllPlayers(new UpdateSupplyMessage(gameBoard.getSupplyStacks()));
 	}
 	
-	public void setGameBoard(GameBoard gameBoard) {
-		this.gameBoard = gameBoard;
-	}
-	
-	public void rotatePlayers() {
-		Player currentPlayer = players.removeFirst();
-		players.addLast(currentPlayer);
-	}
-	
 	/**
-	 * Each player starts the game with the same cards:
-	 * 7 coppers
-	 * 3 estates
-	 * 
-	 * Each player shuffles these cards and places them (their Deck)
-	 * face-down in their play area (the area near them on the table).
+	 * Returns a list of the all the cards in the game
+	 * @return
 	 */
-	private void buildDeckForPlayer(Player player) {
-		LinkedList<Card> cards = new LinkedList<Card>();
+	public List<Card> listAllCards() {
+		List<Card> cards = new LinkedList<Card>();
 		
-		for (int i = 0; i < NUM_ESTATE_SETUP; i++) {
-			cards.add(new EstateCard());
+		for (Class<? extends Card> cardClass : gameBoard.getSupplyStacks().keySet()) {
+			Card card = Card.getCard(cardClass);				
+			cards.add(card);
 		}
-		
-		for (int i = 0; i < NUM_COPPER_SETUP; i++) {
-			cards.add(new CopperCard());
-		}
-		
-		Collections.shuffle(cards);
-		player.addCardsToDeck(cards);
-	}
-	
-	/**
-	 * Randomises the turn order, which also provides the starting player 
-	 */
-	private void randomisePlayers() {
-		Collections.shuffle(players);
-	}
-	
-	/**
-	 * Build the starting deck and draw a new hand for each player
-	 */
-	private void setupAllPlayers() {
-		for (Player player : players) {
-			buildDeckForPlayer(player);
-			player.drawNewHand();
-		}
-	}
-	
-	public void broadcastToAllPlayers(PlayerInterfaceMessage message) {
-		for (Player player: players) {
-			player.invokeMessage(message);
-		}
+		return cards;		
 	}
 	
 	/**
@@ -166,7 +136,7 @@ public class GameState {
 				Card card = Card.getCard(checkCardClass);
 
 				// Apply modifiers for cost, e.g. Bridge
-				Card mCard = card.modifyCard(turnState.getModifiers());
+				Card mCard = modifyCard(card);
 				
 				// Check if player can afford this card
 				if (cardClass.isInstance(card) && mCard.getCost() <= amount) {
@@ -196,7 +166,7 @@ public class GameState {
 				Card card = Card.getCard(cardClass);
 				
 				// Apply modifiers for cost, e.g. Bridge
-				Card mCard = card.modifyCard(turnState.getModifiers());
+				Card mCard = modifyCard(card);
 				
 				// Check if player can afford this card
 				if (mCard.getCost() >= min && mCard.getCost() <= max) {
@@ -206,19 +176,109 @@ public class GameState {
 		}
 		return cards;		
 	}
-
-
+	
 	/**
-	 * Returns a list of the all the cards in the game
+	 * Applies modifiers to the card in a pipeline and returns the final modified card
+	 * 
+	 * @param card
 	 * @return
 	 */
-	public List<Card> listAllCards() {
-		List<Card> cards = new LinkedList<Card>();
-		
-		for (Class<? extends Card> cardClass : gameBoard.getSupplyStacks().keySet()) {
-			Card card = Card.getCard(cardClass);				
-			cards.add(card);
+	public Card modifyCard(Card mCard) {
+		for (CardModifier modifier : turnState.getModifiers()) {
+			mCard = modifier.modify(mCard);
 		}
-		return cards;		
+		return mCard;
+	}
+	
+	/**
+	 * Applies modifiers to the card in a pipeline and returns the final modified card
+	 * 
+	 * @param card
+	 * @return
+	 */
+	public TreasureCard modifyCard(TreasureCard mCard) {
+		for (CardModifier modifier : turnState.getModifiers()) {
+			mCard = modifier.modify(mCard);
+		}
+		return mCard;
+	}
+	
+	public void playActionCard(ActionCard actionCard) {		
+		broadcastToAllPlayers(new CardPlayedMessage(getCurrentPlayer(), (Card)actionCard));		
+
+		// Play the card into their play area
+		getCurrentPlayer().moveCardFromHandToPlayArea((Card)actionCard);
+		
+		// Track actions player for Conspirator
+		turnState.incrementActionsPlayed();
+		
+		// Iterate through actions for action card
+		for (CardAction action : actionCard.buildActionList()) {
+			action.execute(this);
+		}
+	}
+	
+	/**
+	 * During buy phase you can play treasure cards
+	 * @param card
+	 */
+	public void playTreasureCard(TreasureCard card) {
+		getCurrentPlayer().moveCardFromHandToPlayArea((Card)card);		
+		
+		TreasureCard mCard = modifyCard(card);
+		turnState.incrementCoins(mCard.getCoinAmount());
+
+		getCurrentPlayer().notifyOfTurnState(turnState);
+		broadcastToAllPlayers(new CardPlayedMessage(getCurrentPlayer(), (Card)card));
+	}
+
+
+	public void rotatePlayers() {
+		Player currentPlayer = players.removeFirst();
+		players.addLast(currentPlayer);
+	}
+	
+	public void setGameBoard(GameBoard gameBoard) {
+		this.gameBoard = gameBoard;
+	}
+
+	/**
+	 * Each player starts the game with the same cards:
+	 * 7 coppers
+	 * 3 estates
+	 * 
+	 * Each player shuffles these cards and places them (their Deck)
+	 * face-down in their play area (the area near them on the table).
+	 */
+	private void buildDeckForPlayer(Player player) {
+		LinkedList<Card> cards = new LinkedList<Card>();
+		
+		for (int i = 0; i < NUM_ESTATE_SETUP; i++) {
+			cards.add(new EstateCard());
+		}
+		
+		for (int i = 0; i < NUM_COPPER_SETUP; i++) {
+			cards.add(new CopperCard());
+		}
+		
+		Collections.shuffle(cards);
+		player.addCardsToDeck(cards);
+	}
+	
+	/**
+	 * Randomises the turn order, which also provides the starting player 
+	 */
+	private void randomisePlayers() {
+		Collections.shuffle(players);
+	}	
+	
+	/**
+	 * Build the starting deck and draw a new hand for each player
+	 */
+	private void setupAllPlayers() {
+		for (Player player : players) {
+			buildDeckForPlayer(player);
+			player.drawNewHand();
+		}
 	}
 }
