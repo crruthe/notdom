@@ -1,7 +1,6 @@
 package com.dominion.game.interfaces.messages;
 
 import com.dominion.game.Player;
-import com.dominion.game.cards.Card;
 import com.dominion.game.interfaces.PlayerInterface;
 
 public class ActionSelectedMessage implements PlayerInterfaceMessage {

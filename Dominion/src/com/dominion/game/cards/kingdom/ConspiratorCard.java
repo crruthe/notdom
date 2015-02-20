@@ -4,32 +4,33 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import com.dominion.game.actions.CardAction;
-import com.dominion.game.actions.ReactionAction;
-import com.dominion.game.actions.SecretChamberAction;
-import com.dominion.game.actions.SecretChamberReaction;
+import com.dominion.game.actions.ConspiratorAction;
+import com.dominion.game.actions.PlusBuyAction;
+import com.dominion.game.actions.PlusCoinAction;
 import com.dominion.game.cards.ActionCard;
 import com.dominion.game.cards.Card;
-import com.dominion.game.cards.ReactionCard;
 import com.dominion.game.visitors.CardVisitor;
 
-public class SecretChamberCard extends Card implements ReactionCard, ActionCard {
-	public static final int COST = 2;
-	public static final String NAME = "SecretChamber";	
+public class ConspiratorCard extends Card implements ActionCard {
+	public static final int COST = 4;
+	public static final String NAME = "Conspirator";
+	private final int PLUS_COINS = 2;
 
 	@Override
 	public void accept(CardVisitor visitor) {
 		visitor.visit(this);
 	}
-
+	
 	@Override
 	public Collection<CardAction> buildActionList() {
 		LinkedList<CardAction> cardActions = new LinkedList<CardAction>();
 		
-		cardActions.add(new SecretChamberAction());
+		cardActions.add(new PlusCoinAction(PLUS_COINS));
+		cardActions.add(new ConspiratorAction());
 		
 		return cardActions;
 	}
-	
+
 	@Override
 	public int getCost() {
 		return COST;
@@ -38,10 +39,5 @@ public class SecretChamberCard extends Card implements ReactionCard, ActionCard 
 	@Override
 	public String getName() {
 		return NAME;
-	}
-
-	@Override
-	public ReactionAction getReaction() {
-		return new SecretChamberReaction();
 	}
 }

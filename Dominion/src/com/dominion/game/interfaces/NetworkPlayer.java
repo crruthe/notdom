@@ -308,6 +308,14 @@ public class NetworkPlayer implements PlayerInterface {
 	}
 
 	@Override
+	public void notifyNewTurn(int round) {
+		System.out.println("notifyLog");
+		Gson gson = new Gson();
+		String json = gson.toJson(new Message("notifyLog", "New Round - " +  round + "."));
+		connection.sendMessage(json);
+	}
+
+	@Override
 	public ActionCard selectActionCardToPlay(final List<Card> cards) {
 		// TODO Auto-generated method stub
 		System.out.println("selectActionCardToPlay");

@@ -14,6 +14,7 @@ import com.dominion.game.interfaces.messages.CardGainedMessage;
 import com.dominion.game.interfaces.messages.CardPlayedMessage;
 import com.dominion.game.interfaces.messages.EndGameCardsMessage;
 import com.dominion.game.interfaces.messages.EndGameScoreMessage;
+import com.dominion.game.interfaces.messages.NewTurnMessage;
 
 
 public class GameMaster {
@@ -31,6 +32,9 @@ public class GameMaster {
 
 		// Play the card into their play area
 		state.getCurrentPlayer().moveCardFromHandToPlayArea((Card)actionCard);
+		
+		// Track actions player for Conspirator
+		state.getTurnState().incrementActionsPlayed();
 		
 		// Iterate through actions for action card
 		for (CardAction action : actionCard.buildActionList()) {
@@ -57,15 +61,25 @@ public class GameMaster {
 		
 		state.initialise();
 		
+		int turnCount = 0;		
+		
 		// Main game loop
-		while (true) {			
-			playTurn();			
+		while (true) {
+			// On a new round, broadcast the turn count
+			if ((turnCount % state.getPlayers().size()) == 0) {
+				int round = (int)(turnCount / state.getPlayers().size()) + 1;
+				state.broadcastToAllPlayers(new NewTurnMessage(round));
+			}
+			
+			playTurn();
+			state.rotatePlayers();
 			
 			if (state.hasGameEnded()) {
 				
 				printSupplyStack();
 				break;
 			}
+			turnCount++;			
 		}
 		
 		// Tally the victory points
@@ -117,7 +131,7 @@ public class GameMaster {
 
 	private void actionPhase() {
 		// Continue while the player has actions left
-		while(state.getTurnState().getNumberOfActions() > 0) {
+		while(state.getTurnState().getNumOfActions() > 0) {
 			state.getCurrentPlayer().notifyOfTurnState(state.getTurnState());
 			
 			ActionCard actionCard = state.getCurrentPlayer().getActionCardToPlay();
@@ -149,7 +163,7 @@ public class GameMaster {
 			playTreasureCard(state.getCurrentPlayer(), treasureCard);
 		}
 		
-		while(state.getTurnState().getNumberOfBuys() > 0) {
+		while(state.getTurnState().getNumOfBuys() > 0) {
 			
 			state.getCurrentPlayer().notifyOfTurnState(state.getTurnState());
 			
@@ -190,6 +204,5 @@ public class GameMaster {
 		state.getCurrentPlayer().cleanUpPhase();
 		state.getCurrentPlayer().drawNewHand();
 		state.getTurnState().reset();
-		state.rotatePlayers();
 	}
 }

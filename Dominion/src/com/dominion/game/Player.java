@@ -12,6 +12,7 @@ import com.dominion.game.cards.TreasureCard;
 import com.dominion.game.cards.VictoryCard;
 import com.dominion.game.cards.basic.CopperCard;
 import com.dominion.game.cards.basic.CurseCard;
+import com.dominion.game.cards.basic.EstateCard;
 import com.dominion.game.interfaces.PlayerInterface;
 import com.dominion.game.interfaces.messages.PlayerInterfaceMessage;
 import com.dominion.game.observers.*;
@@ -244,6 +245,10 @@ public class Player {
 		return playerInterface.selectCardToTrashThief(cards);
 	}
 		
+	public Card getCardWishingWell(List<Card> cards) {
+		return playerInterface.guessCard(cards);
+	}	
+
 	public Card getCopperCardToTrash() {
 		List<Card> cards = new LinkedList<Card>();
 		
@@ -267,22 +272,38 @@ public class Player {
 	}
 
 
+	public Card getEstateCardToDiscard() {
+		List<Card> cards = new LinkedList<Card>();
+		
+		for (Card card : cardHand.getCards()) {
+			if (card instanceof EstateCard) {
+				cards.add(card);
+			}
+		}
+		
+		if (!cards.isEmpty()) {
+			return playerInterface.selectCardToDiscard(cards);
+		}
+		
+		return null;
+	}
+	
 	public List<Card> getHand() {
 		return cardHand.getCards();
 	}
-	
+
 	/**
 	 * Returns the current size of the hand
 	 * @return
 	 */
 	public int getHandSize() {
 		return cardHand.count();
-	}
-
-	public String getPlayerName() {
-		return playerInterface.getPlayerName();
 	}	
 	
+	public String getPlayerName() {
+		return playerInterface.getPlayerName();
+	}
+
 	public ReactionCard getReactionCardToPlay() {
 		List<Card> cards = cardHand.getCardsFilterByClass(ReactionCard.class);
 		
@@ -315,7 +336,7 @@ public class Player {
 		}
 		return (TreasureCard)playerInterface.selectCardToTrashFromHand(cards);
 	}
-
+	
 	public Card getVictoryCardToReveal() {
 		List<Card> cards = cardHand.getCardsFilterByClass(VictoryCard.class);
 		
@@ -329,7 +350,7 @@ public class Player {
 	public void invokeMessage(PlayerInterfaceMessage message) {
 		message.invoke(playerInterface);		
 	}
-	
+
 	public boolean isImmune() {
 		return this.immune;
 	}
@@ -360,8 +381,8 @@ public class Player {
 
 	public void notifyOfTurnState(TurnState turnState) {
 		playerInterface.updateTurnState(
-				turnState.getNumberOfActions(), 
-				turnState.getNumberOfBuys(), 
+				turnState.getNumOfActions(), 
+				turnState.getNumOfBuys(), 
 				turnState.getTotalCoins());
 	}
 
@@ -384,11 +405,11 @@ public class Player {
 	public boolean wantsToGainCard(Card card) {
 		return playerInterface.chooseIfGainCard(card);
 	}
-
+	
 	public boolean wantsToGainCardThief(Card trashCard) {
 		return playerInterface.chooseIfGainCardThief(trashCard);
 	}
-	
+
 	public boolean wantsToPutDeckInDiscard() {
 		return playerInterface.chooseIfPutDeckInDiscard();
 	}
@@ -399,9 +420,5 @@ public class Player {
 
 	public boolean wantsToTrashCard(Card card) {
 		return playerInterface.chooseIfTrashCard(card);
-	}
-
-	public Card getCardWishingWell(List<Card> cards) {
-		return playerInterface.guessCard(cards);
 	}
 }

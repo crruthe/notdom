@@ -152,6 +152,12 @@ public class BigMoneyAIPlayer implements PlayerInterface {
 	}
 
 	@Override
+	public void notifyNewTurn(int turnCount) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
 	public ActionCard selectActionCardToPlay(List<Card> cards) {
 		return null;	
 	}
@@ -196,15 +202,15 @@ public class BigMoneyAIPlayer implements PlayerInterface {
 		}		
 		Collections.shuffle(cards);
 		return cards.get(0);		
-	}
-
+	}	
 	@Override
 	public Card selectCardToPassLeft(final List<Card> cards) {
 		// Send over the cheapest card
 		List<Card> sCards = new LinkedList<Card>(cards);
 		Collections.sort(sCards);
 		return cards.get(0);
-	}	
+	}
+
 	@Override
 	public Card selectCardToPutOnDeck(List<Card> cards) {
 		return cards.get(0);
@@ -248,11 +254,11 @@ public class BigMoneyAIPlayer implements PlayerInterface {
 		return (ReactionCard) cards.get(0);
 	}
 
+
 	@Override
 	public TreasureCard selectTreasureCardToPlay(List<Card> cards) {
 		return (TreasureCard) cards.get(0);
 	}
-
 
 	@Override
 	public Card selectVictoryCardToReveal(List<Card> cards) {

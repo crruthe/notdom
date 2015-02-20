@@ -15,7 +15,8 @@ public class MoneylenderAction implements CardAction {
 			state.getCurrentPlayer().removeFromHand(card);
 			state.getGameBoard().addToTrashPile(card);
 			
-			state.getTurnState().incrementCoins(3);
+			CardAction action = new PlusCoinAction(3);
+			action.execute(state);
 		}		
 	}	
 }

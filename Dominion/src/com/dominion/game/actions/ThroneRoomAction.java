@@ -14,9 +14,15 @@ public class ThroneRoomAction implements CardAction {
 			state.getCurrentPlayer().moveCardFromHandToPlayArea((Card)actionCard);			
 			state.broadcastToAllPlayers(new CardPlayedMessage(state.getCurrentPlayer(), (Card)actionCard));
 			
+			// Track actions player for Conspirator
+			state.getTurnState().incrementActionsPlayed();
+			
 			for (CardAction action : actionCard.buildActionList()) {
 				action.execute(state);
 			}			
+
+			// Track actions player for Conspirator
+			state.getTurnState().incrementActionsPlayed();
 
 			for (CardAction action : actionCard.buildActionList()) {
 				action.execute(state);

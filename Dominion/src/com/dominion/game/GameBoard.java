@@ -140,7 +140,9 @@ public class GameBoard {
 		
 
 		// 4: Baron, Bridge, Conspirator, Coppersmith, Ironworks, Mining Village, Scout 
+		cardList.add(BaronCard.class);		
 		cardList.add(BridgeCard.class);
+		cardList.add(ConspiratorCard.class);
 		
 		// 5: Duke, Minion, Saboteur, Torturer, Trading Post, Tribute, Upgrade 
 		cardList.add(TributeCard.class);

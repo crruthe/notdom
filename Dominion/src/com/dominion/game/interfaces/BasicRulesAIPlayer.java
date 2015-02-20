@@ -154,6 +154,12 @@ public class BasicRulesAIPlayer implements PlayerInterface {
 	}
 
 	@Override
+	public void notifyNewTurn(int turnCount) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
 	public ActionCard selectActionCardToPlay(List<Card> cards) {
 		
 		Card myCard = null;
@@ -268,8 +274,7 @@ public class BasicRulesAIPlayer implements PlayerInterface {
 		}		
 		Collections.shuffle(cards);
 		return cards.get(0);		
-	}
-
+	}	
 	@Override
 	public Card selectCardToPassLeft(List<Card> cards) {
 		for (Card card : cards) {
@@ -278,7 +283,8 @@ public class BasicRulesAIPlayer implements PlayerInterface {
 			}			
 		}
 		return cards.get(0);
-	}	
+	}
+
 	@Override
 	public Card selectCardToPutOnDeck(List<Card> cards) {
 		return cards.get(0);

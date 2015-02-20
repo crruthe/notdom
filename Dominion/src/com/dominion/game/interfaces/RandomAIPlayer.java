@@ -17,7 +17,7 @@ import com.dominion.game.cards.TreasureCard;
 public class RandomAIPlayer implements PlayerInterface {
 
 	public static void main(String[] args) {
-		for (int i=0; i<100; i++) {
+		for (int i=0; i<1000; i++) {
 			GameMaster gm = new GameMaster();
 			Player p1 = new Player(new BigMoneyAIPlayer());
 			Player p2 = new Player(new RandomAIPlayer());
@@ -156,6 +156,12 @@ public class RandomAIPlayer implements PlayerInterface {
 		if (!player.getPlayerName().equals("RandomAIPlayer"))
 			return;
 		System.out.println("HandRevealed - " + player.getPlayerName() + ": " + cards);
+	}
+
+	@Override
+	public void notifyNewTurn(int turnCount) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override

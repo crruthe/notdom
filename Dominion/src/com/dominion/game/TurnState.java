@@ -6,80 +6,97 @@ import java.util.List;
 import com.dominion.game.modifiers.CardModifier;
 
 public class TurnState {
-	private int numberOfActions;
-	private int numberOfBuys;
-	private int totalCoins;	
+
+	// Modifiers for the turn, e.g. Bridge
 	private List<CardModifier> modifiers = new LinkedList<CardModifier>();
+
+	private int numOfActions;
+
+	// Tracked for Conspirator
+	private int numOfActionsPlayed;	
+	
+	private int numOfBuys;
+	
+	private int totalCoins;
 	
 	public TurnState() {
 		reset();
 	}
 	
+	public void addModifier(CardModifier modifier) {
+		modifiers.add(modifier);
+	}
+	
 	public void decrementActions() {
-		numberOfActions--;
+		numOfActions--;
 	}
 	
 	public void decrementBuys() {
-		numberOfBuys--;
+		numOfBuys--;
 	}
 	
 	public void decrementCoins(int coins) {
 		totalCoins -= coins;
 	}
 	
+	public List<CardModifier> getModifiers() {
+		return modifiers;
+	}
+	
 	/**
 	 * @return the numberOfActions
 	 */
-	public int getNumberOfActions() {
-		return numberOfActions;
+	public int getNumOfActions() {
+		return numOfActions;
+	}
+
+	public int getNumOfActionsPlayed() {
+		return numOfActionsPlayed;
 	}
 	
 	/**
 	 * @return the numberOfBuys
 	 */
-	public int getNumberOfBuys() {
-		return numberOfBuys;
+	public int getNumOfBuys() {
+		return numOfBuys;
 	}
-	
+
 	/**
 	 * @return the totalCoins
 	 */
 	public int getTotalCoins() {
 		return totalCoins;
 	}
-
+	
 	public void incrementActions(int amount) {
-		numberOfActions += amount;
+		numOfActions += amount;
+	}
+	
+	public void incrementActionsPlayed() {
+		numOfActionsPlayed ++;
 	}
 	
 	public void incrementBuys(int amount) {
-		numberOfBuys += amount;
+		numOfBuys += amount;
 	}
 
 	public void incrementCoins(int amount) {
 		totalCoins += amount;
 	}
-	
+		
 	public void reset() {
-		numberOfBuys = 1;
-		numberOfActions = 1;
+		numOfBuys = 1;
+		numOfActions = 1;
 		totalCoins = 0;	
+		numOfActionsPlayed = 0;
 		modifiers.clear();
 	}
 	
 	public void zeroActions() {
-		numberOfActions = 0;
+		numOfActions = 0;
 	}
 
 	public void zeroBuys() {
-		numberOfBuys = 0;
-	}
-		
-	public void addModifier(CardModifier modifier) {
-		modifiers.add(modifier);
-	}
-	
-	public List<CardModifier> getModifiers() {
-		return modifiers;
+		numOfBuys = 0;
 	}
 }

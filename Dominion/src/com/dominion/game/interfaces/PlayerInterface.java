@@ -28,6 +28,7 @@ public interface PlayerInterface {
 	public void notifyEndGameScore(final Player player, int score);
 	public void notifyGuessCard(Player player, Card card);
 	public void notifyHandRevealed(final Player player, final List<Card> cards);
+	public void notifyNewTurn(int turnCount);
 	public ActionCard selectActionCardToPlay(final List<Card> cards);
 	public CardAction selectCardActionToPlay(final HashMap<String, CardAction> actions);
 	public Card selectCardToBuy(final List<Card> cards);
