@@ -1,7 +1,6 @@
 package com.dominion.game.actions;
 
 import java.util.HashMap;
-import java.util.Map.Entry;
 
 import com.dominion.game.GameState;
 import com.dominion.game.Player;
@@ -92,18 +91,15 @@ public class TorturerAction extends AttackAction  {
 		actions.put("Discard 2 cards", new DiscardCardTorturerAction(victim, 2));
 		actions.put("Gain a curse", new GainCurseTorturerAction(victim));
 		
-		// The victim picks the action
-		CardAction action = victim.getCardActionToPlay(actions);
+		String action = null;
+		while (!actions.containsKey(action)) {
+			action = victim.getCardActionToPlay(actions);
+		}
 
-		// Broadcast this decision
-		// TODO: code smell... inefficient
-		for (Entry<String, CardAction> entry : actions.entrySet()) {
-	        if (action.equals(entry.getValue())) {
-	        	state.broadcastToAllPlayers(new ActionSelectedMessage(victim, entry.getKey()));
-	        }
-	    }
+		
+    	state.broadcastToAllPlayers(new ActionSelectedMessage(victim, action));
 		
 		// Then perform this action
-		action.execute(state);
+		actions.get(action).execute(state);
 	}
 }

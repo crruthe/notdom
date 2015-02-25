@@ -171,8 +171,8 @@ public class RandomAIPlayer implements PlayerInterface {
 	}
 
 	@Override
-	public CardAction selectCardActionToPlay(HashMap<String, CardAction> actions) {
-		List<CardAction> actionsList = new LinkedList<CardAction>(actions.values());
+	public String selectCardActionToPlay(HashMap<String, CardAction> actions) {
+		List<String> actionsList = new LinkedList<String>(actions.keySet());
 		Collections.shuffle(actionsList);
 		return actionsList.get(0);
 	}
@@ -226,6 +226,11 @@ public class RandomAIPlayer implements PlayerInterface {
 	@Override
 	public Card selectCardToPutOnDeck(List<Card> cards) {
 		Collections.shuffle(cards);
+		return cards.get(0);
+	}
+
+	@Override
+	public Card selectCardToPutOnDeckScout(List<Card> cards) {
 		return cards.get(0);
 	}
 

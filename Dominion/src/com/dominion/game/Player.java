@@ -210,7 +210,7 @@ public class Player {
 		return cards;
 	}
 
-	public CardAction getCardActionToPlay(HashMap<String, CardAction> actions) {
+	public String getCardActionToPlay(HashMap<String, CardAction> actions) {
 		return playerInterface.selectCardActionToPlay(actions);
 		
 	}
@@ -458,5 +458,9 @@ public class Player {
 
 	public boolean wantsToTrashCard(Card card) {
 		return playerInterface.chooseIfTrashCard(card);
+	}
+
+	public Card getCardToPutOnDeckScout(List<Card> cards) {
+		return playerInterface.selectCardToPutOnDeckScout(cards);
 	}
 }

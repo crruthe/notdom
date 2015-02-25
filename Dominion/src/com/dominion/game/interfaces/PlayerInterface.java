@@ -30,13 +30,14 @@ public interface PlayerInterface {
 	public void notifyHandRevealed(final Player player, final List<Card> cards);
 	public void notifyNewTurn(int turnCount);
 	public ActionCard selectActionCardToPlay(final List<Card> cards);
-	public CardAction selectCardActionToPlay(final HashMap<String, CardAction> actions);
+	public String selectCardActionToPlay(final HashMap<String, CardAction> actions);
 	public Card selectCardToBuy(final List<Card> cards);
 	public Card selectCardToDiscard(final List<Card> cards);
 	public Card selectCardToGain(final List<Card> cards, int cost);
 	public Card selectCardToGainExact(final List<Card> cards, int cost);
 	public Card selectCardToPassLeft(final List<Card> cards);
 	public Card selectCardToPutOnDeck(final List<Card> cards);
+	public Card selectCardToPutOnDeckScout(final List<Card> cards);
 	public Card selectCardToTrashFromHand(final List<Card> cards);
 	public Card selectCardToTrashThief(List<Card> cards);
 	public ReactionCard selectReactionCard(final List<Card> cards);

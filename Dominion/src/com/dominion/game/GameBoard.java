@@ -146,21 +146,24 @@ public class GameBoard {
 		cardList.add(CoppersmithCard.class);
 		cardList.add(IronworksCard.class);
 		cardList.add(MiningVillageCard.class);
+		cardList.add(ScoutCard.class);
 		
 		// 5: Duke, Minion, Saboteur, Torturer, Trading Post, Tribute, Upgrade 
 		cardList.add(DukeCard.class);
 		cardList.add(MinionCard.class);
 		cardList.add(SaboteurCard.class);
-		cardList.add(TorturerCard.class);		
+		cardList.add(TorturerCard.class);
+		cardList.add(TradingPostCard.class);
 		cardList.add(TributeCard.class);
 		cardList.add(UpgradeCard.class);
 		
 		// 6: Harem, Nobles
 		cardList.add(HaremCard.class);
+		cardList.add(NoblesCard.class);
 
 			
 		Collections.shuffle(cardList);
-
+	
 		return cardList.subList(0, 10);
 	}
 	

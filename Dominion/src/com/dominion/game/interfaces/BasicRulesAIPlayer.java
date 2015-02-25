@@ -242,9 +242,9 @@ public class BasicRulesAIPlayer implements PlayerInterface {
 	}
 
 	@Override
-	public CardAction selectCardActionToPlay(HashMap<String, CardAction> actions) {
+	public String selectCardActionToPlay(HashMap<String, CardAction> actions) {
 		// TODO Auto-generated method stub
-		return actions.values().iterator().next();
+		return actions.keySet().iterator().next();
 	}
 
 	@Override
@@ -315,6 +315,11 @@ public class BasicRulesAIPlayer implements PlayerInterface {
 
 	@Override
 	public Card selectCardToPutOnDeck(List<Card> cards) {
+		return cards.get(0);
+	}
+
+	@Override
+	public Card selectCardToPutOnDeckScout(List<Card> cards) {
 		return cards.get(0);
 	}
 

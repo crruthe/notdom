@@ -1,7 +1,6 @@
 package com.dominion.game.actions;
 
 import java.util.HashMap;
-import java.util.Map.Entry;
 
 import com.dominion.game.GameState;
 import com.dominion.game.cards.Card;
@@ -21,7 +20,7 @@ public class StewardAction implements CardAction {
 		HashMap<String, CardAction> actions = new HashMap<String, CardAction>();
 		
 		actions.put("+2 Card", new PlusCardAction(2));
-		actions.put("+2 Coin", new PlusCoinAction(1));
+		actions.put("+2 Coin", new PlusCoinAction(2));
 		actions.put("Trash 2 Cards", new CardAction() {			
 			@Override
 			public void execute(GameState state) {
@@ -39,20 +38,16 @@ public class StewardAction implements CardAction {
 					state.getGameBoard().addToTrashPile(trashCard);					
 				}				
 			}
-		});
+		});		
 		
+		String action = null;
+		while (!actions.containsKey(action)) {
+			action = state.getCurrentPlayer().getCardActionToPlay(actions);
+		}
 		
-		// Pick an action to perform
-		CardAction action = state.getCurrentPlayer().getCardActionToPlay(actions);
+    	state.broadcastToAllPlayers(new ActionSelectedMessage(state.getCurrentPlayer(), action));
 		
-		// Broadcast this decision
-		// TODO: code smell... inefficient
-		for (Entry<String, CardAction> entry : actions.entrySet()) {
-	        if (action.equals(entry.getValue())) {
-	        	state.broadcastToAllPlayers(new ActionSelectedMessage(state.getCurrentPlayer(), entry.getKey()));
-	        }
-	    }		
-		
-		action.execute(state);
+		// Then perform this action
+		actions.get(action).execute(state);
 	}
 }

@@ -334,7 +334,7 @@ public class NetworkPlayer implements PlayerInterface {
 	}
 
 	@Override
-	public CardAction selectCardActionToPlay(HashMap<String, CardAction> actions) {
+	public String selectCardActionToPlay(HashMap<String, CardAction> actions) {
 		System.out.println("selectCardActionToPlay");
 		
 		Gson gson = new Gson();		
@@ -343,7 +343,7 @@ public class NetworkPlayer implements PlayerInterface {
 		String result = connection.waitForMessage();
 		System.out.println(result);
 		
-		return actions.get(result);
+		return result;
 	}
 
 	@Override
@@ -436,6 +436,23 @@ public class NetworkPlayer implements PlayerInterface {
 		// TODO Auto-generated method stub
 		System.out.println("selectCardToPutOnDeck");
 		String json = convertCardsToJson("selectCardToPutOnDeck", cards);
+		connection.sendMessage(json);
+		String result = connection.waitForMessage();
+		System.out.println(result);
+		
+		for(Card card : cards) {
+			if (card.getName().equals(result)) {
+				return card;
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public Card selectCardToPutOnDeckScout(List<Card> cards) {
+		// TODO Auto-generated method stub
+		System.out.println("selectCardToPutOnDeckScout");
+		String json = convertCardsToJson("selectCardToPutOnDeckScout", cards);
 		connection.sendMessage(json);
 		String result = connection.waitForMessage();
 		System.out.println(result);
@@ -666,7 +683,7 @@ public class NetworkPlayer implements PlayerInterface {
 		System.out.println(json);
 		return json;
 	}
-
+	
 	/**
 	 * Converts all cards into a collection of strings to formats into json
 	 * 
@@ -687,7 +704,7 @@ public class NetworkPlayer implements PlayerInterface {
 		System.out.println(json);
 		return json;
 	}
-	
+
 	/**
 	 * Converts a card into a collection of strings to formats into json
 	 * 

@@ -163,9 +163,9 @@ public class BigMoneyAIPlayer implements PlayerInterface {
 	}
 
 	@Override
-	public CardAction selectCardActionToPlay(HashMap<String, CardAction> actions) {
+	public String selectCardActionToPlay(HashMap<String, CardAction> actions) {
 		// TODO Auto-generated method stub
-		return actions.values().iterator().next();
+		return actions.keySet().iterator().next();
 	}
 
 	@Override
@@ -264,6 +264,12 @@ public class BigMoneyAIPlayer implements PlayerInterface {
 	}
 
 	@Override
+	public Card selectCardToPutOnDeckScout(List<Card> cards) {
+		return cards.get(0);
+	}
+
+
+	@Override
 	public Card selectCardToTrashFromHand(List<Card> cards) {
 		for (Card c: cards) {
 			if (c instanceof CurseCard) {
@@ -283,7 +289,6 @@ public class BigMoneyAIPlayer implements PlayerInterface {
 		Collections.sort(sCards);
 		return cards.get(0);
 	}
-
 
 	@Override
 	public Card selectCardToTrashThief(List<Card> cards) {

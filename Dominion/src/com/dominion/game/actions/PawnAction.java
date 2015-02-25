@@ -1,9 +1,8 @@
 package com.dominion.game.actions;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.HashMap;
-import java.util.Map.Entry;
 
 import com.dominion.game.GameState;
 import com.dominion.game.interfaces.messages.ActionSelectedMessage;
@@ -19,33 +18,30 @@ public class PawnAction implements CardAction {
 	public void execute(GameState state) {
 		
 		HashMap<String, CardAction> actions = new HashMap<String, CardAction>();
-		List<CardAction> selectedActions = new LinkedList<CardAction>();
+		List<String> selectedActions = new LinkedList<String>();
 		
 		actions.put("+1 Card", new PlusCardAction(1));
 		actions.put("+1 Action", new PlusActionAction(1));
 		actions.put("+1 Buy", new PlusBuyAction(1));
 		actions.put("+1 Coin", new PlusCoinAction(1));
-		
+
 		// Pick two actions to perform first
 		for (int i = 0; i < 2; i++) {
-			CardAction action = state.getCurrentPlayer().getCardActionToPlay(actions);
+			String action = null;
+			while (!actions.containsKey(action)) {
+				action = state.getCurrentPlayer().getCardActionToPlay(actions);
+			}
 			selectedActions.add(action);
 			
 			// Cannot repeat the action, so remove it
 			actions.values().remove(action);
 
-			// Broadcast this decision
-			// TODO: code smell... inefficient
-			for (Entry<String, CardAction> entry : actions.entrySet()) {
-		        if (action.equals(entry.getValue())) {
-		        	state.broadcastToAllPlayers(new ActionSelectedMessage(state.getCurrentPlayer(), entry.getKey()));
-		        }
-		    }		
+	    	state.broadcastToAllPlayers(new ActionSelectedMessage(state.getCurrentPlayer(), action));
 		}		
 		
 		// Then perform those actions
-		for (CardAction action : selectedActions) {
-			action.execute(state);
+		for (String action : selectedActions) {
+			actions.get(action).execute(state);
 		}
 	}
 }

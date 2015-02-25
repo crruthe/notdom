@@ -1,7 +1,6 @@
 package com.dominion.game.actions;
 
 import java.util.HashMap;
-import java.util.Map.Entry;
 
 import com.dominion.game.GameState;
 import com.dominion.game.Player;
@@ -52,18 +51,16 @@ public class MinionAction extends AttackAction  {
 		actions.put("+2 Coin", new PlusCoinAction(2));
 		actions.put("Minion Attack!!!", new MinionAttackAction());
 		
-		CardAction action = state.getCurrentPlayer().getCardActionToPlay(actions);
+		String action = null;
+		while (!actions.containsKey(action)) {
+			action = state.getCurrentPlayer().getCardActionToPlay(actions);
+		}
 
-		// Broadcast this decision
-		// TODO: code smell... inefficient
-		for (Entry<String, CardAction> entry : actions.entrySet()) {
-	        if (action.equals(entry.getValue())) {
-	        	state.broadcastToAllPlayers(new ActionSelectedMessage(state.getCurrentPlayer(), entry.getKey()));
-	        }
-	    }
+		
+    	state.broadcastToAllPlayers(new ActionSelectedMessage(state.getCurrentPlayer(), action));
 		
 		// Then perform this action
-		action.execute(state);
+		actions.get(action).execute(state);
 	}
 
 	@Override
