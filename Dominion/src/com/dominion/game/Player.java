@@ -20,15 +20,29 @@ import com.dominion.game.observers.*;
 import com.dominion.game.visitors.VictoryPointCounterCardVisitor;
 
 public class Player {	
-	private final static int NUM_CARDS_IN_HAND = 5;
-	private final CardCollection cardDeck = new CardCollection();
-	private final CardCollection cardHand = new CardCollection();	
-	private final CardCollection discardPile = new CardCollection();
-	private boolean immune = false;
+	protected final static int NUM_CARDS_IN_HAND = 5;
+	protected CardCollection cardDeck = new CardCollection();
+	protected CardCollection cardHand = new CardCollection();	
+	protected CardCollection discardPile = new CardCollection();
+	protected boolean immune = false;	
+
+	protected CardCollection playArea = new CardCollection();	
 	
-	private final CardCollection playArea = new CardCollection();	
+	protected PlayerInterface playerInterface;
 	
-	private final PlayerInterface playerInterface;
+	
+	/**
+	 * Clone constructor
+	 * @param player
+	 */
+	public Player(Player player) {
+		this.cardDeck = new CardCollection(player.cardDeck);
+		this.cardHand = new CardCollection(player.cardHand);
+		this.discardPile = new CardCollection(player.discardPile);
+		this.immune = player.immune;
+		this.playArea = new CardCollection(player.playArea);
+		this.playerInterface = player.playerInterface;
+	}
 	
 	/**
 	 * Constructor
@@ -42,7 +56,7 @@ public class Player {
 		discardPile.addObserver(new DiscardPileObserver(playerInterface));
 		playArea.addObserver(new PlayAreaObserver(playerInterface));
 	}
-	
+
 	public void addCardsToDeck(LinkedList<Card> cards) {
 		cardDeck.addCards(cards);
 	}
@@ -238,6 +252,13 @@ public class Player {
 		return card;
 	}
 
+	public Card getCardToDiscard() {
+		if (cardHand.getCards().isEmpty()) {
+			return null;
+		}
+		return playerInterface.selectCardToDiscard(cardHand.getCards());
+	}
+
 	/**
 	 * Used when an action allows a gain
 	 * @param cards
@@ -248,7 +269,7 @@ public class Player {
 
 		return card;
 	}
-
+	
 	/**
 	 * Used when an action allows a gain
 	 * @param cards
@@ -259,13 +280,6 @@ public class Player {
 
 		return card;
 	}
-	
-	public Card getCardToDiscard() {
-		if (cardHand.getCards().isEmpty()) {
-			return null;
-		}
-		return playerInterface.selectCardToDiscard(cardHand.getCards());
-	}
 
 	public Card getCardToPassLeft() {
 		return playerInterface.selectCardToPassLeft(cardHand.getCards());
@@ -275,18 +289,22 @@ public class Player {
 		return playerInterface.selectCardToPutOnDeck(cardHand.getCards());
 	}
 
+	public Card getCardToPutOnDeckScout(List<Card> cards) {
+		return playerInterface.selectCardToPutOnDeckScout(cards);
+	}
+	
 	public Card getCardToTrashFromHand() {		
 		return playerInterface.selectCardToTrashFromHand(cardHand.getCards());
 	}
-	
+		
 	public Card getCardToTrashThief(List<Card> cards) {
 		return playerInterface.selectCardToTrashThief(cards);
-	}
-		
-	public Card getCardWishingWell(List<Card> cards) {
-		return playerInterface.guessCard(cards);
 	}	
 
+	public Card getCardWishingWell(List<Card> cards) {
+		return playerInterface.guessCard(cards);
+	}
+	
 	public Card getCopperCardToTrash() {
 		List<Card> cards = new LinkedList<Card>();
 		
@@ -302,14 +320,14 @@ public class Player {
 		
 		return null;
 	}
-	
+
+
 	public int getCurrentScore() {
 		List<Card> cards = getAllCards();
 		
 		return countVictoryPoints(cards) - countCurseCards(cards);
 	}
-
-
+	
 	public Card getEstateCardToDiscard() {
 		List<Card> cards = new LinkedList<Card>();
 		
@@ -325,19 +343,19 @@ public class Player {
 		
 		return null;
 	}
-	
+
 	public List<Card> getHand() {
 		return cardHand.getCards();
-	}
-
+	}	
+	
 	/**
 	 * Returns the current size of the hand
 	 * @return
 	 */
 	public int getHandSize() {
 		return cardHand.count();
-	}	
-	
+	}
+
 	public String getPlayerName() {
 		return playerInterface.getPlayerName();
 	}
@@ -366,7 +384,7 @@ public class Player {
 		
 		return null;
 	}
-
+	
 	public TreasureCard getTreasureCardToTrash() {
 		List<Card> cards = cardHand.getCardsFilterByClass(TreasureCard.class);
 		if (cards.isEmpty()) {
@@ -384,7 +402,7 @@ public class Player {
 		
 		return null;
 	}
-	
+
 	public void invokeMessage(PlayerInterfaceMessage message) {
 		message.invoke(playerInterface);		
 	}
@@ -439,11 +457,11 @@ public class Player {
 	public boolean wantsToDiscardCard(Card card) {
 		return playerInterface.chooseIfDiscardCard(card);		
 	}
-
+	
 	public boolean wantsToGainCard(Card card) {
 		return playerInterface.chooseIfGainCard(card);
 	}
-	
+
 	public boolean wantsToGainCardThief(Card trashCard) {
 		return playerInterface.chooseIfGainCardThief(trashCard);
 	}
@@ -458,9 +476,5 @@ public class Player {
 
 	public boolean wantsToTrashCard(Card card) {
 		return playerInterface.chooseIfTrashCard(card);
-	}
-
-	public Card getCardToPutOnDeckScout(List<Card> cards) {
-		return playerInterface.selectCardToPutOnDeckScout(cards);
 	}
 }

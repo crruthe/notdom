@@ -7,7 +7,7 @@ import com.dominion.game.visitors.CardVisitor;
 public class GoldCard extends Card implements TreasureCard {
 	public static final int COST = 6;
 	public static final String NAME = "Gold";
-	private final int COINS = 3;
+	private static final int COINS = 3;
 	
 	@Override
 	public void accept(CardVisitor visitor) {

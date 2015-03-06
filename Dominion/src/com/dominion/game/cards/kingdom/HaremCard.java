@@ -10,7 +10,7 @@ public class HaremCard extends Card implements VictoryCard, TreasureCard {
 	public static final int COST = 6;
 	public static final String NAME = "Harem";
 	public static final int POINTS = 2;
-	private final int COINS = 2;
+	private static final int COINS = 2;
 	
 	@Override
 	public void accept(CardVisitor visitor) {

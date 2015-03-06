@@ -13,7 +13,7 @@ import com.dominion.game.visitors.CardVisitor;
 public class ShantyTownCard extends Card implements ActionCard {
 	public static final int COST = 3;
 	public static final String NAME = "ShantyTown";
-	private final int PLUS_ACTIONS = 2;
+	private static final int PLUS_ACTIONS = 2;
 
 	@Override
 	public void accept(CardVisitor visitor) {

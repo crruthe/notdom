@@ -14,8 +14,8 @@ import com.dominion.game.visitors.CardVisitor;
 public class MiningVillageCard extends Card implements ActionCard {
 	public static final int COST = 4;
 	public static final String NAME = "MiningVillage";
-	private final int PLUS_ACTIONS = 2;
-	private final int PLUS_CARDS = 1;
+	private static final int PLUS_ACTIONS = 2;
+	private static final int PLUS_CARDS = 1;
 	
 	@Override
 	public void accept(CardVisitor visitor) {

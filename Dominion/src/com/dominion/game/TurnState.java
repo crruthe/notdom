@@ -8,21 +8,34 @@ import com.dominion.game.modifiers.CardModifier;
 public class TurnState {
 
 	// Modifiers for the turn, e.g. Bridge
-	private List<CardModifier> modifiers = new LinkedList<CardModifier>();
+	protected List<CardModifier> modifiers = new LinkedList<CardModifier>();
 
-	private int numOfActions;
+	protected int numOfActions;
 
 	// Tracked for Conspirator
-	private int numOfActionsPlayed;	
+	protected int numOfActionsPlayed;	
 	
-	private int numOfBuys;
+	protected int numOfBuys;
 	
-	private int totalCoins;
+	protected int totalCoins;
 	
 	public TurnState() {
+		super();
 		reset();
 	}
 	
+	/**
+	 * Copy constructor
+	 * @param turnState
+	 */
+	public TurnState(TurnState turnState) {
+		this.modifiers = new LinkedList<CardModifier>(turnState.modifiers);
+		this.numOfActions = turnState.numOfActions;
+		this.numOfActionsPlayed = turnState.numOfActionsPlayed;
+		this.numOfBuys = turnState.numOfBuys;
+		this.totalCoins = turnState.totalCoins;
+	}
+
 	public void addModifier(CardModifier modifier) {
 		modifiers.add(modifier);
 	}

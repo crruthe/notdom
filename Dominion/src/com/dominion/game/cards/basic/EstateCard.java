@@ -8,7 +8,7 @@ import com.dominion.game.visitors.CardVisitor;
 public class EstateCard extends Card implements VictoryCard {
 	public static final int COST = 2;
 	public static final String NAME = "Estate";
-	final static int POINTS = 1;
+	private static final int POINTS = 1;
 	
 	@Override
 	public void accept(CardVisitor visitor) {

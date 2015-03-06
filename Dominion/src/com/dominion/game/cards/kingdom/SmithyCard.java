@@ -12,7 +12,7 @@ import com.dominion.game.visitors.CardVisitor;
 public class SmithyCard extends Card implements ActionCard {
 	public static final int COST = 4;
 	public static final String NAME = "Smithy";	
-	private final int PLUS_CARDS = 3;
+	private static final int PLUS_CARDS = 3;
 
 	@Override
 	public void accept(CardVisitor visitor) {

@@ -1,8 +1,5 @@
 package com.dominion.game.cards;
 
-import java.util.List;
-
-import com.dominion.game.modifiers.CardModifier;
 import com.dominion.game.visitors.CardVisitor;
 
 public abstract class Card implements Comparable<Card> {

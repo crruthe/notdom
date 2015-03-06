@@ -13,8 +13,8 @@ import com.dominion.game.visitors.CardVisitor;
 public class LaboratoryCard extends Card implements ActionCard {
 	public static final int COST = 5;
 	public static final String NAME = "Laboratory";
-	private final int PLUS_ACTIONS = 1;
-	private final int PLUS_CARDS = 2;
+	private static final int PLUS_ACTIONS = 1;
+	private static final int PLUS_CARDS = 2;
 
 	@Override
 	public void accept(CardVisitor visitor) {

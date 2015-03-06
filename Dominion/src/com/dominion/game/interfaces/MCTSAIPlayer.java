@@ -9,7 +9,7 @@ import com.dominion.game.cards.Card;
 import com.dominion.game.cards.ReactionCard;
 import com.dominion.game.cards.TreasureCard;
 
-public class MCSTAIPlayer implements PlayerInterface {
+public class MCTSAIPlayer implements PlayerInterface {
 
 	@Override
 	public ReactionCard selectReactionCard(List<Card> cards) {

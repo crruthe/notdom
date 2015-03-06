@@ -25,10 +25,27 @@ public class GameState {
 	private final static int NUM_COPPER_SETUP = 7;
 	private final static int NUM_ESTATE_SETUP = 3;		
 
-	private GameBoard gameBoard;
-	private final LinkedList<Player> players = new LinkedList<Player>();	
-	private TurnState turnState = new TurnState();	
+	protected GameBoard gameBoard;
+	protected LinkedList<Player> players = new LinkedList<Player>();	
+	protected TurnState turnState = new TurnState();	
 	
+	/**
+	 * Clone constructor
+	 * @param gameState
+	 */
+	public GameState(GameState gameState) {
+		this.gameBoard = new GameBoard(gameState.gameBoard);		
+		this.players = new LinkedList<Player>();
+		for (Player player : gameState.players) {
+			this.players.add(new Player(player));
+		}
+		this.turnState = new TurnState(gameState.turnState);
+	}
+	
+	public GameState() {
+		super();
+	}
+
 	public void addPlayer(Player player) {
 		players.add(player);
 	}
@@ -167,32 +184,6 @@ public class GameState {
 		return listCardsFilterByCost(amount, amount);
 	}
 	
-	/** 
-	 * Build up a list of cards that the player can buy
-	 * 
-	 * @param amount of coins to buy with
-	 * @return collection of cards
-	 */
-	private List<Card> listCardsFilterByCost(int min, int max) {
-		List<Card> cards = new LinkedList<Card>();
-		
-		for (Class<? extends Card> cardClass : gameBoard.getSupplyStacks().keySet()) {	
-			// Check if any cards are left in stack
-			if (gameBoard.getSupplyStacks().get(cardClass) > 0) {
-				Card card = Card.getCard(cardClass);
-				
-				// Apply modifiers for cost, e.g. Bridge
-				Card mCard = modifyCard(card);
-				
-				// Check if player can afford this card
-				if (mCard.getCost() >= min && mCard.getCost() <= max) {
-					cards.add(card);
-				}
-			}
-		}
-		return cards;		
-	}
-	
 	/**
 	 * Applies modifiers to the card in a pipeline and returns the final modified card
 	 * 
@@ -247,17 +238,17 @@ public class GameState {
 		getCurrentPlayer().notifyOfTurnState(turnState);
 		broadcastToAllPlayers(new CardPlayedMessage(getCurrentPlayer(), (Card)card));
 	}
-
-
+	
 	public void rotatePlayers() {
 		Player currentPlayer = players.removeFirst();
 		players.addLast(currentPlayer);
 	}
-	
+
+
 	public void setGameBoard(GameBoard gameBoard) {
 		this.gameBoard = gameBoard;
 	}
-
+	
 	/**
 	 * Each player starts the game with the same cards:
 	 * 7 coppers
@@ -280,6 +271,32 @@ public class GameState {
 		Collections.shuffle(cards);
 		player.addCardsToDeck(cards);
 	}
+
+	/** 
+	 * Build up a list of cards that the player can buy
+	 * 
+	 * @param amount of coins to buy with
+	 * @return collection of cards
+	 */
+	private List<Card> listCardsFilterByCost(int min, int max) {
+		List<Card> cards = new LinkedList<Card>();
+		
+		for (Class<? extends Card> cardClass : gameBoard.getSupplyStacks().keySet()) {	
+			// Check if any cards are left in stack
+			if (gameBoard.getSupplyStacks().get(cardClass) > 0) {
+				Card card = Card.getCard(cardClass);
+				
+				// Apply modifiers for cost, e.g. Bridge
+				Card mCard = modifyCard(card);
+				
+				// Check if player can afford this card
+				if (mCard.getCost() >= min && mCard.getCost() <= max) {
+					cards.add(card);
+				}
+			}
+		}
+		return cards;		
+	}
 	
 	/**
 	 * Randomises the turn order, which also provides the starting player 
@@ -296,5 +313,5 @@ public class GameState {
 			buildDeckForPlayer(player);
 			player.drawNewHand();
 		}
-	}
+	}	
 }

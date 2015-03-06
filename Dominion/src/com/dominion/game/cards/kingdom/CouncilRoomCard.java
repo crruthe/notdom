@@ -14,8 +14,8 @@ import com.dominion.game.visitors.CardVisitor;
 public class CouncilRoomCard extends Card implements ActionCard {
 	public static final int COST = 5;
 	public static final String NAME = "CouncilRoom";
-	private final int PLUS_BUYS = 1;
-	private final int PLUS_CARDS = 4;
+	private static final int PLUS_BUYS = 1;
+	private static final int PLUS_CARDS = 4;
 
 	@Override
 	public void accept(CardVisitor visitor) {

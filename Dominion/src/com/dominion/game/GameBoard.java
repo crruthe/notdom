@@ -10,11 +10,24 @@ import com.dominion.game.cards.kingdom.*;
 import com.dominion.game.observers.SupplyStackObserver;
 import com.dominion.game.observers.TrashPileObserver;
 
-public class GameBoard {
+public class GameBoard implements Cloneable {
 
-	private SupplyStack supply = new SupplyStack();
-	private CardCollection trashPile = new CardCollection();	
+	protected SupplyStack supply = new SupplyStack();
+	protected CardCollection trashPile = new CardCollection();	
 	
+	/**
+	 * Cloning constructor
+	 * @param gameBoard
+	 */
+	public GameBoard(GameBoard gameBoard) {
+		supply = new SupplyStack(gameBoard.supply);
+		trashPile = new CardCollection(gameBoard.trashPile);		
+	}
+
+	public GameBoard() {
+		super();
+	}
+
 	public void registerObservers(GameState state) {
 		supply.addObserver(new SupplyStackObserver(state));
 		trashPile.addObserver(new TrashPileObserver(state));

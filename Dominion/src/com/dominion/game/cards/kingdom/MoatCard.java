@@ -15,7 +15,7 @@ import com.dominion.game.visitors.CardVisitor;
 public class MoatCard extends Card implements ReactionCard, ActionCard {
 	public static final int COST = 2;
 	public static final String NAME = "Moat";	
-	private final int PLUS_CARDS = 2;
+	private static final int PLUS_CARDS = 2;
 
 	@Override
 	public void accept(CardVisitor visitor) {

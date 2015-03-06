@@ -14,8 +14,20 @@ import com.dominion.game.cards.Card;
  */
 public class CardCollection extends Observable {
 	
-	private LinkedList<Card> cards = new LinkedList<Card>();
+	protected LinkedList<Card> cards = new LinkedList<Card>();
 	
+	public CardCollection() {
+		super();
+	}
+
+	/**
+	 * Cloning constructor 
+	 * @param cards
+	 */
+	public CardCollection(CardCollection cards) {		
+		this.cards = new LinkedList<Card>(cards.cards);
+	}
+
 	/**
 	 * Add a collection of cards to the deck
 	 * @param cards
@@ -39,14 +51,6 @@ public class CardCollection extends Observable {
 		notifyObservers();
 	}
 	
-	/** 
-	 * Look at the top card
-	 * @return top card
-	 */
-	public Card getTopCard() {
-		return cards.peekLast();
-	}
-	
 	/**
 	 * Clear the stack and return a copy
 	 * @return
@@ -68,24 +72,10 @@ public class CardCollection extends Observable {
 		return cards.size();
 	}
 	
-	/**
-	 * Remove the card from the top and return it
-	 * @return drawn card
-	 */
-	public Card removeTopCard() {
-		if (cards.isEmpty()) { 
-			return null;
-		}
-		Card topCard = cards.removeLast();
-		setChanged();
-		notifyObservers();
-		return topCard;
-	}
-
 	public List<Card> getCards() {
 		return cards;
 	}
-
+	
 	/**
 	 * Generic method to filter and return cards by type e.g. VictoryCards
 	 * @param cardClass
@@ -103,6 +93,21 @@ public class CardCollection extends Observable {
 		Collections.sort(resultCards);
 		return resultCards;
 	}
+
+	/** 
+	 * Look at the top card
+	 * @return top card
+	 */
+	public Card getTopCard() {
+		return cards.peekLast();
+	}
+
+	/**
+	 * @return whether is empty
+	 */
+	public boolean isEmpty() {
+		return cards.isEmpty();
+	}
 	
 	/**
 	 * Removes the card from the collection
@@ -115,10 +120,17 @@ public class CardCollection extends Observable {
 	}
 	
 	/**
-	 * @return whether is empty
+	 * Remove the card from the top and return it
+	 * @return drawn card
 	 */
-	public boolean isEmpty() {
-		return cards.isEmpty();
+	public Card removeTopCard() {
+		if (cards.isEmpty()) { 
+			return null;
+		}
+		Card topCard = cards.removeLast();
+		setChanged();
+		notifyObservers();
+		return topCard;
 	}
 	
 	/**

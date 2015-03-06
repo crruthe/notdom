@@ -58,10 +58,68 @@ public class NetworkPlayer implements PlayerInterface {
 		}
 	}
 	
+	static class PlayerThread implements Runnable {
+		boolean isReady = false;
+		boolean isDead = false;
+		final NetworkPlayer player;
+
+		public PlayerThread(NetworkPlayer player) {
+			this.player = player;
+		}
+		
+		@Override
+		public void run() {
+			System.out.println("Created player thread...");
+			
+			while (!isReady && !isDead) {
+				System.out.println("Check player heartbeat...");
+				if (!player.heartbeat()) {
+					isDead = true;
+					break;
+				}
+				
+				System.out.println("Check player is ready...");
+				if (player.isReady()) {
+					isReady = true;					
+				}
+
+				System.out.println("Getting player name...");
+				
+				// If their name isn't set
+				if (player.getPlayerName().equals("")) {
+					// Setup their player name				
+					player.selectPlayerName();
+					// Wait for player to say their ready
+					player.waitReadyToStart();
+				}
+				
+				System.out.println("Sleep...");
+				try {
+					Thread.sleep(2000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}			
+		}
+
+		public boolean isReady() {
+			return isReady;
+		}
+
+		public boolean isDead() {
+			return isDead;
+		}
+
+		public NetworkPlayer getPlayer() {
+			return player;
+		}
+	}
+	
 	public static void main(String[] args) {
 		while (true) {
 			GameMaster gm = new GameMaster();
-			List<NetworkPlayer> players = new LinkedList<NetworkPlayer>();
+			List<PlayerThread> players = new LinkedList<PlayerThread>();
 			
 			Jedis j = new Jedis("localhost");
 			boolean startGame = false;
@@ -73,44 +131,38 @@ public class NetworkPlayer implements PlayerInterface {
 					System.out.println("Client found: " + clientid);
 					
 					// Create a new player and add to player list
-					NetworkPlayer newPlayer = new NetworkPlayer(clientid);
-					players.add(newPlayer);				
+					PlayerThread pt = new PlayerThread(new NetworkPlayer(clientid));
+					(new Thread(pt)).start();
+					players.add(pt);					
+					
+				} else {
+					try {
+						Thread.sleep(2000);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}					
 				}
 				
 				startGame = true;
 				
 				// Check if players are still there, remove them if not
-				Iterator<NetworkPlayer> iter = players.iterator();
+				Iterator<PlayerThread> iter = players.iterator();
 				while (iter.hasNext()) {
-					NetworkPlayer player = iter.next();
-					if (!player.heartbeat()) {					
+					PlayerThread player = iter.next();
+					if (player.isDead()) {
 						iter.remove();
-					} else {
-						// If their name isn't set
-						if (player.getPlayerName().equals("")) {
-							// Setup their player name				
-							player.selectPlayerName();
-							// Wait for player to say their ready
-							player.waitReadyToStart();
-						}
-						if (!player.isReady()) {
-							startGame = false; 
-						}
+					} else if (!player.isReady()) {
+						startGame = false; 
 					}
-				}
-				try {
-					Thread.sleep(2000);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
 				}
 			}
 			j.close();
 			
 			//gm.addPlayer(new Player(new SimpleConsolePlayer()));
 			
-			for (NetworkPlayer player : players) {
-				gm.addPlayerToState(new Player(player));
+			for (PlayerThread player : players) {
+				gm.addPlayerToState(new Player(player.getPlayer()));
 			}			
 			gm.startGame();
 		}

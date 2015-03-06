@@ -8,7 +8,7 @@ import com.dominion.game.visitors.CardVisitor;
 public class DuchyCard extends Card implements VictoryCard {
 	public static final int COST = 5;
 	public static final String NAME = "Duchy";
-	final static int POINTS = 3;
+	private final static int POINTS = 3;
 	
 	@Override
 	public void accept(CardVisitor visitor) {

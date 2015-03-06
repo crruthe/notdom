@@ -1,25 +1,18 @@
 package com.dominion.game;
 
-import java.util.Collection;
-import java.util.LinkedList;
+import junit.framework.TestCase;
 
 import com.dominion.game.cards.Card;
 import com.dominion.game.cards.basic.CopperCard;
-import com.dominion.game.cards.basic.DuchyCard;
-import com.dominion.game.cards.basic.EstateCard;
 import com.dominion.game.cards.basic.GoldCard;
-import com.dominion.game.cards.basic.ProvinceCard;
 import com.dominion.game.cards.basic.SilverCard;
-import com.dominion.game.cards.kingdom.GardensCard;
-
-import junit.framework.TestCase;
 
 public class PlayerTest extends TestCase {
 
 	protected void setUp() throws Exception {
 		super.setUp();
 	}
-
+	
 	public void testAddCardToCardDeck() {
 		Player player = new Player(new MockPlayerInterface());
 		player.addCardToCardDeck(new CopperCard());

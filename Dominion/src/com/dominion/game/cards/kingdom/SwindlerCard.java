@@ -14,7 +14,7 @@ import com.dominion.game.visitors.CardVisitor;
 public class SwindlerCard extends Card implements ActionCard, AttackCard {
 	public static final int COST = 3;
 	public static final String NAME = "Swindler";
-	private final int PLUS_COINS = 2;
+	private static final int PLUS_COINS = 2;
 	
 	@Override
 	public void accept(CardVisitor visitor) {

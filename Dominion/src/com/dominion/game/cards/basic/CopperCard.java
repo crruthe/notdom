@@ -8,7 +8,7 @@ import com.dominion.game.visitors.CardVisitor;
 public class CopperCard extends Card implements TreasureCard {
 	public static final int COST = 0;
 	public static final String NAME = "Copper";
-	private final int COINS = 1;
+	private static final int COINS = 1;
 
 	@Override
 	public void accept(CardVisitor visitor) {

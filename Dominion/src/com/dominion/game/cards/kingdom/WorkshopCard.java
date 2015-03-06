@@ -12,7 +12,7 @@ import com.dominion.game.visitors.CardVisitor;
 public class WorkshopCard extends Card implements ActionCard {
 	public static final int COST = 3;
 	public static final String NAME = "Workshop";
-	private final int GAIN_COST = 4;
+	private static final int GAIN_COST = 4;
 
 	@Override
 	public void accept(CardVisitor visitor) {

@@ -13,8 +13,8 @@ import com.dominion.game.visitors.CardVisitor;
 public class WoodcutterCard extends Card implements ActionCard {
 	public static final int COST = 3;
 	public static final String NAME = "Woodcutter";
-	private final int PLUS_BUYS = 1;
-	private final int PLUS_COINS = 2;
+	private static final int PLUS_BUYS = 1;
+	private static final int PLUS_COINS = 2;
 
 	@Override
 	public void accept(CardVisitor visitor) {

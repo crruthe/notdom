@@ -30,7 +30,10 @@ public class StewardAction implements CardAction {
 						return;
 					}
 					
-					Card trashCard = state.getCurrentPlayer().getCardToTrashFromHand();
+					Card trashCard = null;
+					while (trashCard == null) {
+						trashCard = state.getCurrentPlayer().getCardToTrashFromHand();
+					}					
 
 					state.broadcastToAllPlayers(new CardTrashedMessage(state.getCurrentPlayer(), trashCard));
 

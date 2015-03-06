@@ -7,19 +7,37 @@ import com.dominion.game.cards.Card;
 
 public class SupplyStack extends Observable {
 
-	private final HashMap<Class<? extends Card>, Integer> stacks = new HashMap<Class<? extends Card>, Integer>();
+	protected HashMap<Class<? extends Card>, Integer> stacks = new HashMap<Class<? extends Card>, Integer>();
+	
+	public SupplyStack() {
+		super();
+	}
+
+	/**
+	 * Cloning constructor
+	 * @param supply
+	 */
+	public SupplyStack(SupplyStack supply) {
+		this.stacks = new HashMap<Class<? extends Card>, Integer>(supply.stacks);		
+	}
+
+	public void addToStack(Class<? extends Card>cardClass, Integer numOfCards) {
+		stacks.put(cardClass, numOfCards);
+		setChanged();
+		notifyObservers();
+	}	
 	
 	public HashMap<Class<? extends Card>, Integer> getStacks() {
 		return stacks;
-	}	
-	
+	}
+
 	/**
 	 * Check if a stack is empty (usually for end of game)
 	 */
 	public boolean isStackEmpty(Class<? extends Card> cardName) {
 		return stacks.get(cardName) == 0;		
 	}
-
+	
 	/**
 	 * Remove the top card from the stack and return it
 	 * 
@@ -36,11 +54,5 @@ public class SupplyStack extends Observable {
 		setChanged();
 		notifyObservers();
 		return true;
-	}
-	
-	public void addToStack(Class<? extends Card>cardClass, Integer numOfCards) {
-		stacks.put(cardClass, numOfCards);
-		setChanged();
-		notifyObservers();
 	}
 }

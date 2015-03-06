@@ -15,8 +15,8 @@ import com.dominion.game.visitors.CardVisitor;
 public class SpyCard extends Card implements ActionCard, AttackCard {
 	public static final int COST = 4;	
 	public static final String NAME = "Spy";
-	private final int PLUS_ACTIONS = 1;
-	private final int PLUS_CARDS = 1;
+	private static final int PLUS_ACTIONS = 1;
+	private static final int PLUS_CARDS = 1;
 
 	@Override
 	public void accept(CardVisitor visitor) {

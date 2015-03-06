@@ -14,8 +14,8 @@ import com.dominion.game.visitors.CardVisitor;
 public class BridgeCard extends Card implements ActionCard {
 	public static final int COST = 4;
 	public static final String NAME = "Bridge";
-	private final int PLUS_BUYS = 1;
-	private final int PLUS_COINS = 1;
+	private static final int PLUS_BUYS = 1;
+	private static final int PLUS_COINS = 1;
 
 	@Override
 	public void accept(CardVisitor visitor) {
