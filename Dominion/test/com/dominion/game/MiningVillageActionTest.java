@@ -2,14 +2,10 @@ package com.dominion.game;
 
 import java.util.List;
 
-import com.dominion.game.actions.BridgeAction;
-import com.dominion.game.actions.CardAction;
 import com.dominion.game.actions.MiningVillageAction;
 import com.dominion.game.actions.ThroneRoomAction;
 import com.dominion.game.cards.ActionCard;
 import com.dominion.game.cards.Card;
-import com.dominion.game.cards.basic.ProvinceCard;
-import com.dominion.game.cards.basic.SilverCard;
 import com.dominion.game.cards.kingdom.MiningVillageCard;
 
 public class MiningVillageActionTest extends ActionTest {

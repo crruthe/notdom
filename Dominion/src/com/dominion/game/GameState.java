@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.dominion.game.actions.CardAction;
 import com.dominion.game.cards.ActionCard;
 import com.dominion.game.cards.Card;
 import com.dominion.game.cards.TreasureCard;
@@ -216,13 +215,8 @@ public class GameState {
 		// Play the card into their play area
 		getCurrentPlayer().moveCardFromHandToPlayArea((Card)actionCard);
 		
-		// Track actions player for Conspirator
-		turnState.incrementActionsPlayed();
-		
-		// Iterate through actions for action card
-		for (CardAction action : actionCard.buildActionList()) {
-			action.execute(this);
-		}
+		// Perform on play actions
+		((Card)actionCard).onPlay(this);
 	}
 	
 	/**
@@ -231,7 +225,11 @@ public class GameState {
 	 */
 	public void playTreasureCard(TreasureCard card) {
 		getCurrentPlayer().moveCardFromHandToPlayArea((Card)card);		
-		
+
+		// Perform on play actions
+		((Card)card).onPlay(this);
+
+		// Update number of coins left
 		TreasureCard mCard = modifyCard(card);
 		turnState.incrementCoins(mCard.getCoinAmount());
 

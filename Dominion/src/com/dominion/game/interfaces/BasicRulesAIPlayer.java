@@ -176,7 +176,7 @@ public class BasicRulesAIPlayer implements PlayerInterface {
 		// Find increase actions
 		int maxActions = 0;
 		for (Card c: cards) {
-			Collection<CardAction> actions = ((ActionCard)c).buildActionList();
+			Collection<CardAction> actions = c.getActionList();
 			for (CardAction a: actions) {
 				if (a instanceof PlusActionAction) {
 					int numOfActions = ((PlusActionAction)a).getNumActions();
@@ -195,7 +195,7 @@ public class BasicRulesAIPlayer implements PlayerInterface {
 		// Find increase cards
 		int maxCards = 0;
 		for (Card c: cards) {
-			Collection<CardAction> actions = ((ActionCard)c).buildActionList();
+			Collection<CardAction> actions = c.getActionList();
 			for (CardAction a: actions) {
 				if (a instanceof PlusCardAction) {
 					int numOfCards = ((PlusCardAction)a).getNumCards();
@@ -222,7 +222,7 @@ public class BasicRulesAIPlayer implements PlayerInterface {
 		// Find coins cards
 		int maxCoins = 0;
 		for (Card c: cards) {
-			Collection<CardAction> actions = ((ActionCard)c).buildActionList();
+			Collection<CardAction> actions = c.getActionList();
 			for (CardAction a: actions) {
 				if (a instanceof PlusCoinAction) {
 					int numOfCoins = ((PlusCoinAction)a).getCoins();

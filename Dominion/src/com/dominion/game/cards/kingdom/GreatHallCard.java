@@ -1,14 +1,13 @@
 package com.dominion.game.cards.kingdom;
 
-import java.util.Collection;
-import java.util.LinkedList;
+import java.util.List;
 
 import com.dominion.game.actions.CardAction;
 import com.dominion.game.actions.PlusActionAction;
 import com.dominion.game.actions.PlusCardAction;
+import com.dominion.game.cards.ActionCard;
 import com.dominion.game.cards.Card;
 import com.dominion.game.cards.VictoryCard;
-import com.dominion.game.cards.ActionCard;
 import com.dominion.game.visitors.CardVisitor;
 
 
@@ -26,8 +25,8 @@ public class GreatHallCard extends Card implements VictoryCard, ActionCard {
 	}
 
 	@Override
-	public Collection<CardAction> buildActionList() {
-		LinkedList<CardAction> cardActions = new LinkedList<CardAction>();
+	public List<CardAction> getActionList() {
+		List<CardAction> cardActions = super.getActionList();
 		
 		cardActions.add(new PlusCardAction(PLUS_CARDS));
 		cardActions.add(new PlusActionAction(PLUS_ACTIONS));

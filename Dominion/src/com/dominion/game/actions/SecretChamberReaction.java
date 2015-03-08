@@ -23,7 +23,7 @@ public class SecretChamberReaction implements ReactionAction {
 				break;			
 			Card card = null;
 			while (card == null) {
-				player.getCardToPutOnDeck();
+				card = player.getCardToPutOnDeck();
 			}			
 			player.moveCardFromHandToDeck(card);
 		}

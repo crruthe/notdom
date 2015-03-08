@@ -1,7 +1,6 @@
 package com.dominion.game.cards.kingdom;
 
-import java.util.Collection;
-import java.util.LinkedList;
+import java.util.List;
 
 import com.dominion.game.actions.CardAction;
 import com.dominion.game.actions.PlusBuyAction;
@@ -22,8 +21,8 @@ public class WoodcutterCard extends Card implements ActionCard {
 	}
 	
 	@Override
-	public Collection<CardAction> buildActionList() {
-		LinkedList<CardAction> cardActions = new LinkedList<CardAction>();
+	public List<CardAction> getActionList() {
+		List<CardAction> cardActions = super.getActionList();
 		
 		cardActions.add(new PlusBuyAction(PLUS_BUYS));
 		cardActions.add(new PlusCoinAction(PLUS_COINS));

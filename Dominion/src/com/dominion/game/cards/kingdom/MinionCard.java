@@ -1,7 +1,6 @@
 package com.dominion.game.cards.kingdom;
 
-import java.util.Collection;
-import java.util.LinkedList;
+import java.util.List;
 
 import com.dominion.game.actions.CardAction;
 import com.dominion.game.actions.MinionAction;
@@ -22,8 +21,8 @@ public class MinionCard extends Card implements ActionCard, AttackCard {
 	}
 	
 	@Override
-	public Collection<CardAction> buildActionList() {
-		LinkedList<CardAction> cardActions = new LinkedList<CardAction>();		
+	public List<CardAction> getActionList() {
+		List<CardAction> cardActions = super.getActionList();
 		
 		cardActions.add(new PlusActionAction(PLUS_ACTIONS));
 		cardActions.add(new MinionAction());

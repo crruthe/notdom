@@ -1,7 +1,7 @@
 package com.dominion.game.actions;
 
 import com.dominion.game.GameState;
-import com.dominion.game.cards.Card;
+import com.dominion.game.cards.kingdom.MiningVillageCard;
 import com.dominion.game.interfaces.messages.CardTrashedMessage;
 
 /**
@@ -11,9 +11,9 @@ import com.dominion.game.interfaces.messages.CardTrashedMessage;
  *
  */
 public class MiningVillageAction implements CardAction {
-	private Card trashCard;
+	private MiningVillageCard trashCard;
 	
-	public MiningVillageAction(Card trashCard) {
+	public MiningVillageAction(MiningVillageCard trashCard) {
 		this.trashCard = trashCard;
 	}
 
@@ -21,7 +21,7 @@ public class MiningVillageAction implements CardAction {
 	public void execute(GameState state) {
 		
 		// If this card has already been trashed (e.g. ThroneRoom)
-		if (trashCard == null) {
+		if (trashCard.isTrashed()) {
 			return;
 		}
 		
@@ -35,7 +35,7 @@ public class MiningVillageAction implements CardAction {
 			new PlusCoinAction(2).execute(state);
 			
 			// Only allow trash card onces (e.g. ThroneRoom)
-			trashCard = null;
+			trashCard.setTrashed(true);
 		}
 	}	
 }

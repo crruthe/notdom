@@ -14,7 +14,7 @@ import com.dominion.game.interfaces.messages.ActionSelectedMessage;
  * or discard your hand, +4 Cards; and each other player with at least 5 cards 
  * in hand discards his hand and draws 4 cards.
  */
-public class MinionAction extends AttackAction  {
+public class MinionAction implements CardAction  {
 	
 	/**
 	 * When the player choose minion attack
@@ -29,8 +29,7 @@ public class MinionAction extends AttackAction  {
 			state.getCurrentPlayer().discardHand();
 			new PlusCardAction(state.getCurrentPlayer(), 4).execute(state);
 			
-			// Already allowed for reaction, no need to repeat
-			attackOtherPlayers(state);
+			super.execute(state);
 		}
 
 		@Override
@@ -44,7 +43,6 @@ public class MinionAction extends AttackAction  {
 	
 	@Override
 	public void execute(GameState state) {
-		getReactionToAttack(state);
 		
 		HashMap<String, CardAction> actions = new HashMap<String, CardAction>();
 		
@@ -61,10 +59,5 @@ public class MinionAction extends AttackAction  {
 		
 		// Then perform this action
 		actions.get(action).execute(state);
-	}
-
-	@Override
-	public void executeAttackOnPlayer(GameState state, Player victim) {
-		// Do nothing, this is handled by MinionAttackAction		
 	}
 }

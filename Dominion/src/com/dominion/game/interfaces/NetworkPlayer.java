@@ -8,10 +8,9 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.TreeMap;
-
 import redis.clients.jedis.Jedis;
 
+import com.dominion.game.GameBoard;
 import com.dominion.game.GameMaster;
 import com.dominion.game.Player;
 import com.dominion.game.actions.CardAction;
@@ -20,6 +19,8 @@ import com.dominion.game.cards.Card;
 import com.dominion.game.cards.ReactionCard;
 import com.dominion.game.cards.TreasureCard;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonParser;
 
 public class NetworkPlayer implements PlayerInterface {
 	class Connection {
@@ -56,6 +57,14 @@ public class NetworkPlayer implements PlayerInterface {
 			this.message = message;
 			this.data = data;
 		}
+
+		public String getMessage() {
+			return message;
+		}
+
+		public String getData() {
+			return (String)data;
+		}
 	}
 	
 	static class PlayerThread implements Runnable {
@@ -70,35 +79,28 @@ public class NetworkPlayer implements PlayerInterface {
 		@Override
 		public void run() {
 			System.out.println("Created player thread...");
+			long lastHeartbeat = System.currentTimeMillis();
+			player.selectPlayerName();
 			
-			while (!isReady && !isDead) {
-				System.out.println("Check player heartbeat...");
-				if (!player.heartbeat()) {
-					isDead = true;
+			while (true) {
+				Message message = player.getMessageFromConnection();
+				if (message == null) {
+					System.out.println("Sleep...");
+					player.heartbeat();
+				} else if (message.getMessage().equals("heartbeat")) {
+					lastHeartbeat = System.currentTimeMillis();
+				} else if (message.getMessage().equals("setPlayerName")) {
+					player.setPlayerName(message.getData());
+					player.waitReadyToStart();
+				} else if (message.getMessage().equals("ready")) {
+					isReady = true;
 					break;
 				}
 				
-				System.out.println("Check player is ready...");
-				if (player.isReady()) {
-					isReady = true;					
-				}
-
-				System.out.println("Getting player name...");
-				
-				// If their name isn't set
-				if (player.getPlayerName().equals("")) {
-					// Setup their player name				
-					player.selectPlayerName();
-					// Wait for player to say their ready
-					player.waitReadyToStart();
-				}
-				
-				System.out.println("Sleep...");
-				try {
-					Thread.sleep(2000);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				if (System.currentTimeMillis() - lastHeartbeat > 5000) {
+					System.out.println("DEAD DEAD DEAD... removing!");
+					isDead = true;
+					break;
 				}
 			}			
 		}
@@ -126,6 +128,7 @@ public class NetworkPlayer implements PlayerInterface {
 			while (players.isEmpty() || !startGame) {			
 				System.out.println("Check for new players...");
 				String clientid = j.lpop("newclient");
+				System.out.println("Num of players: " + players.size());
 				
 				if (clientid != null) {
 					System.out.println("Client found: " + clientid);
@@ -149,8 +152,9 @@ public class NetworkPlayer implements PlayerInterface {
 				// Check if players are still there, remove them if not
 				Iterator<PlayerThread> iter = players.iterator();
 				while (iter.hasNext()) {
-					PlayerThread player = iter.next();
+					PlayerThread player = iter.next();					
 					if (player.isDead()) {
+						System.out.println("DEAD DEAD DEAD... removing!");
 						iter.remove();
 					} else if (!player.isReady()) {
 						startGame = false; 
@@ -159,21 +163,81 @@ public class NetworkPlayer implements PlayerInterface {
 			}
 			j.close();
 			
-			//gm.addPlayer(new Player(new SimpleConsolePlayer()));
+			//gm.addPlayer(new Player(new SimpleConsolePlayer()));			
+						
+			List<Class<? extends Card>> randomKingdoms = GameBoard.randomKingdoms(10 + players.size());
 			
 			for (PlayerThread player : players) {
+				Class<? extends Card> cardClass = player.getPlayer().selectVetoCard(randomKingdoms);
+				randomKingdoms.remove(cardClass);
+				player.getPlayer().notifyStartGame();
 				gm.addPlayerToState(new Player(player.getPlayer()));
-			}			
+			}		
+
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}					
+			
+			GameBoard gb = new GameBoard();
+			gb.setup(randomKingdoms, players.size());
+			gm.setGameBoard(gb);
 			gm.startGame();
 		}
 	}
 	
+	private void notifyStartGame() {
+		System.out.println("notifyStartGame");
+		Gson gson = new Gson();
+		String json = gson.toJson(new Message("notifyStartGame", null));
+		connection.sendMessage(json);
+	}
+
+	private Class<? extends Card> selectVetoCard(List<Class<? extends Card>> randomKingdoms) {
+		// TODO Auto-generated method stub
+		System.out.println("selectVeto");
+		
+		HashMap<String, Class<? extends Card>> cardsMap = new HashMap<String, Class<? extends Card>>();
+		
+		for(Class<? extends Card> kingdom : randomKingdoms) {
+			try {
+				cardsMap.put(kingdom.newInstance().getName(), kingdom);
+			} catch (InstantiationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		Gson gson = new Gson();
+		String json = gson.toJson(new Message("selectVeto", cardsMap.keySet()));
+		connection.sendMessage(json);
+		String result = connection.waitForMessage();
+		System.out.println(result);
+		
+		return cardsMap.get(result);
+	}
+
 	private Connection connection;
 	private boolean isReady = false;
-	private String playerName = "";
+	private String playerName = null;
 
 	public NetworkPlayer(String clientid) {
 		this.connection = new Connection(clientid);
+	}
+	
+	public Message getMessageFromConnection() {
+		String json = connection.waitForMessage(2);
+		if (json == null)
+			return null;
+		
+		Gson gson = new Gson();
+		System.out.println("Got Message: " + json);
+	    return gson.fromJson(json, Message.class);
 	}
 	
 	@Override
@@ -253,20 +317,10 @@ public class NetworkPlayer implements PlayerInterface {
 		return null;
 	}
 	
-	public boolean heartbeat() {
+	public void heartbeat() {
 		Gson gson = new Gson();
 		String json = gson.toJson(new Message("heartbeat", null));
 		connection.sendMessage(json);
-		
-		// Wait 5 seconds for the player to respond
-		String result = connection.waitForMessage(2);
-		if (result != null && result.equals("ready")) {
-			isReady = true;		
-			result = connection.waitForMessage(2);
-		}
-
-		System.out.println(result);
-		return result != null && result.equals("heartbeat");
 	}	
 	
 	public boolean isReady() {
@@ -555,7 +609,10 @@ public class NetworkPlayer implements PlayerInterface {
 		Gson gson = new Gson();
 		String json = gson.toJson(new Message("selectPlayerName", null));
 		connection.sendMessage(json);
-		playerName = connection.waitForMessage();
+	}
+	
+	public void setPlayerName(String playerName) {
+		this.playerName = playerName;
 	}
 
 	@Override
