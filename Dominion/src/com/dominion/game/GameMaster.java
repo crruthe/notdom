@@ -20,6 +20,10 @@ public class GameMaster {
 	// TODO: Make this threadable
 	private GameState state = new GameState();
 
+	public void setGameBoard(GameBoard gameBoard) {
+		state.setGameBoard(gameBoard);
+	}
+	
 	public void addPlayerToState(Player player) {
 		state.addPlayer(player);
 	}

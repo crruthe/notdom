@@ -31,7 +31,11 @@ public class MasqueradeAction implements CardAction {
 				break;
 			}
 			
-			Card card = player.getCardToPassLeft();
+			Card card = null;
+			while (card == null) {
+				card = player.getCardToPassLeft();
+			}
+			
 			player.removeFromHand(card);
 			cardsAside.put(playerLeft, card);
 		}

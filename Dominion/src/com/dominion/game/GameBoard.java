@@ -74,7 +74,7 @@ public class GameBoard implements Cloneable {
 	}
 
 	public void setupRandom(int numberOfPlayers) {
-		List<Class<? extends Card>> kingdomCards = randomKingdoms();
+		List<Class<? extends Card>> kingdomCards = randomKingdoms(10);
 		setup(kingdomCards, numberOfPlayers);
 	}
 		
@@ -91,7 +91,7 @@ public class GameBoard implements Cloneable {
 	 * Generate a random set of kingdom cards
 	 * @param numberOfPlayers
 	 */
-	private List<Class<? extends Card>> randomKingdoms() {
+	static public List<Class<? extends Card>> randomKingdoms(int numOfCards) {
 		LinkedList<Class<? extends Card>> cardList = new LinkedList<Class<? extends Card>>();
 		
 		/* 
@@ -174,10 +174,22 @@ public class GameBoard implements Cloneable {
 		cardList.add(HaremCard.class);
 		cardList.add(NoblesCard.class);
 
+		
+		/*
+		 * Prosperity 
+		 */
+		
+		// 3: Loan, Trade Route, Watchtower 
+		
+		// 4: Bishop, Monument, Quarry, Talisman, Worker's Village 
+		// 5: City, Contraband, Counting House, Mint, Mountebank, Rabble, Royal Seal, Vault, Venture 
+		// 6: Goons, Grand Market, Hoard 
+		// 7: Bank, Expand, Forge, King's Court 
+		// 8: Peddler
 			
 		Collections.shuffle(cardList);
 	
-		return cardList.subList(0, 10);
+		return cardList.subList(0, numOfCards);
 	}
 	
 	/**

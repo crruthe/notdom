@@ -20,8 +20,11 @@ public class SecretChamberReaction implements ReactionAction {
 		
 		for (int i=0; i<2; i++) {
 			if (player.getHandSize() == 0)
-				break;
-			Card card = player.getCardToPutOnDeck();
+				break;			
+			Card card = null;
+			while (card == null) {
+				player.getCardToPutOnDeck();
+			}			
 			player.moveCardFromHandToDeck(card);
 		}
 	}
