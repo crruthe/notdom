@@ -180,7 +180,7 @@ public class GameBoard implements Cloneable {
 		 */
 		
 		// 3: Loan, Trade Route, Watchtower 
-		
+		//cardList.add(LoanCard.class);
 		// 4: Bishop, Monument, Quarry, Talisman, Worker's Village 
 		// 5: City, Contraband, Counting House, Mint, Mountebank, Rabble, Royal Seal, Vault, Venture 
 		// 6: Goons, Grand Market, Hoard 
@@ -188,6 +188,7 @@ public class GameBoard implements Cloneable {
 		// 8: Peddler
 			
 		Collections.shuffle(cardList);
+		cardList.addFirst(LoanCard.class);
 	
 		return cardList.subList(0, numOfCards);
 	}
