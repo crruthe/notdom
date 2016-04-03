@@ -7,6 +7,7 @@ import java.util.List;
 import com.dominion.game.cards.ActionCard;
 import com.dominion.game.cards.Card;
 import com.dominion.game.cards.TreasureCard;
+import com.dominion.game.cards.basic.ColonyCard;
 import com.dominion.game.cards.basic.CopperCard;
 import com.dominion.game.cards.basic.EstateCard;
 import com.dominion.game.cards.basic.ProvinceCard;
@@ -105,6 +106,11 @@ public class GameState {
 		if (gameBoard.countNumberOfEmptyStacks() >= 3) {
 			System.out.println("Stacks are empty.");
 			return true;
+		}
+		
+		if (gameBoard.areBigCardsUsed() && gameBoard.isStackEmpty(ColonyCard.class)) {
+			System.out.println("No colonies!");
+			return true;			
 		}
 		
 		return false;

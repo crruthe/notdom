@@ -4,89 +4,19 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+
 import com.dominion.game.cards.*;
 import com.dominion.game.cards.basic.*;
 import com.dominion.game.cards.kingdom.*;
 import com.dominion.game.observers.SupplyStackObserver;
 import com.dominion.game.observers.TrashPileObserver;
 
+/**
+ * @author user
+ *
+ */
 public class GameBoard implements Cloneable {
 
-	protected SupplyStack supply = new SupplyStack();
-	protected CardCollection trashPile = new CardCollection();	
-	
-	/**
-	 * Cloning constructor
-	 * @param gameBoard
-	 */
-	public GameBoard(GameBoard gameBoard) {
-		supply = new SupplyStack(gameBoard.supply);
-		trashPile = new CardCollection(gameBoard.trashPile);		
-	}
-
-	public GameBoard() {
-		super();
-	}
-
-	public void registerObservers(GameState state) {
-		supply.addObserver(new SupplyStackObserver(state));
-		trashPile.addObserver(new TrashPileObserver(state));
-	}
-	
-	public void addToTrashPile(Card card) {
-		trashPile.addCardToTop(card);
-	}
-
-	/**
-	 * Count the number of stacks that are empty.
-	 * Used for determining if the game is finished.
-	 * 
-	 * @return number of empty stacks
-	 */
-	public int countNumberOfEmptyStacks() {
-		int numOfEmptyStacks = 0;
-		for (Integer numOfCards: supply.getStacks().values()) {
-			if (numOfCards == 0) {
-				numOfEmptyStacks++;
-			}
-		}
-		return numOfEmptyStacks;
-	}
-	
-	public HashMap<Class<? extends Card>, Integer> getSupplyStacks() {
-		return supply.getStacks();
-	}
-	
-	public CardCollection getTrashPile() {
-		return trashPile;
-	}
-	
-	public boolean isStackEmpty(Class<? extends Card> cardName) {
-		return supply.isStackEmpty(cardName);
-	}
-
-
-	public void setup(List<Class<? extends Card>> kingdomCards, int numberOfPlayers) {
-		setupKingdomCards(kingdomCards, numberOfPlayers);
-		setupVictoryCards(numberOfPlayers);
-		setupCurseCards(numberOfPlayers);
-		setupTreasureCards();
-	}
-
-	public void setupRandom(int numberOfPlayers) {
-		List<Class<? extends Card>> kingdomCards = randomKingdoms(10);
-		setup(kingdomCards, numberOfPlayers);
-	}
-		
-	public Card removeCardFromSupply(Class<? extends Card> cardClass) {
-		if (supply.removeCard(cardClass)) {
-			return Card.getCard(cardClass);
-		} else {
-			return null;
-		}		
-	}
-
-	
 	/**
 	 * Generate a random set of kingdom cards
 	 * @param numberOfPlayers
@@ -192,6 +122,96 @@ public class GameBoard implements Cloneable {
 	
 		return cardList.subList(0, numOfCards);
 	}
+	protected boolean bigCardsUsed = false;
+	protected SupplyStack supply = new SupplyStack();
+	
+	protected CardCollection trashPile = new CardCollection();
+
+	public GameBoard() {
+		super();
+	}
+
+	/**
+	 * Cloning constructor
+	 * @param gameBoard
+	 */
+	public GameBoard(GameBoard gameBoard) {
+		supply = new SupplyStack(gameBoard.supply);
+		trashPile = new CardCollection(gameBoard.trashPile);		
+	}
+	
+	public void addToTrashPile(Card card) {
+		trashPile.addCardToTop(card);
+	}
+
+	public boolean areBigCardsUsed() {
+		return bigCardsUsed;
+	}
+	
+	/**
+	 * Count the number of stacks that are empty.
+	 * Used for determining if the game is finished.
+	 * 
+	 * @return number of empty stacks
+	 */
+	public int countNumberOfEmptyStacks() {
+		int numOfEmptyStacks = 0;
+		for (Integer numOfCards: supply.getStacks().values()) {
+			if (numOfCards == 0) {
+				numOfEmptyStacks++;
+			}
+		}
+		return numOfEmptyStacks;
+	}
+	
+	public HashMap<Class<? extends Card>, Integer> getSupplyStacks() {
+		return supply.getStacks();
+	}
+	
+	public CardCollection getTrashPile() {
+		return trashPile;
+	}
+
+
+	public boolean isStackEmpty(Class<? extends Card> cardName) {
+		return supply.isStackEmpty(cardName);
+	}
+	
+	
+	public void registerObservers(GameState state) {
+		supply.addObserver(new SupplyStackObserver(state));
+		trashPile.addObserver(new TrashPileObserver(state));
+	}
+
+	public Card removeCardFromSupply(Class<? extends Card> cardClass) {
+		if (supply.removeCard(cardClass)) {
+			return Card.getCard(cardClass);
+		} else {
+			return null;
+		}		
+	}
+		
+	public void setup(List<Class<? extends Card>> kingdomCards, int numberOfPlayers) {
+		bigCardsUsed = randomChooseToUseBigCards(kingdomCards);
+		setupKingdomCards(kingdomCards, numberOfPlayers);		
+		setupVictoryCards(numberOfPlayers);
+		setupCurseCards(numberOfPlayers);
+		setupTreasureCards();
+	}
+
+	
+	public void setupRandom(int numberOfPlayers) {
+		List<Class<? extends Card>> kingdomCards = randomKingdoms(10);
+		setup(kingdomCards, numberOfPlayers);
+	}
+	
+	/**
+	 * Looks at first card, if it is a prosperity card, then use big cards.
+	 * Note: Assumes that the kingdom cards are shuffled already
+	 */
+	private boolean randomChooseToUseBigCards(List<Class<? extends Card>> kingdomCards) {
+		return ProsperityCard.class.isAssignableFrom(kingdomCards.get(0));
+	}
 	
 	/**
 	 * Place 10 Curse cards in the Supply for a 2
@@ -245,8 +265,14 @@ public class GameBoard implements Cloneable {
 		supply.addToStack(CopperCard.class, 500);
 		supply.addToStack(SilverCard.class, 500);
 		supply.addToStack(GoldCard.class, 500);
+		
+		if (bigCardsUsed) {
+			supply.addToStack(PlatinumCard.class, 500);
+		} else {
+			supply.addToStack(PlatinumCard.class, 0);
+		}			
 	}
-	
+
 	/**
 	 * Place 12 each of the Estate,
 	 * Duchy, and Province cards in face-up piles
@@ -264,5 +290,11 @@ public class GameBoard implements Cloneable {
 		supply.addToStack(EstateCard.class, numOfCards);
 		supply.addToStack(DuchyCard.class, numOfCards);
 		supply.addToStack(ProvinceCard.class, numOfCards);
+		
+		if (bigCardsUsed) {
+			supply.addToStack(ColonyCard.class, numOfCards);
+		} else {
+			supply.addToStack(ColonyCard.class, 0);
+		}
 	}	
 }

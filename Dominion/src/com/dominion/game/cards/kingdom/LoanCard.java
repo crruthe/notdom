@@ -5,11 +5,12 @@ import java.util.List;
 import com.dominion.game.actions.CardAction;
 import com.dominion.game.actions.LoanAction;
 import com.dominion.game.cards.Card;
+import com.dominion.game.cards.ProsperityCard;
 import com.dominion.game.cards.TreasureCard;
 import com.dominion.game.visitors.CardVisitor;
 
 
-public class LoanCard extends Card implements TreasureCard {	
+public class LoanCard extends Card implements TreasureCard, ProsperityCard {	
 	public static final int COST = 3;
 	public static final String NAME = "Loan";
 	private static final int COINS = 1;

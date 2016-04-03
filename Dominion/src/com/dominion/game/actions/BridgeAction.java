@@ -7,7 +7,7 @@ import com.dominion.game.modifiers.BridgeModifier;
  * 
  * @author Vomit
  *
- * Trash a card from your hand. Gain a card costing up to 2 Coins more than the trashed card.
+ * All cards (including cards in players’ hands) cost 1 coin less this turn, but not less than 0 coins.
  */
 public class BridgeAction implements CardAction {
 	@Override
