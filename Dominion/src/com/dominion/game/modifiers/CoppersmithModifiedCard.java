@@ -27,16 +27,9 @@ public class CoppersmithModifiedCard extends CopperCard implements ModifiedCard 
 		throw new RuntimeException("Cannot visit a modified card");		
 	}
 
-
 	@Override
 	public String getName() {
 		return parentCard.getName();
 	}
 
-
-	@Override
-	public int getCost() {
-		// Return new cost, but don't go below zero
-		return Math.max(parentCard.getCost() - 1, 0);
-	}	
 }
