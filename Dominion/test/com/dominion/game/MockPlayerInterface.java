@@ -164,7 +164,7 @@ public class MockPlayerInterface implements PlayerInterface {
 	}
 
 	@Override
-	public CardAction selectCardActionToPlay(HashMap<String, CardAction> actions) {
+	public String selectCardActionToPlay(HashMap<String, CardAction> actions) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -278,5 +278,11 @@ public class MockPlayerInterface implements PlayerInterface {
 		this.numOfActions = numOfActions;
 		this.numOfBuys = numOfBuys;
 		this.numOfCoins = numOfCoins;		
+	}
+
+	@Override
+	public Card selectCardToPutOnDeckScout(List<Card> cards) {
+		// TODO Auto-generated method stub
+		return null;
 	}	
 }

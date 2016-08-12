@@ -268,8 +268,6 @@ public class GameBoard implements Cloneable {
 		
 		if (bigCardsUsed) {
 			supply.addToStack(PlatinumCard.class, 500);
-		} else {
-			supply.addToStack(PlatinumCard.class, 0);
 		}			
 	}
 
@@ -293,8 +291,6 @@ public class GameBoard implements Cloneable {
 		
 		if (bigCardsUsed) {
 			supply.addToStack(ColonyCard.class, numOfCards);
-		} else {
-			supply.addToStack(ColonyCard.class, 0);
 		}
 	}	
 }

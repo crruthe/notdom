@@ -25,10 +25,10 @@ public class LoanAction implements CardAction {
 		}		
 	}
 	
-	class TrashCardLoadCardAction implements CardAction {		
+	class TrashCardLoanCardAction implements CardAction {		
 		final Card card;
 		
-		TrashCardLoadCardAction(Card card) {
+		TrashCardLoanCardAction(Card card) {
 			this.card = card;
 		}
 		
@@ -60,7 +60,7 @@ public class LoanAction implements CardAction {
 			if (card instanceof TreasureCard) {
 				// Give them the option to discard this card or trash it
 				actions.put("Discard Card", new DiscardCardLoanCardAction(card));
-				actions.put("Trash Card", new TrashCardLoadCardAction(card));
+				actions.put("Trash Card", new TrashCardLoanCardAction(card));
 
 				String action = null;
 				while (!actions.containsKey(action)) {
