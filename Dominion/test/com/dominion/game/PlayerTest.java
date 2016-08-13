@@ -1,11 +1,18 @@
 package com.dominion.game;
 
+import java.util.LinkedList;
+
 import junit.framework.TestCase;
 
 import com.dominion.game.cards.Card;
+import com.dominion.game.cards.TreasureCard;
 import com.dominion.game.cards.basic.CopperCard;
+import com.dominion.game.cards.basic.DuchyCard;
+import com.dominion.game.cards.basic.EstateCard;
 import com.dominion.game.cards.basic.GoldCard;
+import com.dominion.game.cards.basic.ProvinceCard;
 import com.dominion.game.cards.basic.SilverCard;
+import com.dominion.game.cards.kingdom.GardensCard;
 
 public class PlayerTest extends TestCase {
 
@@ -22,22 +29,22 @@ public class PlayerTest extends TestCase {
 		Card card = player.drawCard();		
 		assertEquals(GoldCard.class, card.getClass());
 	}
-/*
+
 	public void testDrawCardWithTwoCardsInDeck() {
 		Player player = new Player(new MockPlayerInterface());
 		player.addCardToCardDeck(new CopperCard());
 		player.addCardToCardDeck(new SilverCard());
 
 		Card card = player.drawCard();		
-		assertEquals("Draw card returns wrong card (first draw)", CopperCard.class, card.getClass());
+		assertEquals("Draw card returns wrong card (first draw)", SilverCard.class, card.getClass());
 		
 		Card card2 = player.drawCard();		
-		assertEquals("Draw card returns wrong card (second draw)", SilverCard.class, card2.getClass());
+		assertEquals("Draw card returns wrong card (second draw)", CopperCard.class, card2.getClass());
 	}
 	
 	public void testDrawCardWithOneCardInDiscardPile() {
 		Player player = new Player(new MockPlayerInterface());
-		player.gainCard(new CopperCard());
+		player.addCardToDiscardPile(new CopperCard());
 		
 		Card card = player.drawCard();		
 		assertEquals("Draw card returns wrong card", CopperCard.class, card.getClass());
@@ -46,7 +53,7 @@ public class PlayerTest extends TestCase {
 	public void testDrawCardWithOneCardInCardDeckAndOneCardInDiscardPile() {
 		Player player = new Player(new MockPlayerInterface());
 		player.addCardToCardDeck(new CopperCard());
-		player.gainCard(new SilverCard());
+		player.addCardToDiscardPile(new SilverCard());
 		
 		Card card = player.drawCard();		
 		assertEquals("Draw card returns wrong card (first draw)", CopperCard.class, card.getClass());
@@ -78,35 +85,42 @@ public class PlayerTest extends TestCase {
 	public void testMoveDiscardPileToCardDeck() {
 		Player player = new Player(new MockPlayerInterface());
 		
-		player.gainCard(new CopperCard());
-		player.gainCard(new SilverCard());
-		player.gainCard(new GoldCard());
+		player.addCardToDiscardPile(new CopperCard());
+		player.addCardToDiscardPile(new SilverCard());
+		player.addCardToDiscardPile(new GoldCard());
 		
 		player.moveDiscardPileToCardDeck();
-		assertEquals("Move discard pile to card deck returns invalid card deck size", 3, player.getCardDeckSize());
-		assertEquals("Move card deck to discard pile returns invalid discard pile size", 0, player.getDiscardPileSize());
+		assertEquals("Move discard pile to card deck returns invalid card deck size", 3, player.cardDeck.cards.size());
+		assertEquals("Move card deck to discard pile returns invalid discard pile size", 0, player.discardPile.cards.size());
 	}
 
 	public void testMoveDiscardPileToCardDeckWhenDiscardPileIsEmpty() {
 		Player player = new Player(new MockPlayerInterface());
 				
 		player.moveDiscardPileToCardDeck();
-		assertEquals("Move discard pile to card deck returns invalid card deck size", 0, player.getCardDeckSize());
-		assertEquals("Move card deck to discard pile returns invalid discard pile size", 0, player.getDiscardPileSize());
+		assertEquals("Move discard pile to card deck returns invalid card deck size", 0, player.cardDeck.cards.size());
+		assertEquals("Move card deck to discard pile returns invalid discard pile size", 0, player.discardPile.cards.size());
 	}
 
 	public void testDiscardPlayArea() {
-		Player player = new Player(new MockPlayerInterface());
+		GameState state = new GameState();
 		
-		Card card = new CopperCard();
-		Card card2 = new SilverCard();
-		player.addCardToHand(card);
-		player.addCardToHand(card2);
-		player.playCard(card);
-		player.playCard(card2);
+		Player player = new Player(new MockPlayerInterface());
+		state.addPlayer(player);
+		
+		state.initialise();
+		
+		TreasureCard card = new CopperCard();
+		TreasureCard card2 = new SilverCard();
+		player.addCardToHand((Card)card);
+		player.addCardToHand((Card)card2);
+		
+		state.playTreasureCard(card);
+		state.playTreasureCard(card2);
+		
 		player.discardPlayArea();
 		
-		assertEquals("Discard play area returns invalid discard pile size", 2, player.getDiscardPileSize());
+		assertEquals("Discard play area returns invalid discard pile size", 2, player.discardPile.cards.size());
 	}
 
 	public void testDiscardPlayAreaWhenEmpty() {
@@ -114,7 +128,7 @@ public class PlayerTest extends TestCase {
 		
 		player.discardPlayArea();
 		
-		assertEquals("Discard play area returns invalid discard pile size", 0, player.getDiscardPileSize());
+		assertEquals("Discard play area returns invalid discard pile size", 0, player.discardPile.cards.size());
 	}
 
 	public void testDiscardCardFromHand() {
@@ -128,27 +142,29 @@ public class PlayerTest extends TestCase {
 		player.discardCardFromHand(card);
 		player.discardCardFromHand(card2);
 		
-		assertEquals("Discard card from hand returns invalid discard pile size", 2, player.getDiscardPileSize());
+		assertEquals("Discard card from hand returns invalid discard pile size", 2, player.discardPile.cards.size());
 	}
 
 	public void testMoveCardDeckToDiscardPile() {
 		Player player = new Player(new MockPlayerInterface());
 		
-		player.gainCard(new CopperCard());
-		player.gainCard(new SilverCard());
-		player.gainCard(new GoldCard());
+		player.addCardToDiscardPile(new CopperCard());
+		player.addCardToDiscardPile(new SilverCard());
+		player.addCardToDiscardPile(new GoldCard());
 		
-		player.moveCardDeckToDiscardPile();
-		assertEquals("Move card deck to discard pile returns invalid discard pile size", 3, player.getDiscardPileSize());
-		assertEquals("Move discard pile to card deck returns invalid card deck size", 0, player.getCardDeckSize());
+		player.discardEntireCardDeck();
+		
+		assertEquals("Move card deck to discard pile returns invalid discard pile size", 3, player.discardPile.cards.size());
+		assertEquals("Move discard pile to card deck returns invalid card deck size", 0, player.cardDeck.cards.size());
 	}
 
-	public void testMoveCardDeckToDiscardPileWhenCarkDeckIsEmpty() {
+	public void testMoveCardDeckToDiscardPileWhenCardDeckIsEmpty() {
 		Player player = new Player(new MockPlayerInterface());
 				
-		player.moveCardDeckToDiscardPile();
-		assertEquals("Move discard pile to card deck returns invalid card deck size", 0, player.getCardDeckSize());
-		assertEquals("Move card deck to discard pile returns invalid discard pile size", 0, player.getDiscardPileSize());
+		player.discardEntireCardDeck();
+		
+		assertEquals("Move discard pile to card deck returns invalid card deck size", 0, player.cardDeck.cards.size());
+		assertEquals("Move card deck to discard pile returns invalid discard pile size", 0, player.discardPile.cards.size());
 	}
 
 	public void testGetHandSize() {
@@ -174,44 +190,44 @@ public class PlayerTest extends TestCase {
 		player.addCardToCardDeck(new SilverCard());
 		player.addCardToCardDeck(new GoldCard());
 		
-		assertEquals("Add card to deck returns invalid card deck size", 3, player.getCardDeckSize());
+		assertEquals("Add card to deck returns invalid card deck size", 3, player.cardDeck.cards.size());
 	}
 	
 
 	public void testAddCardsToDiscardPile() {
 		Player player = new Player(new MockPlayerInterface());
 		
-		Collection<Card> cards = new LinkedList<Card>();
+		LinkedList<Card> cards = new LinkedList<Card>();
 		
 		cards.add(new CopperCard());
 		cards.add(new SilverCard());
 		cards.add(new GoldCard());
 		
 		player.addCardsToDiscardPile(cards);
-		assertEquals("Add card to discard pile returns invalid discard pile size", 3, player.getDiscardPileSize());
+		assertEquals("Add card to discard pile returns invalid discard pile size", 3, player.discardPile.cards.size());
 	}
 
 	public void testAddCardsToDiscardPileWithEmptyCollection() {
 		Player player = new Player(new MockPlayerInterface());
 		
-		Collection<Card> cards = new LinkedList<Card>();
+		LinkedList<Card> cards = new LinkedList<Card>();
 		
 		player.addCardsToDiscardPile(cards);
-		assertEquals("Add card to discard pile returns invalid discard pile size", 0, player.getDiscardPileSize());
+		assertEquals("Add card to discard pile returns invalid discard pile size", 0, player.discardPile.cards.size());
 	}
 	
 	public void testAddCardsToDiscardPileWithNonEmptyDiscardPile() {
 		Player player = new Player(new MockPlayerInterface());
 		
-		Collection<Card> cards = new LinkedList<Card>();
+		LinkedList<Card> cards = new LinkedList<Card>();
 		cards.add(new CopperCard());
 		cards.add(new SilverCard());
 		cards.add(new GoldCard());
 
-		player.gainCard(new CopperCard());
+		player.addCardToDiscardPile(new CopperCard());
 		
 		player.addCardsToDiscardPile(cards);
-		assertEquals("Add card to discard pile returns invalid discard pile size", 4, player.getDiscardPileSize());
+		assertEquals("Add card to discard pile returns invalid discard pile size", 4, player.discardPile.cards.size());
 	}
 	
 	public void testDiscardHand() {
@@ -222,14 +238,14 @@ public class PlayerTest extends TestCase {
 		player.addCardToHand(new GoldCard());
 		
 		player.discardHand();		
-		assertEquals("Discard hand returns invalid discard pile size", 3, player.getDiscardPileSize());
+		assertEquals("Discard hand returns invalid discard pile size", 3, player.discardPile.cards.size());
 	}
 
 	public void testDiscardHandWithEmptyHand() {
 		Player player = new Player(new MockPlayerInterface());
 		
 		player.discardHand();		
-		assertEquals("Discard hand returns invalid discard pile size", 0, player.getDiscardPileSize());
+		assertEquals("Discard hand returns invalid discard pile size", 0, player.discardPile.cards.size());
 	}
 
 	public void testDrawNewHand() {
@@ -244,10 +260,10 @@ public class PlayerTest extends TestCase {
 		
 		player.drawNewHand();		
 		assertEquals("Draw new hand returns invalid hand size", 5, player.getHandSize());
-		assertEquals("Draw new hand returns invalid card deck size", 1, player.getCardDeckSize());
+		assertEquals("Draw new hand returns invalid card deck size", 1, player.cardDeck.cards.size());
 	}
 	
-	public void testCountVictoryPointsInCardDeck() {
+	public void testCountVictoryPoints() {
 		Player player = new Player(new MockPlayerInterface());
 		
 		for (int i=0; i < 10; i++) {
@@ -258,21 +274,8 @@ public class PlayerTest extends TestCase {
 		player.addCardToCardDeck(new DuchyCard());
 		player.addCardToCardDeck(new ProvinceCard());
 		player.addCardToCardDeck(new GardensCard());		
-				
-		assertEquals("Count victory points return invalid number", 1+3+6+1, player.countVictoryPointsInCardDeck());
+		
+		assertEquals("Count victory points return invalid number", 1+3+6+1, player.countVictoryPoints(player.getAllCards()));
 	}
-
-	public void testCountTotalCoinsInHand() {
-		Player player = new Player(new MockPlayerInterface());
-				
-		player.addCardToHand(new EstateCard());
-		player.addCardToHand(new EstateCard());
-		player.addCardToHand(new CopperCard());
-		player.addCardToHand(new SilverCard());
-		player.addCardToHand(new GoldCard());
-				
-		assertEquals("Count victory points return invalid number", 1+2+3, player.countTotalCoinsInHand());
-	}
-*/
 }
 

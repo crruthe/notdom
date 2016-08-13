@@ -192,7 +192,6 @@ public class GameBoard implements Cloneable {
 	}
 		
 	public void setup(List<Class<? extends Card>> kingdomCards, int numberOfPlayers) {
-		bigCardsUsed = randomChooseToUseBigCards(kingdomCards);
 		setupKingdomCards(kingdomCards, numberOfPlayers);		
 		setupVictoryCards(numberOfPlayers);
 		setupCurseCards(numberOfPlayers);
@@ -202,6 +201,10 @@ public class GameBoard implements Cloneable {
 	
 	public void setupRandom(int numberOfPlayers) {
 		List<Class<? extends Card>> kingdomCards = randomKingdoms(10);
+		
+		// Randomly decide if to use big cards or not
+		bigCardsUsed = randomChooseToUseBigCards(kingdomCards);		
+		
 		setup(kingdomCards, numberOfPlayers);
 	}
 	

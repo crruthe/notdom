@@ -10,17 +10,22 @@ import com.dominion.game.cards.Card;
 import com.dominion.game.cards.ReactionCard;
 import com.dominion.game.cards.TreasureCard;
 import com.dominion.game.cards.VictoryCard;
+import com.dominion.game.cards.basic.ColonyCard;
 import com.dominion.game.cards.basic.CopperCard;
 import com.dominion.game.cards.basic.CurseCard;
 import com.dominion.game.cards.basic.DuchyCard;
 import com.dominion.game.cards.basic.EstateCard;
+import com.dominion.game.cards.basic.ProvinceCard;
 import com.dominion.game.cards.basic.SilverCard;
 import com.dominion.game.cards.kingdom.AdventurerCard;
+import com.dominion.game.cards.kingdom.BridgeCard;
 import com.dominion.game.cards.kingdom.CellarCard;
 import com.dominion.game.cards.kingdom.CourtyardCard;
 import com.dominion.game.cards.kingdom.GardensCard;
 import com.dominion.game.cards.kingdom.MilitiaCard;
+import com.dominion.game.cards.kingdom.MineCard;
 import com.dominion.game.cards.kingdom.MoatCard;
+import com.dominion.game.cards.kingdom.SmithyCard;
 import com.dominion.game.cards.kingdom.SpyCard;
 import com.dominion.game.cards.kingdom.WitchCard;
 import com.dominion.game.cards.kingdom.WoodcutterCard;
@@ -64,8 +69,84 @@ public class GameStateTest extends TestCase {
 		assertEquals(otherPlayers, state.getOtherPlayers());
 	}
 
-	public void testHasGameEnded() {
-		fail("Not yet implemented"); // TODO
+	public void testHasGameEndedThreeEmptyStacks() {
+		GameState state = new GameState();
+		state.gameBoard = new GameBoard();
+		
+		List<Class<? extends Card>> kingdomCards = new LinkedList<Class<? extends Card>>();
+		kingdomCards.add(SmithyCard.class);
+		kingdomCards.add(MineCard.class);
+		kingdomCards.add(BridgeCard.class);
+		kingdomCards.addAll(GameBoard.randomKingdoms(7));
+
+		state.gameBoard.setup(kingdomCards, 2);
+		
+		assertFalse(state.hasGameEnded());
+		
+		for (int i = 0; i < 10; i++) {
+			state.gameBoard.removeCardFromSupply(SmithyCard.class);
+			state.gameBoard.removeCardFromSupply(MineCard.class);
+			state.gameBoard.removeCardFromSupply(BridgeCard.class);
+		}
+		
+		assertTrue(state.hasGameEnded());
+	}
+	
+	public void testHasGameEndedNoProvinces() {
+		GameState state = new GameState();
+		state.initialise();
+		
+		assertFalse(state.hasGameEnded());
+		
+		for (int i = 0; i < 12; i++) {
+			state.gameBoard.removeCardFromSupply(ProvinceCard.class);
+		}
+		
+		assertTrue(state.hasGameEnded());
+	}
+	
+	public void testHasGameEndedNoColonies() {
+		GameState state = new GameState();
+		state.gameBoard = new GameBoard();
+		state.gameBoard.bigCardsUsed = true;
+		
+		List<Class<? extends Card>> kingdomCards = new LinkedList<Class<? extends Card>>();
+		kingdomCards.addAll(GameBoard.randomKingdoms(10));
+
+		state.gameBoard.setup(kingdomCards, 2);
+		
+		assertFalse(state.hasGameEnded());
+		
+		for (int i = 0; i < 12; i++) {
+			state.gameBoard.removeCardFromSupply(ColonyCard.class);
+		}
+		
+		assertTrue(state.hasGameEnded());
+	}
+	
+	public void testHasGameEndedNotEnded() {
+		GameState state = new GameState();
+		state.gameBoard = new GameBoard();
+		state.gameBoard.bigCardsUsed = true;
+		
+		List<Class<? extends Card>> kingdomCards = new LinkedList<Class<? extends Card>>();
+		kingdomCards.add(SmithyCard.class);
+		kingdomCards.add(MineCard.class);
+		kingdomCards.add(BridgeCard.class);
+		kingdomCards.addAll(GameBoard.randomKingdoms(7));
+
+		state.gameBoard.setup(kingdomCards, 2);
+		
+		assertFalse(state.hasGameEnded());
+		
+		for (int i = 0; i < 7; i++) {
+			state.gameBoard.removeCardFromSupply(SmithyCard.class);
+			state.gameBoard.removeCardFromSupply(MineCard.class);
+			state.gameBoard.removeCardFromSupply(BridgeCard.class);
+			state.gameBoard.removeCardFromSupply(ProvinceCard.class);
+		}
+		
+		assertFalse(state.hasGameEnded());
 	}
 
 	public void testInitialise() {

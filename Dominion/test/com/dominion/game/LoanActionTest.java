@@ -2,20 +2,15 @@ package com.dominion.game;
 
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
+
+import junit.framework.TestCase;
 
 import com.dominion.game.actions.CardAction;
 import com.dominion.game.actions.LoanAction;
 import com.dominion.game.cards.Card;
-import com.dominion.game.cards.TreasureCard;
 import com.dominion.game.cards.basic.CopperCard;
 import com.dominion.game.cards.basic.DuchyCard;
 import com.dominion.game.cards.basic.EstateCard;
-import com.dominion.game.cards.basic.ProvinceCard;
-import com.dominion.game.cards.basic.SilverCard;
-import com.dominion.game.cards.kingdom.WoodcutterCard;
-
-import junit.framework.TestCase;
 
 public class LoanActionTest extends TestCase {
 
