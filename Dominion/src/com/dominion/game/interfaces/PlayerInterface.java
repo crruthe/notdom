@@ -3,6 +3,7 @@ package com.dominion.game.interfaces;
 import java.util.HashMap;
 import java.util.List;
 
+import com.dominion.game.CardStack;
 import com.dominion.game.Player;
 import com.dominion.game.actions.CardAction;
 import com.dominion.game.cards.ActionCard;
@@ -48,7 +49,7 @@ public interface PlayerInterface {
 	public void updateHand(final List<Card> cards);
 	public void updateOtherPlayer(final Player player);
 	public void updatePlayArea(final List<Card> cards);
-	public void updateSupply(final HashMap<Class<? extends Card>, Integer> supplyStack);
+	public void updateSupply(final HashMap<Class<? extends Card>, CardStack> supplyStack);
 	public void updateTrashPile(final List<Card> cards);
 	public void updateTurnState(int numOfActions, int numOfBuys, int numOfCoins);
 }

@@ -22,7 +22,7 @@ public class WorkshopCard extends Card implements ActionCard {
 	public List<CardAction> getActionList() {
 		List<CardAction> cardActions = super.getActionList();
 		
-		cardActions.add(new GainCardAction(GAIN_COST));
+		cardActions.add(new GainCardAction(GAIN_COST, true));
 		
 		return cardActions;
 	}

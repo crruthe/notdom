@@ -5,6 +5,7 @@ import java.util.List;
 import com.dominion.game.actions.CardAction;
 import com.dominion.game.actions.MasqueradeAction;
 import com.dominion.game.actions.PlusCardAction;
+import com.dominion.game.actions.TrashCardAction;
 import com.dominion.game.cards.ActionCard;
 import com.dominion.game.cards.Card;
 import com.dominion.game.visitors.CardVisitor;
@@ -25,6 +26,7 @@ public class MasqueradeCard extends Card implements ActionCard {
 		
 		cardActions.add(new PlusCardAction(PLUS_CARDS));
 		cardActions.add(new MasqueradeAction());
+		cardActions.add(new TrashCardAction(1, false));
 		
 		return cardActions;
 	}

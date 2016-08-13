@@ -4,10 +4,11 @@ import java.util.HashMap;
 import java.util.Observable;
 
 import com.dominion.game.cards.Card;
+import com.dominion.game.cards.VictoryCard;
 
 public class SupplyStack extends Observable {
 
-	protected HashMap<Class<? extends Card>, Integer> stacks = new HashMap<Class<? extends Card>, Integer>();
+	protected HashMap<Class<? extends Card>, CardStack> stacks = new HashMap<Class<? extends Card>, CardStack>();
 	
 	public SupplyStack() {
 		super();
@@ -18,16 +19,24 @@ public class SupplyStack extends Observable {
 	 * @param supply
 	 */
 	public SupplyStack(SupplyStack supply) {
-		this.stacks = new HashMap<Class<? extends Card>, Integer>(supply.stacks);		
+		this.stacks = new HashMap<Class<? extends Card>, CardStack>(supply.stacks);		
 	}
 
 	public void addToStack(Class<? extends Card>cardClass, Integer numOfCards) {
-		stacks.put(cardClass, numOfCards);
+		
+		CardStack cardStack = new CardStack(numOfCards);
+
+		// if victorycard, add a trade route token
+		if (VictoryCard.class.isAssignableFrom(cardClass)) {
+			cardStack.setTraceRouteToken(true);
+		}
+		
+		stacks.put(cardClass, cardStack);
 		setChanged();
 		notifyObservers();
 	}	
 	
-	public HashMap<Class<? extends Card>, Integer> getStacks() {
+	public HashMap<Class<? extends Card>, CardStack> getStacks() {
 		return stacks;
 	}
 
@@ -35,7 +44,7 @@ public class SupplyStack extends Observable {
 	 * Check if a stack is empty (usually for end of game)
 	 */
 	public boolean isStackEmpty(Class<? extends Card> cardName) {
-		return stacks.get(cardName) == 0;		
+		return stacks.get(cardName).getNumCards() == 0;		
 	}
 	
 	/**
@@ -45,14 +54,32 @@ public class SupplyStack extends Observable {
 	 * @return Card from top of stack
 	 */
 	public boolean removeCard(Class<? extends Card> cardClass) {
-		if (stacks.get(cardClass) == 0) {			
+		CardStack cardStack = stacks.get(cardClass);
+		
+		if (cardStack.getNumCards() == 0) {			
 			return false;
 		}
 
 		// Decrement the stack size by 1
-		stacks.put(cardClass, stacks.get(cardClass)-1);
+		cardStack.decrementNumCards(1);
+		
 		setChanged();
 		notifyObservers();
 		return true;
+	}
+	
+	/**
+	 * Remove the trade token from the stack
+	 * 
+	 * @param cardClass
+	 * @return
+	 */
+	public boolean retrieveTradeRouteToken(Class<? extends Card> cardClass) {
+		CardStack cardStack = stacks.get(cardClass);
+		if (cardStack.hasTraceRouteToken()) {
+			cardStack.setTraceRouteToken(false);
+			return true;
+		}
+		return false;
 	}
 }

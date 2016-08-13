@@ -110,7 +110,7 @@ public class GameMaster {
 		
 		LinkedHashMap<String, Integer> supplyObject = new LinkedHashMap<String, Integer>();		
 		for (Card card : cards) {
-			supplyObject.put(card.getName(), state.getGameBoard().getSupplyStacks().get(card.getClass()));
+			supplyObject.put(card.getName(), state.getGameBoard().getSupplyStacks().get(card.getClass()).getNumCards());
 		}	
 		System.out.println(supplyObject);
 	}

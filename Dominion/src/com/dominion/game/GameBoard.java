@@ -125,6 +125,7 @@ public class GameBoard implements Cloneable {
 	protected boolean bigCardsUsed = false;
 	protected SupplyStack supply = new SupplyStack();
 	
+	protected int tradeRouteMatTokens = 0;
 	protected CardCollection trashPile = new CardCollection();
 
 	public GameBoard() {
@@ -156,48 +157,59 @@ public class GameBoard implements Cloneable {
 	 */
 	public int countNumberOfEmptyStacks() {
 		int numOfEmptyStacks = 0;
-		for (Integer numOfCards: supply.getStacks().values()) {
-			if (numOfCards == 0) {
+		for (CardStack cardStack: supply.getStacks().values()) {
+			if (cardStack.getNumCards() == 0) {
 				numOfEmptyStacks++;
 			}
 		}
 		return numOfEmptyStacks;
 	}
 	
-	public HashMap<Class<? extends Card>, Integer> getSupplyStacks() {
+	public HashMap<Class<? extends Card>, CardStack> getSupplyStacks() {
 		return supply.getStacks();
 	}
 	
+	public int getTradeRouteMatTokens() {
+		return tradeRouteMatTokens;
+	}
+
+
 	public CardCollection getTrashPile() {
 		return trashPile;
 	}
-
-
+	
+	
 	public boolean isStackEmpty(Class<? extends Card> cardName) {
 		return supply.isStackEmpty(cardName);
 	}
-	
-	
+
 	public void registerObservers(GameState state) {
 		supply.addObserver(new SupplyStackObserver(state));
 		trashPile.addObserver(new TrashPileObserver(state));
 	}
-
+		
 	public Card removeCardFromSupply(Class<? extends Card> cardClass) {
 		if (supply.removeCard(cardClass)) {
+			// Track trade route tokens when victory cards are gained
+			if (VictoryCard.class.isAssignableFrom(cardClass)) {
+				// if there is a trade route token, remove it and add to trade route mat
+				if (supply.retrieveTradeRouteToken(cardClass)) {
+					tradeRouteMatTokens += 1;
+				}
+			}
 			return Card.getCard(cardClass);
 		} else {
 			return null;
 		}		
 	}
-		
+
+	
 	public void setup(List<Class<? extends Card>> kingdomCards, int numberOfPlayers) {
 		setupKingdomCards(kingdomCards, numberOfPlayers);		
 		setupVictoryCards(numberOfPlayers);
 		setupCurseCards(numberOfPlayers);
 		setupTreasureCards();
 	}
-
 	
 	public void setupRandom(int numberOfPlayers) {
 		List<Class<? extends Card>> kingdomCards = randomKingdoms(10);
@@ -259,7 +271,7 @@ public class GameBoard implements Cloneable {
 			supply.addToStack(cardClass, numOfCards);
 		}		
 	}
-	
+
 	/**
 	 * Game supply has "unlimited" cards. 50 should be enough.
 	 * @param numberOfPlayers

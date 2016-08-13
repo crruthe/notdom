@@ -8,8 +8,10 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+
 import redis.clients.jedis.Jedis;
 
+import com.dominion.game.CardStack;
 import com.dominion.game.GameBoard;
 import com.dominion.game.GameMaster;
 import com.dominion.game.Player;
@@ -707,7 +709,7 @@ public class NetworkPlayer implements PlayerInterface {
 	}
 
 	@Override
-	public void updateSupply(HashMap<Class<? extends Card>, Integer> supplyStack) {
+	public void updateSupply(HashMap<Class<? extends Card>, CardStack> supplyStack) {
 		// TODO Auto-generated method stub
 		List<Card> cards = new LinkedList<Card>();
 		
@@ -741,7 +743,7 @@ public class NetworkPlayer implements PlayerInterface {
 		
 		LinkedHashMap<String, Integer> supplyObject = new LinkedHashMap<String, Integer>();		
 		for (Card card : cards) {
-			supplyObject.put(card.getName(), supplyStack.get(card.getClass()));
+			supplyObject.put(card.getName(), supplyStack.get(card.getClass()).getNumCards());
 		}
 		
 		Gson gson = new Gson();		

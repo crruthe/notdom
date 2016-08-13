@@ -154,7 +154,7 @@ public class GameState {
 		
 		for (Class<? extends Card> checkCardClass : gameBoard.getSupplyStacks().keySet()) {	
 			// Check if any cards are left in stack
-			if (gameBoard.getSupplyStacks().get(checkCardClass) > 0) {
+			if (gameBoard.getSupplyStacks().get(checkCardClass).getNumCards() > 0) {
 				Card card = Card.getCard(checkCardClass);
 
 				// Apply modifiers for cost, e.g. Bridge
@@ -287,7 +287,7 @@ public class GameState {
 		
 		for (Class<? extends Card> cardClass : gameBoard.getSupplyStacks().keySet()) {	
 			// Check if any cards are left in stack
-			if (gameBoard.getSupplyStacks().get(cardClass) > 0) {
+			if (gameBoard.getSupplyStacks().get(cardClass).getNumCards() > 0) {
 				Card card = Card.getCard(cardClass);
 				
 				// Apply modifiers for cost, e.g. Bridge

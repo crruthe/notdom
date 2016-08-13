@@ -23,12 +23,11 @@ public class SaboteurAction extends AttackAction {
 		LinkedList<Card> setAside = new LinkedList<Card>();
 		
 		while (true) {
-			Card card = victim.drawCard();
-
-			// User has no more cards
-			if (card == null) {
+			// Victim has no more cards
+			if (victim.getHandSize() == 0) {
 				break;
 			}
+			Card card = victim.drawCard();
 
 			state.broadcastToAllPlayers(new CardRevealedMessage(victim, card));			
 			
@@ -40,8 +39,9 @@ public class SaboteurAction extends AttackAction {
 				state.getGameBoard().addToTrashPile(card);
 				
 				// They may gain a card costing 2 less 
-				new GainCardAction(victim, cost-2).execute(state);
+				new GainCardAction(victim, cost-2, false).execute(state);
 				
+				// once they have revealed a card of cost 3 or more, they can stop
 				break;				
 			} else {
 				setAside.add(card);

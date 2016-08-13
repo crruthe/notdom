@@ -4,7 +4,6 @@ import java.util.HashMap;
 import com.dominion.game.GameState;
 import com.dominion.game.Player;
 import com.dominion.game.cards.Card;
-import com.dominion.game.interfaces.messages.CardTrashedMessage;
 
 /**
  * Each player passes a card in their hand to the player on their left. You may trash a card from your hand.
@@ -44,21 +43,5 @@ public class MasqueradeAction implements CardAction {
 		for (Player player : cardsAside.keySet()) {
 			player.addCardToHand(cardsAside.get(player));
 		}
-		
-		// No cards to trash
-		if (state.getCurrentPlayer().getHandSize() == 0) {
-			return;
-		}
-		
-		// Now let the current player trash a card
-		Card card = state.getCurrentPlayer().getCardToTrashFromHand();
-		if (card == null) {
-			return;
-		}
-		
-		state.broadcastToAllPlayers(new CardTrashedMessage(state.getCurrentPlayer(), card));
-		
-		state.getCurrentPlayer().removeFromHand(card);
-		state.getGameBoard().addToTrashPile(card);
 	}	
 }

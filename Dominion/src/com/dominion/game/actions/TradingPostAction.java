@@ -3,38 +3,20 @@ package com.dominion.game.actions;
 import com.dominion.game.GameState;
 import com.dominion.game.cards.Card;
 import com.dominion.game.cards.basic.SilverCard;
-import com.dominion.game.interfaces.messages.CardTrashedMessage;
 
 public class TradingPostAction implements CardAction {
 	@Override
 	public void execute(GameState state) {
+		TrashCardAction trashCardAction = new TrashCardAction(2, true);
+		trashCardAction.execute(state);
 		
-		// Trash two cards
-		for (int i = 0; i < 2; i++) {
+		if (trashCardAction.getTrashedCards().size() == 2) {
+			Card card = state.getGameBoard().removeCardFromSupply(SilverCard.class);
 			
-			// No cards to trash
-			if (state.getCurrentPlayer().getHandSize() == 0) {
-				return;
+			// card is null if none left
+			if (card != null) {
+				state.getCurrentPlayer().addCardToHand(card);			
 			}
-			
-			// Get a card to trash
-			Card trashCard = null;
-			while (trashCard == null) {
-				trashCard = state.getCurrentPlayer().getCardToTrashFromHand();				
-			}
-			state.getCurrentPlayer().removeFromHand(trashCard);
-			state.getGameBoard().addToTrashPile(trashCard);
-			
-			state.broadcastToAllPlayers(new CardTrashedMessage(state.getCurrentPlayer(), trashCard));
-		}
-		
-		Card card = state.getGameBoard().removeCardFromSupply(SilverCard.class);
-		
-		// No cards left in stack
-		if (card == null) {
-			return;
-		}
-		
-		state.getCurrentPlayer().addCardToHand(card);
+		}		
 	}	
 }

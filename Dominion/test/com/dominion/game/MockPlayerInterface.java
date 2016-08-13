@@ -262,7 +262,7 @@ public class MockPlayerInterface implements PlayerInterface {
 	}
 
 	@Override
-	public void updateSupply(HashMap<Class<? extends Card>, Integer> supplyStack) {
+	public void updateSupply(HashMap<Class<? extends Card>, CardStack> supplyStack) {
 		// TODO Auto-generated method stub
 		
 	}
