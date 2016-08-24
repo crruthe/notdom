@@ -9,8 +9,10 @@ import com.dominion.game.cards.Card;
 import com.dominion.game.visitors.CardVisitor;
 
 public class PawnCard extends Card implements ActionCard {
-	public static final int COST = 2;	
-	public static final String NAME = "Pawn";
+	
+	public PawnCard() {
+		super("Pawn", 2);
+	}
 
 	@Override
 	public void accept(CardVisitor visitor) {
@@ -24,15 +26,5 @@ public class PawnCard extends Card implements ActionCard {
 		cardActions.add(new PawnAction());
 		
 		return cardActions;
-	}
-
-	@Override
-	public int getCost() {
-		return COST;
-	}
-
-	@Override
-	public String getName() {
-		return NAME;
 	}
 }

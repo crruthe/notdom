@@ -6,24 +6,17 @@ import com.dominion.game.visitors.CardVisitor;
 
 
 public class DukeCard extends Card implements VictoryCard {	
-	public static final int COST = 5;
-	public static final String NAME = "Duke";
+	
 	public static final int POINTS = 0;
 	public static final int POINTS_PER_DUCHY = 1;
+	
+	public DukeCard() {
+		super("Duke", 5);
+	}
 	
 	@Override
 	public void accept(CardVisitor visitor) {
 		visitor.visit(this);
-	}
-
-	@Override
-	public int getCost() {
-		return COST;
-	}
-	
-	@Override
-	public String getName() {
-		return NAME;
 	}
 	
 	@Override

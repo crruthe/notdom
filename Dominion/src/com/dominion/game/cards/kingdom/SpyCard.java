@@ -12,10 +12,13 @@ import com.dominion.game.cards.Card;
 import com.dominion.game.visitors.CardVisitor;
 
 public class SpyCard extends Card implements ActionCard, AttackCard {
-	public static final int COST = 4;	
-	public static final String NAME = "Spy";
+	
 	private static final int PLUS_ACTIONS = 1;
 	private static final int PLUS_CARDS = 1;
+	
+	public SpyCard() {
+		super("Spy", 4);
+	}
 
 	@Override
 	public void accept(CardVisitor visitor) {
@@ -31,15 +34,5 @@ public class SpyCard extends Card implements ActionCard, AttackCard {
 		cardActions.add(new SpyAction());
 		
 		return cardActions;
-	}
-
-	@Override
-	public int getCost() {
-		return COST;
-	}
-
-	@Override
-	public String getName() {
-		return NAME;
 	}
 }

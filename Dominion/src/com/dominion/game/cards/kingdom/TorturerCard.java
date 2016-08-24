@@ -11,9 +11,12 @@ import com.dominion.game.cards.Card;
 import com.dominion.game.visitors.CardVisitor;
 
 public class TorturerCard extends Card implements ActionCard, AttackCard {
-	public static final int COST = 5;	
-	public static final String NAME = "Torturer";
+	
 	private static final int PLUS_CARDS = 3;
+
+	public TorturerCard() {
+		super("Torturer", 5);
+	}
 
 	@Override
 	public void accept(CardVisitor visitor) {
@@ -28,15 +31,5 @@ public class TorturerCard extends Card implements ActionCard, AttackCard {
 		cardActions.add(new TorturerAction());
 		
 		return cardActions;
-	}
-
-	@Override
-	public int getCost() {
-		return COST;
-	}
-
-	@Override
-	public String getName() {
-		return NAME;
 	}
 }

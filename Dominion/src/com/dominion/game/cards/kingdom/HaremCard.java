@@ -7,10 +7,13 @@ import com.dominion.game.visitors.CardVisitor;
 
 
 public class HaremCard extends Card implements VictoryCard, TreasureCard {	
-	public static final int COST = 6;
-	public static final String NAME = "Harem";
+	
 	public static final int POINTS = 2;
 	private static final int COINS = 2;
+	
+	public HaremCard() {
+		super("Harem", 6);
+	}
 	
 	@Override
 	public void accept(CardVisitor visitor) {
@@ -19,22 +22,12 @@ public class HaremCard extends Card implements VictoryCard, TreasureCard {
 	}
 
 	@Override
-	public int getCost() {
-		return COST;
-	}
-	
-	@Override
-	public String getName() {
-		return NAME;
+	public int getCoinAmount() {
+		return COINS;
 	}
 
 	@Override
 	public int getVictoryPoints() {
 		return POINTS;
-	}
-
-	@Override
-	public int getCoinAmount() {
-		return COINS;
 	}	
 }

@@ -1,11 +1,12 @@
 package com.dominion.game.modifiers;
 
-import com.dominion.game.cards.Card;
+public class BridgeModifier extends CostModifier {
 
-public class BridgeModifier extends CardModifier {
-
+	/**
+	 * Reduce the cost of the card by one, but no less than 0 
+	 */
 	@Override
-	public Card modify(Card card) {
-		return new BridgeModifiedCard(card);
+	public int getModifiedCost(int cost) {
+		return Math.max(cost - 1, 0);
 	}
 }

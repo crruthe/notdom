@@ -9,9 +9,11 @@ import com.dominion.game.cards.Card;
 import com.dominion.game.visitors.CardVisitor;
 
 public class RemodelCard extends Card implements ActionCard {
-	public static final int COST = 4;
-	public static final String NAME = "Remodel";
 	
+	public RemodelCard() {
+		super("Remodel", 4);
+	}
+
 	@Override
 	public void accept(CardVisitor visitor) {
 		visitor.visit(this);
@@ -24,15 +26,5 @@ public class RemodelCard extends Card implements ActionCard {
 		cardActions.add(new RemodelAction());
 		
 		return cardActions;
-	}
-
-	@Override
-	public int getCost() {
-		return COST;
-	}
-
-	@Override
-	public String getName() {
-		return NAME;
 	}
 }

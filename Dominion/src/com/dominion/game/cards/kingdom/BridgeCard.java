@@ -11,10 +11,13 @@ import com.dominion.game.cards.Card;
 import com.dominion.game.visitors.CardVisitor;
 
 public class BridgeCard extends Card implements ActionCard {
-	public static final int COST = 4;
-	public static final String NAME = "Bridge";
+	
 	private static final int PLUS_BUYS = 1;
 	private static final int PLUS_COINS = 1;
+	
+	public BridgeCard() {
+		super("Bridge", 4);
+	}
 
 	@Override
 	public void accept(CardVisitor visitor) {
@@ -30,15 +33,5 @@ public class BridgeCard extends Card implements ActionCard {
 		cardActions.add(new BridgeAction());
 		
 		return cardActions;
-	}
-
-	@Override
-	public int getCost() {
-		return COST;
-	}
-	
-	@Override
-	public String getName() {
-		return NAME;
 	}
 }

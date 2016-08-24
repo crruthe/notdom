@@ -8,7 +8,7 @@ import com.dominion.game.modifiers.CardModifier;
 public class TurnState {
 
 	// Modifiers for the turn, e.g. Bridge
-	protected List<CardModifier> modifiers = new LinkedList<CardModifier>();
+	protected List<CardModifier> cardModifiers = new LinkedList<CardModifier>();
 
 	protected int numOfActions;
 
@@ -29,15 +29,15 @@ public class TurnState {
 	 * @param turnState
 	 */
 	public TurnState(TurnState turnState) {
-		this.modifiers = new LinkedList<CardModifier>(turnState.modifiers);
+		this.cardModifiers = new LinkedList<CardModifier>(turnState.cardModifiers);
 		this.numOfActions = turnState.numOfActions;
 		this.numOfActionsPlayed = turnState.numOfActionsPlayed;
 		this.numOfBuys = turnState.numOfBuys;
 		this.totalCoins = turnState.totalCoins;
 	}
 
-	public void addModifier(CardModifier modifier) {
-		modifiers.add(modifier);
+	public void addCardModifier(CardModifier modifier) {
+		cardModifiers.add(modifier);
 	}
 	
 	public void decrementActions() {
@@ -52,8 +52,8 @@ public class TurnState {
 		totalCoins -= coins;
 	}
 	
-	public List<CardModifier> getModifiers() {
-		return modifiers;
+	public List<CardModifier> getCardModifiers() {
+		return cardModifiers;
 	}
 	
 	/**
@@ -102,7 +102,7 @@ public class TurnState {
 		numOfActions = 1;
 		totalCoins = 0;	
 		numOfActionsPlayed = 0;
-		modifiers.clear();
+		cardModifiers.clear();
 	}
 	
 	public void zeroActions() {

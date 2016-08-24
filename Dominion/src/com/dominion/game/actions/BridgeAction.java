@@ -12,6 +12,6 @@ import com.dominion.game.modifiers.BridgeModifier;
 public class BridgeAction implements CardAction {
 	@Override
 	public void execute(GameState state) {
-		state.getTurnState().addModifier(new BridgeModifier());
+		state.getTurnState().addCardModifier(new BridgeModifier());
 	}
 }

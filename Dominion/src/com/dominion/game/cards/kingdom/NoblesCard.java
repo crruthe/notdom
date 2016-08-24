@@ -11,9 +11,12 @@ import com.dominion.game.visitors.CardVisitor;
 
 
 public class NoblesCard extends Card implements VictoryCard, ActionCard {	
-	public static final int COST = 6;
-	public static final String NAME = "Nobles";
+	
 	public static final int POINTS = 2;
+
+	public NoblesCard() {
+		super("Nobles", 6);
+	}
 	
 	@Override
 	public void accept(CardVisitor visitor) {
@@ -28,16 +31,6 @@ public class NoblesCard extends Card implements VictoryCard, ActionCard {
 		cardActions.add(new NoblesAction());
 		
 		return cardActions;
-	}
-	
-	@Override
-	public int getCost() {
-		return COST;
-	}
-
-	@Override
-	public String getName() {
-		return NAME;
 	}
 
 	@Override

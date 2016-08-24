@@ -24,9 +24,8 @@ public class BridgeActionTest extends ActionTest {
 		action.execute(state);
 		
 		Card card = new SilverCard();
-		Card mCard = state.modifyCard(card);
 		
-		assertEquals(2, mCard.getCost());
+		assertEquals(2, state.getModifiedCost(card));
 	}
 	
 	public void testMultipleBridges() {
@@ -39,13 +38,11 @@ public class BridgeActionTest extends ActionTest {
 		action2.execute(state);		
 		
 		Card card = new SilverCard();
-		Card mCard = state.modifyCard(card);
 		
-		assertEquals(1, mCard.getCost());
+		assertEquals(1, state.getModifiedCost(card));
 
 		Card card1 = new ProvinceCard();
-		Card mCard1 = state.modifyCard(card1);
 		
-		assertEquals(6, mCard1.getCost());
+		assertEquals(6, state.getModifiedCost(card1));
 	}	
 }

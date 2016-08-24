@@ -11,9 +11,12 @@ import com.dominion.game.cards.Card;
 import com.dominion.game.visitors.CardVisitor;
 
 public class MinionCard extends Card implements ActionCard, AttackCard {
-	public static final int COST = 5;	
-	public static final String NAME = "Minion";
+	
 	private static final int PLUS_ACTIONS = 1;
+
+	public MinionCard() {
+		super("Minion", 5);
+	}
 
 	@Override
 	public void accept(CardVisitor visitor) {
@@ -28,15 +31,5 @@ public class MinionCard extends Card implements ActionCard, AttackCard {
 		cardActions.add(new MinionAction());
 		
 		return cardActions;
-	}
-
-	@Override
-	public int getCost() {
-		return COST;
-	}
-
-	@Override
-	public String getName() {
-		return NAME;
 	}
 }

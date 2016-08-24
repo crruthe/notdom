@@ -10,9 +10,12 @@ import com.dominion.game.cards.Card;
 import com.dominion.game.visitors.CardVisitor;
 
 public class CellarCard extends Card implements ActionCard {
-	public static final int COST = 2;
-	public static final String NAME = "Cellar";
+	
 	private static final int PLUS_ACTIONS = 1;
+
+	public CellarCard() {
+		super("Cellar", 2);
+	}
 
 	@Override
 	public void accept(CardVisitor visitor) {
@@ -27,15 +30,5 @@ public class CellarCard extends Card implements ActionCard {
 		cardActions.add(new CellarAction());
 		
 		return cardActions;
-	}
-	
-	@Override
-	public int getCost() {
-		return COST;
-	}
-	
-	@Override
-	public String getName() {
-		return NAME;
 	}
 }

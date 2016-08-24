@@ -12,11 +12,14 @@ import com.dominion.game.visitors.CardVisitor;
 
 
 public class GreatHallCard extends Card implements VictoryCard, ActionCard {	
-	public static final int COST = 3;
-	public static final String NAME = "GreatHall";
+
 	public static final int POINTS = 1;
 	private static final int PLUS_ACTIONS = 1;
 	private static final int PLUS_CARDS = 1;
+	
+	public GreatHallCard() {
+		super("GreatHall", 3);
+	}
 	
 	@Override
 	public void accept(CardVisitor visitor) {
@@ -32,16 +35,6 @@ public class GreatHallCard extends Card implements VictoryCard, ActionCard {
 		cardActions.add(new PlusActionAction(PLUS_ACTIONS));
 		
 		return cardActions;
-	}
-	
-	@Override
-	public int getCost() {
-		return COST;
-	}
-	
-	@Override
-	public String getName() {
-		return NAME;
 	}
 
 	@Override

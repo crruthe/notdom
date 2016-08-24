@@ -10,9 +10,11 @@ import com.dominion.game.cards.Card;
 import com.dominion.game.visitors.CardVisitor;
 
 public class SaboteurCard extends Card implements ActionCard, AttackCard {
-	public static final int COST = 5;
-	public static final String NAME = "Saboteur";
 	
+	public SaboteurCard() {
+		super("Saboteur", 5);
+	}
+
 	@Override
 	public void accept(CardVisitor visitor) {
 		visitor.visit(this);
@@ -25,15 +27,5 @@ public class SaboteurCard extends Card implements ActionCard, AttackCard {
 		cardActions.add(new SaboteurAction());
 		
 		return cardActions;
-	}
-
-	@Override
-	public int getCost() {
-		return COST;
-	}
-
-	@Override
-	public String getName() {
-		return NAME;
 	}
 }

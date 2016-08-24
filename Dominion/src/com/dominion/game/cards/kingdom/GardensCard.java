@@ -6,24 +6,17 @@ import com.dominion.game.visitors.CardVisitor;
 
 
 public class GardensCard extends Card implements VictoryCard {	
-	public static final int COST = 4;
-	public static final String NAME = "Gardens";
+	
+	public static final int CARDS_PER_POINT = 10;
 	public static final int POINTS = 0;
-	public static final int CARDS_PER_POINT = 10;	
+	
+	public GardensCard() {
+		super("Gardens", 4);
+	}	
 	
 	@Override
 	public void accept(CardVisitor visitor) {
 		visitor.visit(this);
-	}
-
-	@Override
-	public int getCost() {
-		return COST;
-	}
-	
-	@Override
-	public String getName() {
-		return NAME;
 	}
 
 	@Override

@@ -164,8 +164,7 @@ public class GameMaster {
 				// Gain a card
 				playerGainsCardFromSupply(state.getCurrentPlayer(), card.getClass());
 				
-				Card mCard = state.modifyCard(card);
-				state.getTurnState().decrementCoins(mCard.getCost());
+				state.getTurnState().decrementCoins(state.getModifiedCost(card));
 				state.getTurnState().decrementBuys();				
 			}
 		}		

@@ -31,7 +31,7 @@ public class SaboteurAction extends AttackAction {
 
 			state.broadcastToAllPlayers(new CardRevealedMessage(victim, card));			
 			
-			int cost = state.modifyCard(card).getCost();
+			int cost = state.getModifiedCost(card);
 			
 			if (cost >= 3) {
 				state.broadcastToAllPlayers(new CardTrashedMessage(victim, card));

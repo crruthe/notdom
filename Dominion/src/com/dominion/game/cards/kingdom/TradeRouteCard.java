@@ -13,9 +13,11 @@ import com.dominion.game.visitors.CardVisitor;
 
 
 public class TradeRouteCard extends Card implements ActionCard, ProsperityCard {	
-	public static final int COST = 3;
-	public static final String NAME = "TradeRoute";
 	
+	public TradeRouteCard() {
+		super("TradeRoute", 3);
+	}
+
 	@Override
 	public void accept(CardVisitor visitor) {
 		visitor.visit(this);
@@ -31,14 +33,4 @@ public class TradeRouteCard extends Card implements ActionCard, ProsperityCard {
 		
 		return cardActions;
 	}
-	
-	@Override
-	public int getCost() {
-		return COST;
-	}
-
-	@Override
-	public String getName() {
-		return NAME;
-	}	
 }

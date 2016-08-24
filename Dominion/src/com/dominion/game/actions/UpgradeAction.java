@@ -22,7 +22,7 @@ public class UpgradeAction implements CardAction {
 			Card trashCard = trashCardAction.getTrashedCards().get(0);
 			
 			// Get actual cost after modifiers e.g. Bridge
-			int cost = state.modifyCard(trashCard).getCost();
+			int cost = state.getModifiedCost(trashCard);
 
 			// Gain a card that is exactly cost + 1
 			List<Card> cards = state.listCardsFilterByCostExact(cost + 1);

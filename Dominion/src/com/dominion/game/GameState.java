@@ -15,6 +15,8 @@ import com.dominion.game.interfaces.messages.CardPlayedMessage;
 import com.dominion.game.interfaces.messages.PlayerInterfaceMessage;
 import com.dominion.game.interfaces.messages.UpdateSupplyMessage;
 import com.dominion.game.modifiers.CardModifier;
+import com.dominion.game.modifiers.CoinModifierVisitor;
+import com.dominion.game.modifiers.CostModifierVisitor;
 
 /**
  * GameState is a container for everything that makes up a current state.
@@ -27,7 +29,7 @@ public class GameState {
 
 	protected GameBoard gameBoard;
 	protected LinkedList<Player> players = new LinkedList<Player>();	
-	protected TurnState turnState = new TurnState();	
+	protected TurnState turnState = new TurnState();
 	
 	/**
 	 * Clone constructor
@@ -144,8 +146,9 @@ public class GameState {
 	}
 	
 	/**
-	 * Build up a list of cards that the player can buy
+	 * Build up a list of cards (filtered by card type) that the player can buy
 	 * 
+	 * @param cardClass what class to filter on
 	 * @param amount of coins to buy with
 	 * @return collection of cards
 	 */
@@ -157,11 +160,8 @@ public class GameState {
 			if (gameBoard.getSupplyStacks().get(checkCardClass).getNumCards() > 0) {
 				Card card = Card.getCard(checkCardClass);
 
-				// Apply modifiers for cost, e.g. Bridge
-				Card mCard = modifyCard(card);
-				
 				// Check if player can afford this card
-				if (cardClass.isInstance(card) && mCard.getCost() <= amount) {
+				if (cardClass.isInstance(card) && getModifiedCost(card) <= amount) {
 					cards.add(card);
 				}
 			}
@@ -188,31 +188,31 @@ public class GameState {
 	public List<Card> listCardsFilterByCostExact(int amount) {
 		return listCardsFilterByCost(amount, amount);
 	}
-	
+
 	/**
-	 * Applies modifiers to the card in a pipeline and returns the final modified card
+	 * Applies modifiers to the card and returns the final cost
 	 * 
-	 * @param card
-	 * @return
+	 * @return modified cost
 	 */
-	public Card modifyCard(Card mCard) {
-		for (CardModifier modifier : turnState.getModifiers()) {
-			mCard = modifier.modify(mCard);
+	public int getModifiedCost(Card card) {
+		CostModifierVisitor visitor = new CostModifierVisitor(card);
+		for (CardModifier modifier : turnState.getCardModifiers()) {
+			modifier.accept(visitor);
 		}
-		return mCard;
+		return visitor.getCost();		
 	}
-	
+
 	/**
-	 * Applies modifiers to the card in a pipeline and returns the final modified card
+	 * Applies modifiers to the card and returns the final coin
 	 * 
-	 * @param card
-	 * @return
+	 * @return modified coin
 	 */
-	public TreasureCard modifyCard(TreasureCard mCard) {
-		for (CardModifier modifier : turnState.getModifiers()) {
-			mCard = modifier.modify(mCard);
+	public int getModifiedCoin(TreasureCard card) {
+		CoinModifierVisitor visitor = new CoinModifierVisitor(card);
+		for (CardModifier modifier : turnState.getCardModifiers()) {
+			modifier.accept(visitor);
 		}
-		return mCard;
+		return visitor.getCoin();				
 	}
 	
 	public void playActionCard(ActionCard actionCard) {		
@@ -236,8 +236,7 @@ public class GameState {
 		((Card)card).onPlay(this);
 
 		// Update number of coins left
-		TreasureCard mCard = modifyCard(card);
-		turnState.incrementCoins(mCard.getCoinAmount());
+		turnState.incrementCoins(getModifiedCoin(card));
 
 		getCurrentPlayer().notifyOfTurnState(turnState);
 		broadcastToAllPlayers(new CardPlayedMessage(getCurrentPlayer(), (Card)card));
@@ -290,11 +289,10 @@ public class GameState {
 			if (gameBoard.getSupplyStacks().get(cardClass).getNumCards() > 0) {
 				Card card = Card.getCard(cardClass);
 				
-				// Apply modifiers for cost, e.g. Bridge
-				Card mCard = modifyCard(card);
+				int cost = getModifiedCost(card);
 				
 				// Check if player can afford this card
-				if (mCard.getCost() >= min && mCard.getCost() <= max) {
+				if (cost >= min && cost <= max) {
 					cards.add(card);
 				}
 			}

@@ -10,10 +10,13 @@ import com.dominion.game.cards.TreasureCard;
 import com.dominion.game.visitors.CardVisitor;
 
 
-public class LoanCard extends Card implements TreasureCard, ProsperityCard {	
-	public static final int COST = 3;
-	public static final String NAME = "Loan";
+public class LoanCard extends Card implements TreasureCard, ProsperityCard {
+	
 	private static final int COINS = 1;
+
+	public LoanCard() {
+		super("Loan", 3);
+	}
 	
 	@Override
 	public void accept(CardVisitor visitor) {
@@ -33,14 +36,4 @@ public class LoanCard extends Card implements TreasureCard, ProsperityCard {
 	public int getCoinAmount() {
 		return COINS;
 	}
-	
-	@Override
-	public int getCost() {
-		return COST;
-	}
-
-	@Override
-	public String getName() {
-		return NAME;
-	}	
 }

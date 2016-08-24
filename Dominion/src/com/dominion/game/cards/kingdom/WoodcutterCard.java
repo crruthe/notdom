@@ -10,10 +10,13 @@ import com.dominion.game.cards.Card;
 import com.dominion.game.visitors.CardVisitor;
 
 public class WoodcutterCard extends Card implements ActionCard {
-	public static final int COST = 3;
-	public static final String NAME = "Woodcutter";
+	
 	private static final int PLUS_BUYS = 1;
 	private static final int PLUS_COINS = 2;
+	
+	public WoodcutterCard() {
+		super("Woodcutter", 3);
+	}
 
 	@Override
 	public void accept(CardVisitor visitor) {
@@ -28,15 +31,5 @@ public class WoodcutterCard extends Card implements ActionCard {
 		cardActions.add(new PlusCoinAction(PLUS_COINS));
 		
 		return cardActions;
-	}
-
-	@Override
-	public int getCost() {
-		return COST;
-	}
-	
-	@Override
-	public String getName() {
-		return NAME;
 	}
 }

@@ -12,8 +12,10 @@ import com.dominion.game.cards.ReactionCard;
 import com.dominion.game.visitors.CardVisitor;
 
 public class SecretChamberCard extends Card implements ReactionCard, ActionCard {
-	public static final int COST = 2;
-	public static final String NAME = "SecretChamber";	
+	
+	public SecretChamberCard() {
+		super("SecretChamber", 2);
+	}
 
 	@Override
 	public void accept(CardVisitor visitor) {
@@ -27,16 +29,6 @@ public class SecretChamberCard extends Card implements ReactionCard, ActionCard 
 		cardActions.add(new SecretChamberAction());
 		
 		return cardActions;
-	}
-	
-	@Override
-	public int getCost() {
-		return COST;
-	}
-	
-	@Override
-	public String getName() {
-		return NAME;
 	}
 
 	@Override

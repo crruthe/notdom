@@ -12,9 +12,12 @@ import com.dominion.game.cards.ReactionCard;
 import com.dominion.game.visitors.CardVisitor;
 
 public class MoatCard extends Card implements ReactionCard, ActionCard {
-	public static final int COST = 2;
-	public static final String NAME = "Moat";	
+	
 	private static final int PLUS_CARDS = 2;
+
+	public MoatCard() {
+		super("Moat", 2);
+	}
 
 	@Override
 	public void accept(CardVisitor visitor) {
@@ -28,16 +31,6 @@ public class MoatCard extends Card implements ReactionCard, ActionCard {
 		cardActions.add(new PlusCardAction(PLUS_CARDS));
 		
 		return cardActions;
-	}
-	
-	@Override
-	public int getCost() {
-		return COST;
-	}
-	
-	@Override
-	public String getName() {
-		return NAME;
 	}
 
 	@Override

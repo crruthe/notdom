@@ -6,25 +6,18 @@ import com.dominion.game.visitors.CardVisitor;
 
 
 public class DuchyCard extends Card implements VictoryCard {
-	public static final int COST = 5;
-	public static final String NAME = "Duchy";
+	
 	private final static int POINTS = 3;
+
+	public DuchyCard() {
+		super("Duchy", 5);
+	}
 	
 	@Override
 	public void accept(CardVisitor visitor) {
 		visitor.visit(this);
 	}
 
-	@Override
-	public int getCost() {
-		return COST;
-	}
-	
-	@Override
-	public String getName() {
-		return NAME;
-	}
-	
 	@Override
 	public int getVictoryPoints() {
 		return POINTS;

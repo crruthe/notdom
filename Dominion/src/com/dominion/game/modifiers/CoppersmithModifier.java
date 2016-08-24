@@ -3,13 +3,13 @@ package com.dominion.game.modifiers;
 import com.dominion.game.cards.TreasureCard;
 import com.dominion.game.cards.basic.CopperCard;
 
-public class CoppersmithModifier extends CardModifier {
+public class CoppersmithModifier extends CoinModifier {
 
 	@Override
-	public TreasureCard modify(TreasureCard card) {
-		if (card instanceof CopperCard)
-			return new CoppersmithModifiedCard((CopperCard)card);
-		else
-			return card;
+	public int getModifiedCoin(TreasureCard card, int coin) {
+		if (card instanceof CopperCard) {
+			return coin + 1;
+		}
+		return coin;
 	}
 }

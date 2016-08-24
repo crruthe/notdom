@@ -12,6 +12,6 @@ import com.dominion.game.modifiers.CoppersmithModifier;
 public class CoppersmithAction implements CardAction {
 	@Override
 	public void execute(GameState state) {
-		state.getTurnState().addModifier(new CoppersmithModifier());
+		state.getTurnState().addCardModifier(new CoppersmithModifier());
 	}
 }

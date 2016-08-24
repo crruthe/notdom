@@ -16,9 +16,11 @@ public class RemodelAction implements CardAction {
 		trashCardAction.execute(state);
 		
 		if (trashCardAction.getTrashedCards().size() == 1) { 
-			// Get actual cost after modifiers e.g. Bridge
 			Card trashedCard = trashCardAction.getTrashedCards().get(0);
-			int cost = state.modifyCard(trashedCard).getCost();
+
+			// Get actual cost after modifiers e.g. Bridge
+			int cost = state.getModifiedCost(trashedCard);
+			
 			new GainCardAction(cost + 2, true).execute(state);
 		}
 	}
